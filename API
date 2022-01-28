@@ -20,6 +20,11 @@ SOURCE
 bool(Source_Shipper<tuple_t> &);
 bool(Source_Shipper<tuple_t> &, RuntimeContext &);
 
+KAFKA_SOURCE
+------------
+bool(RdKafka::Message &, Source_Shipper<result_t> &);
+bool(RdKafka::Message &, Source_Shipper<result_t> &, RuntimeContext &);
+
 FILTER
 ------
 bool(tuple_t &);

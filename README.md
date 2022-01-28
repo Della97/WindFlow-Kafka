@@ -20,7 +20,8 @@ The library requires the following dependencies:
 * <strong>FastFlow</strong> version >= 3.0 (https://github.com/fastflow/fastflow)
 * <strong>CUDA</strong> (for using operators targeting GPUs)
 * <strong>libtbb-dev</strong> for using efficient concurrent containers required by the GPU operators
-* <strong>libgraphviz-dev</strong> and <strong>rapidjson-dev</strong> (when compiling with -DWF_TRACING_ENABLED to report statistics and using the Web Dashboard)
+* <strong>libgraphviz-dev</strong> and <strong>rapidjson-dev</strong> when compiling with -DWF_TRACING_ENABLED to report statistics and using the Web Dashboard
+* <strong>librdkafka-dev</strong> for using the integration with Kafka (special Kafka Source and Sink operators)
 * <strong>doxygen</strong> (to generate the documentation)
 
 <b>Important about the FastFlow dependency</b> -> after downloading FastFlow, the user needs to configure the library for the underlying multi-core environment. By default, FastFlow pins its threads onto the cores of the machine. To make FastFlow aware of the ordering of cores, and their correspondence in CPUs and NUMA regions, it is important to run (just one time) the script <strong>"mapping_string.sh"</strong> in the folder <tt>fastflow/ff</tt> before compiling your programs.

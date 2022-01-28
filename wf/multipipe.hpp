@@ -58,12 +58,12 @@
     #include<basic_gpu.hpp>
     #include<broadcast_emitter_gpu.hpp>
     #include<splitting_emitter_gpu.hpp>
-    #if defined (WF_GPU_UNIFIED_MEMORY)
-        #include<keyby_emitter_gpu_u.hpp> // version with CUDA unified memory support
-        #include<forward_emitter_gpu_u.hpp> // version with CUDA unified memory support
-    #else
+    #if !defined (WF_GPU_UNIFIED_MEMORY) && !defined(WF_GPU_PINNED_MEMORY)
         #include<keyby_emitter_gpu.hpp> // version with CUDA explicit memory transfers
         #include<forward_emitter_gpu.hpp> // version with CUDA explicit memory transfers
+    #else
+        #include<keyby_emitter_gpu_u.hpp> // version with CUDA unified memory support
+        #include<forward_emitter_gpu_u.hpp> // version with CUDA unified memory support
     #endif
 #endif
 
@@ -350,15 +350,15 @@ private:
         }
     }
 
-    // Add the Source to the MultiPipe
-    template<typename source_func_t>
-    MultiPipe &add_source(const Source<source_func_t> &_source)
+    // Add a Source to the MultiPipe
+    template<typename source_t>
+    MultiPipe &add_source(const source_t &_source)
     {
         if (_source.getOutputBatchSize() > 0 && execution_mode != Execution_Mode_t::DEFAULT) {
             std::cerr << RED << "WindFlow Error: Source cannot produce a batch in non DEFAULT mode" << DEFAULT_COLOR << std::endl;
             exit(EXIT_FAILURE);
         }
-        auto *copied_source = new Source(_source); // create a copy of the operator
+        auto *copied_source = new source_t(_source); // create a copy of the operator
         copied_source->setConfiguration(execution_mode, time_policy); // set the execution mode and time policy of the operator
         ff::ff_a2a *matrioska = new ff::ff_a2a(); // create the initial matrioska
         std::vector<ff::ff_node *> first_set;
@@ -379,11 +379,28 @@ private:
         lastParallelism = (copied_source->replicas).size(); // save the parallelism of the operator
         localOpList.push_back(copied_source); // add the copied operator to local list
         globalOpList->push_back(copied_source); // add the copied operator to global list
-        using result_t = decltype(get_result_t_Source(copied_source->func)); // extracting the result_t type
-        outputType = TypeName<result_t>::getName(); // save the type of result_t as a string
+        using result1_t = decltype(get_result_t_Source(copied_source->func)); // extracting the result_t type
+        if constexpr (!std::is_same<result1_t, std::false_type>::value) { // case 1: standard Source
+            outputType = TypeName<result1_t>::getName(); // save the type of result_t as a string
+        }
+        else { // case 2: Kafka_Source
+            using result2_t = decltype(get_result_t_KafkaSource(copied_source->func)); // extracting the result_t type
+            if constexpr (!std::is_same<result2_t, std::false_type>::value) {
+                outputType = TypeName<result2_t>::getName(); // save the type of result_t as a string
+            }
+            else {
+                std::cerr << RED << "WindFlow Error: unrecognized Source operator is being added to the PipeGraph" << DEFAULT_COLOR << std::endl;
+                exit(EXIT_FAILURE);
+            }
+        }
 #if defined (WF_TRACING_ENABLED)
         // update the graphviz representation
-        gv_add_vertex("Source (" + std::to_string((copied_source->replicas).size()) + ")", copied_source->getName(), true, false, Routing_Mode_t::NONE);
+        if (_source.getType() == "Kafka_Source") {
+            gv_add_vertex("Kafka_Source (" + std::to_string((copied_source->replicas).size()) + ")", copied_source->getName(), true, false, Routing_Mode_t::NONE);
+        }
+        else {
+            gv_add_vertex("Source (" + std::to_string((copied_source->replicas).size()) + ")", copied_source->getName(), true, false, Routing_Mode_t::NONE);
+        }
 #endif
         return *this;
     }
