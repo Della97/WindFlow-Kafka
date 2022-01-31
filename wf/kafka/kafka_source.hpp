@@ -218,7 +218,7 @@ public:
         tconf = RdKafka::Conf::create(RdKafka::Conf::CONF_TOPIC);
         conf->set("metadata.broker.list", brokers, errstr);
         conf->set("enable.partition.eof", "true", errstr);
-        conf->set(groupid, "group", errstr);              //NEED TO GET GROUP ID AS PARAMATER!!! TO-DO
+        conf->set("group.id", groupid, errstr);              //NEED TO GET GROUP ID AS PARAMATER!!! TO-DO
         consumer = RdKafka::KafkaConsumer::create(conf, errstr);
         if (!consumer) {
             std::cerr << "Failed to create consumer: " << errstr << std::endl;
