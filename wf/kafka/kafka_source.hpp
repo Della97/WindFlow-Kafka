@@ -229,7 +229,15 @@ public:
             std::cerr << "Failed to create topic: " << errstr << std::endl;
             exit(1);
         }
-        consumer->subscribe(topics);
+        
+        /* Subscribe to topics */
+        RdKafka::ErrorCode err = consumer->subscribe(topics);
+        if (err) {
+            std::cerr << "Failed to subscribe to " << topics.size()
+                        << " topics: " << RdKafka::err2str(err) << std::endl;
+            exit(1);
+        }
+
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
 #endif
@@ -244,7 +252,7 @@ public:
             RdKafka::Message *msg = consumer->consume(1000); // qui si può fare qualcosa di carino per gestire il timeout
             switch (msg->err()) {
                 case RdKafka::ERR__TIMED_OUT:
-                    printf("Timed out while fetching msg from broker"); // bisogna usare cout non printf (solo per essere omogenei)
+                    std::cout << "Timed out while fetching msg from broker" << std::endl; // bisogna usare cout non printf (solo per essere omogenei)
                     break;
                 case RdKafka::ERR_NO_ERROR:
                     printf("[PAYLOAD] -> ");
@@ -253,6 +261,7 @@ public:
                 default:
                     /* Errors */
                     std::cerr << "Consume failed: " << msg->errstr() << std::endl;
+                    delete msg;
                     //run = 0;
             }
             if constexpr (isNonRiched) {
@@ -274,8 +283,8 @@ public:
     {
         // <---------------------- qui ci possono essere memory leak!!!
         // stop consumer
-        //consumer->stop(topic, partition);
-        //consumer->poll(1000);
+        consumer->close();
+        delete consumer;
         /*
         * Wait for RdKafka to decommission.
         * This is not strictly needed (when check outq_len() above), but
