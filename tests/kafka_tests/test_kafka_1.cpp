@@ -68,6 +68,35 @@ public:
     void operator()(RuntimeContext &r) {}
 };
 
+// sink functor
+
+// Sink functor
+class Sink_Functor
+{
+private:
+    size_t received; // counter of received results
+    long totalsum;
+
+public:
+    // Constructor
+    Sink_Functor():
+                 received(0),
+                 totalsum(0) {}
+
+    // operator()
+    void operator()(optional<tuple_t> &out)
+    {
+        if (out) {
+            received++;
+            totalsum += (*out).value;
+        }
+        else {
+            // printf("Received: %ld results, total sum: %ld\n", received, totalsum);
+            global_sum.fetch_add(totalsum);
+        }
+    }
+};
+
 // main
 int main()
 {
@@ -82,6 +111,8 @@ int main()
     int32_t offset = 0;
     RdKafka::Conf *cconf;
     RdKafka::Conf *tconf;
+
+    size_t sink1_degree = 1;
 
     Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, cconf, tconf, parallelism, offset, closing_func);
     std::cout << "Creazione con funzioni -> OK!" << std::endl;
@@ -141,8 +172,8 @@ int main()
     MultiPipe &pipe = graph.add_source(source1);
 
     //SINK
-    Int_Sink_Functor int_sink_functor1;
-        Sink sink1 = Sink_Builder(int_sink_functor1)
+    Sink_Functor sink_functor;
+        Sink sink1 = Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(sink1_degree)
                         .build();
