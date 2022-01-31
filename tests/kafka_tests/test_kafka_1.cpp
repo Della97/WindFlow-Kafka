@@ -139,5 +139,14 @@ int main()
 
     PipeGraph graph("test_tracing_1", Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
     MultiPipe &pipe = graph.add_source(source1);
+
+    //SINK
+    Int_Sink_Functor int_sink_functor1;
+        Sink sink1 = Sink_Builder(int_sink_functor1)
+                        .withName("sink1")
+                        .withParallelism(sink1_degree)
+                        .build();
+        pipe.chain_sink(sink1);
+    graph.run();
     return 0;
 }
