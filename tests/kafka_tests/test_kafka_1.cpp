@@ -92,7 +92,7 @@ public:
         }
         else {
             // printf("Received: %ld results, total sum: %ld\n", received, totalsum);
-            global_sum.fetch_add(totalsum);
+            //global_sum.fetch_add(totalsum);
         }
     }
 };
