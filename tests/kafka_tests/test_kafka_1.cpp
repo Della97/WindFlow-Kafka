@@ -148,5 +148,6 @@ int main()
                         .build();
         pipe.chain_sink(sink1);
     graph.run();
+    std::cout << "Exiting..." <<  std::endl;
     return 0;
 }
