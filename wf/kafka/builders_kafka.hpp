@@ -142,7 +142,7 @@ public:
      *  \param _groupid for the consumer
      *  \return a reference to the builder object
      */ 
-    Kafka_Source_Builder<kafka_deser_func_t> &withCConf(std::string _groupid)   //merge group-id
+    Kafka_Source_Builder<kafka_deser_func_t> &withGroupID(std::string _groupid)   //merge group-id
     {
         groupid = _groupid;
         return *this;
