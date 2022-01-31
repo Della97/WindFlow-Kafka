@@ -69,9 +69,8 @@ private:
     /* Da qui in poi abbiamo una serie di variabili che vanno sistemate */
     //std::string topics;
     std::vector<std::string> topics;
-    RdKafka::Conf *tconf;
     std::string brokers = "localhost";
-    RdKafka::Conf *cconf;
+    std::string groupid = "id";
     int32_t partition;
     int32_t offset;
 
@@ -138,26 +137,14 @@ public:
     }
 
     /** 
-     *  \brief Set the consumer configuration
+     *  \brief Set the consumer groupid
      *  
-     *  \param _cconf for the consumer
+     *  \param _groupid for the consumer
      *  \return a reference to the builder object
      */ 
-    Kafka_Source_Builder<kafka_deser_func_t> &withCConf(RdKafka::Conf *_cconf)
+    Kafka_Source_Builder<kafka_deser_func_t> &withCConf(std::string _groupid)   //merge group-id
     {
-        cconf = _cconf;
-        return *this;
-    }
-
-    /** 
-     *  \brief Set the topic conf
-     *  
-     *  \param _tconf of the topic
-     *  \return a reference to the builder object
-     */ 
-    Kafka_Source_Builder<kafka_deser_func_t> &withTConf(RdKafka::Conf *_tconf)
-    {
-        tconf = _tconf;
+        groupid = _groupid;
         return *this;
     }
 
@@ -209,8 +196,7 @@ public:
                               outputBatchSize,
                               brokers,
                               topics,
-                              cconf,
-                              tconf,
+                              groupid,
                               partition,
                               offset,
                               closing_func);

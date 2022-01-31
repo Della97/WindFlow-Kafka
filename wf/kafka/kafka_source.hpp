@@ -78,6 +78,7 @@ private:
     RdKafka::Conf *tconf = nullptr;
     RdKafka::Topic *topic = nullptr;
     std::string brokers = "localhost";
+    std::string groupid = "id";
     std::string errstr;
     std::string topic_str = "topic";
     std::vector<std::string> topics;
@@ -217,7 +218,7 @@ public:
         tconf = RdKafka::Conf::create(RdKafka::Conf::CONF_TOPIC);
         conf->set("metadata.broker.list", brokers, errstr);
         conf->set("enable.partition.eof", "true", errstr);
-        conf->set("group.id", "group", errstr);              //NEED TO GET GROUP ID AS PARAMATER!!! TO-DO
+        conf->set(groupid, "group", errstr);              //NEED TO GET GROUP ID AS PARAMATER!!! TO-DO
         consumer = RdKafka::KafkaConsumer::create(conf, errstr);
         if (!consumer) {
             std::cerr << "Failed to create consumer: " << errstr << std::endl;
@@ -361,9 +362,8 @@ private:
 
     /* Da qui in poi abbiamo una serie di variabili che vanno sistemate */
     std::string brokers;
+    std::string groupid;
     std::vector<std::string> topics;
-    RdKafka::Conf *cconf;
-    RdKafka::Conf *tconf;
     int32_t partition;
     int32_t offset;
 
@@ -476,8 +476,7 @@ public:
                  size_t _outputBatchSize,
                  std::string _brokers,
                  std::vector<std::string> _topics,
-                 RdKafka::Conf* _cconf,
-                 RdKafka::Conf* _tconf,
+                 std::string _groupid, //merge group-id
                  int32_t _partition,
                  int32_t _offset,
                  std::function<void(RuntimeContext &)> _closing_func):
@@ -487,14 +486,18 @@ public:
                  outputBatchSize(_outputBatchSize),
                  brokers(_brokers),
                  topics(_topics),
-                 cconf(_cconf),
-                 tconf(_tconf),
+                 groupid(_groupid), //merge group-id
                  offset(_offset)
     {
         if (parallelism == 0) { // check the validity of the parallelism value
             std::cerr << RED << "WindFlow Error: Kafka_Source has parallelism zero" << DEFAULT_COLOR << std::endl;
             exit(EXIT_FAILURE);
         }
+
+        if (true) {  //check if the parallelism and the partitions are compatible /todo
+
+        }
+
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
             replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), _closing_func));
         }
