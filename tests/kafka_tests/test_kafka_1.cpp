@@ -159,7 +159,7 @@ int main()
                                 .withOutputBatchSize(outputBactchSize)
                                 .withClosingFunction(closing_functor)
                                 .withBrokers(brokers)
-                                .withTopics(topics)
+                                .withTopics(topic)
                                 .withGroupID(groupid)
                                 .withPartition(parallelism)
                                 .withOffset(offset)
@@ -167,7 +167,7 @@ int main()
     std::cout << "Creazione con builder tramite funtori -> OK!" <<  std::endl;
 
     PipeGraph graph("test_tracing_1", Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
-    MultiPipe &pipe = graph.add_source(source1);
+    MultiPipe &pipe = graph.add_source(source6);
 
     //SINK
     Sink_Functor sink_functor;
