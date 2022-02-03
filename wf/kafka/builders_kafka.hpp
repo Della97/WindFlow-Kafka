@@ -179,15 +179,17 @@ public:
      *  \return a reference to the builder object
      */ 
 
-    template <class T>
-    Kafka_Source_Builder<kafka_deser_func_t> &withTopics(std::initializer_list<T> _topics)
+    //template <class T>
+    Kafka_Source_Builder<kafka_deser_func_t> &withTopics(std::vector<std::string> _topics)
     {
+        /*
         for( auto elem : list )
         {
             //std::cout << elem << std::endl ;
             //parse partition:topic or topic (all partition)
         }
-        //topics = _topics;
+        */
+        topics = _topics;
         return *this;
     }
 
