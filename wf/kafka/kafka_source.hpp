@@ -80,7 +80,7 @@ private:
     std::string brokers = "localhost";
     std::string groupid = "id";
     std::string errstr;
-    std::string topic_str = "topic";
+    std::string topic_str = "test";
     std::vector<std::string> topics;
     std::vector<RdKafka::TopicPartition*> partitions;
     int32_t partition = 0;
