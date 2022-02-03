@@ -80,7 +80,7 @@ private:
     std::string brokers = "localhost";
     std::string groupid = "id";
     std::string errstr;
-    std::string topic_str = "test";
+    std::string topic_str;
     std::vector<std::string> topics = { "test" };
     std::vector<RdKafka::TopicPartition*> partitions;
     int32_t partition = 0;
@@ -226,7 +226,7 @@ public:
         }
         std::cout << "% Created consumer " << consumer->name() << std::endl;
         // crate the topic handle
-        topic = RdKafka::Topic::create(consumer, topic_str, tconf, errstr);
+        topic = RdKafka::Topic::create(consumer, "test", tconf, errstr);
         if (!topic) {
             std::cerr << "Failed to create topic: " << errstr << std::endl;
             exit(1);
