@@ -35,6 +35,13 @@
 using namespace std;
 using namespace wf;
 
+// tuple_t struct
+struct tuple_t
+{
+    int key;
+    int value;
+};
+
 // Sink functor
 class Sink_Functor
 {
@@ -53,20 +60,12 @@ public:
     {
         if (out) {
             received++;
-            totalsum += (*out).value;
         }
         else {
             // printf("Received: %ld results, total sum: %ld\n", received, totalsum);
             //global_sum.fetch_add(totalsum);
         }
     }
-};
-
-// tuple_t struct
-struct tuple_t
-{
-    int key;
-    int value;
 };
 
 // deserialization function (stub)
