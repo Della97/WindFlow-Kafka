@@ -137,5 +137,16 @@ int main()
 
     PipeGraph graph("test_tracing_1", Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
     MultiPipe &pipe = graph.add_source(source1);
+
+        //SINK
+    Sink_Functor sink_functor;
+        Sink sink1 = Sink_Builder(sink_functor)
+                        .withName("sink1")
+                        .withParallelism(sink1_degree)
+                        .build();
+        pipe.chain_sink(sink1);
+    graph.run();
+    std::cout << "Exiting..." <<  std::endl;
+    
     return 0;
 }

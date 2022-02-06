@@ -225,12 +225,6 @@ public:
             exit(1);
         }
         std::cout << "% Created consumer " << consumer->name() << std::endl;
-        // crate the topic handle
-        topic = RdKafka::Topic::create(consumer, topic_str, tconf, errstr);
-        if (!topic) {
-            std::cerr << "Failed to create topic: " << errstr << std::endl;
-            exit(1);
-        }
         
         /* Subscribe to topics */
         RdKafka::ErrorCode err = consumer->subscribe(topics);
