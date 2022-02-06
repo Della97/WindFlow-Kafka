@@ -110,6 +110,7 @@ int main()
     int32_t offset = 0;
     RdKafka::Conf *cconf;
     RdKafka::Conf *tconf;
+    std:int sink1_degree = 1;
 
     Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, groupid, parallelism, offset, closing_func);
     std::cout << "Creazione con funzioni -> OK!" << std::endl;
