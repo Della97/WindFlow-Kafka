@@ -35,6 +35,33 @@
 using namespace std;
 using namespace wf;
 
+// Sink functor
+class Sink_Functor
+{
+private:
+    size_t received; // counter of received results
+    long totalsum;
+
+public:
+    // Constructor
+    Sink_Functor():
+                 received(0),
+                 totalsum(0) {}
+
+    // operator()
+    void operator()(optional<tuple_t> &out)
+    {
+        if (out) {
+            received++;
+            totalsum += (*out).value;
+        }
+        else {
+            // printf("Received: %ld results, total sum: %ld\n", received, totalsum);
+            //global_sum.fetch_add(totalsum);
+        }
+    }
+};
+
 // tuple_t struct
 struct tuple_t
 {
@@ -147,6 +174,6 @@ int main()
         pipe.chain_sink(sink1);
     graph.run();
     std::cout << "Exiting..." <<  std::endl;
-    
+
     return 0;
 }
