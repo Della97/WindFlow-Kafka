@@ -59,11 +59,10 @@ public:
     void operator()(optional<tuple_t> &out)
     {
         if (out) {
-            received++;
+            return true;
         }
         else {
-            // printf("Received: %ld results, total sum: %ld\n", received, totalsum);
-            //global_sum.fetch_add(totalsum);
+            return false;
         }
     }
 };
@@ -83,7 +82,10 @@ class deser_functor
 public:
     bool operator()(RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper)
     {
-        return true;
+        tuple_t out;
+        out.key = msg.key;
+        out.value = msg.payload;
+        shipper.push(out);
     }
 };
 
