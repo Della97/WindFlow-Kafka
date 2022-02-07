@@ -80,7 +80,6 @@ private:
     std::string brokers = "localhost";
     std::string groupid = "id";
     std::string errstr;
-    std::string topic_str = "test";
     std::vector<std::string> topics = { "test" };
     std::vector<RdKafka::TopicPartition*> partitions;
     int32_t partition = 0;
@@ -251,7 +250,7 @@ public:
                     std::cout << "Timed out while fetching msg from broker" << std::endl; // bisogna usare cout non printf (solo per essere omogenei)
                     break;
                 case RdKafka::ERR_NO_ERROR:
-                    printf("[PAYLOAD] -> ");
+                    std::cout << "[PAYLOAD] -> " << std::endl;
                     printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
                     break;
                 default:
