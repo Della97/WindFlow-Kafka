@@ -85,8 +85,9 @@ public:
         if (msg) {
             tuple_t out;
             std::cout << "Entered deser" << std::endl;
-            out.key = atoi(msg.key());
-            out.value = msg.payload();
+            out.value = stoi(msg.key());
+            //out.value = msg.payload();
+            out.key = 0;
             shipper.push(out);
             return true;
 
