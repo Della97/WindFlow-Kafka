@@ -70,6 +70,13 @@ public:
 // deserialization function (stub)
 bool deser_func(RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper)
 {
+    tuple_t out;
+    std::cout << "Entered deser" << std::endl;
+    //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg.));
+    out.value = 0;
+    //out.value = msg.payload();
+    out.key = 0;
+    shipper.push(out);
     return true;
 }
 
@@ -169,7 +176,7 @@ int main()
     std::cout << "Creazione con builder tramite funtori -> OK!" <<  std::endl;
 
     PipeGraph graph("test_tracing_1", Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
-    MultiPipe &pipe = graph.add_source(source6);
+    MultiPipe &pipe = graph.add_source(source1);
 
         //SINK
     Sink_Functor sink_functor;
