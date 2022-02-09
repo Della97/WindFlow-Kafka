@@ -84,8 +84,7 @@ public:
     {
         tuple_t out;
         std::cout << "Entered deser" << std::endl;
-        printf("%.*s\n", static_cast<int>(msg->len()),
-             static_cast<const char *>(msg->payload()));
+        //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg.));
         out.value = 0;
         //out.value = msg.payload();
         out.key = 0;
