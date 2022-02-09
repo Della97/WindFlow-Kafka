@@ -258,7 +258,9 @@ public:
                 default:
                     /* Errors */
                     std::cerr << "Consume failed: " << msg->errstr() << std::endl;
+                    std::cout << "pre segfault" << std::endl;
                     delete msg;
+                    std::cout << "after segfault" << std::endl;
                     //run = 0;
             }
             if constexpr (isNonRiched) {
