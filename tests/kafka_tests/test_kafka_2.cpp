@@ -84,8 +84,8 @@ public:
     {
         tuple_t out;
         std::cout << "Entered deser" << std::endl;
-        out.key = msg.key;
-        out.value = msg.payload;
+        out.key = msg.key();
+        out.value = msg.payload();
         shipper.push(out);
     }
 };
