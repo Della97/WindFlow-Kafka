@@ -59,7 +59,7 @@ public:
     void operator()(optional<tuple_t> &out)
     {
         if (out) {
-            std::cout << "Received: " << out.value << std::endl;
+            std::cout << "Received: " << std::endl;
         }
         else {
             //std::cout << "Received: " << out.value << std::endl;
