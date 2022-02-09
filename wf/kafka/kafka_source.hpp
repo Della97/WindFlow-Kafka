@@ -251,7 +251,9 @@ public:
                     break;
                 case RdKafka::ERR_NO_ERROR:
                     std::cout << "[PAYLOAD] -> " << std::endl;
+                    std::cout << "pre segfault" << std::endl;
                     printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
+                    std::cout << "after segfault" << std::endl;
                     break;
                 default:
                     /* Errors */
