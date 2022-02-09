@@ -84,7 +84,7 @@ public:
     {
         tuple_t out;
         std::cout << "Entered deser" << std::endl;
-        printf("%.*s\n", static_cast<int>(messmsgage->len()),
+        printf("%.*s\n", static_cast<int>(msg->len()),
              static_cast<const char *>(msg->payload()));
         out.value = 0;
         //out.value = msg.payload();
