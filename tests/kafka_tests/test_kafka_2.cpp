@@ -169,7 +169,7 @@ int main()
     std::cout << "Creazione con builder tramite funtori -> OK!" <<  std::endl;
 
     PipeGraph graph("test_tracing_1", Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
-    MultiPipe &pipe = graph.add_source(source3);
+    MultiPipe &pipe = graph.add_source(source6);
 
         //SINK
     Sink_Functor sink_functor;
