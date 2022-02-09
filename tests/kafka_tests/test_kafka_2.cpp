@@ -59,10 +59,10 @@ public:
     void operator()(optional<tuple_t> &out)
     {
         if (out) {
-            return true;
+            std::cout << "Received: " << out.value << std::endl;
         }
         else {
-            return false;
+            //std::cout << "Received: " << out.value << std::endl;
         }
     }
 };
@@ -82,11 +82,17 @@ class deser_functor
 public:
     bool operator()(RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper)
     {
-        tuple_t out;
-        std::cout << "Entered deser" << std::endl;
-        out.key = atoi(msg.key());
-        out.value = msg.payload();
-        shipper.push(out);
+        if (msg) {
+            tuple_t out;
+            std::cout << "Entered deser" << std::endl;
+            out.key = atoi(msg.key());
+            out.value = msg.payload();
+            shipper.push(out);
+            return true;
+
+        } else {
+            return false;
+        }
     }
 };
 
