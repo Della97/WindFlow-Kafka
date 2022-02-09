@@ -84,7 +84,9 @@ public:
     {
         tuple_t out;
         std::cout << "Entered deser" << std::endl;
-        out.value = stoi(msg.key);
+        printf("%.*s\n", static_cast<int>(messmsgage->len()),
+             static_cast<const char *>(msg->payload()));
+        out.value = 0;
         //out.value = msg.payload();
         out.key = 0;
         shipper.push(out);
