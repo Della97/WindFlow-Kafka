@@ -251,23 +251,23 @@ public:
                     break;
                 case RdKafka::ERR_NO_ERROR:
                     std::cout << "[PAYLOAD] -> " << std::endl;
-                    std::cout << "pre segfault" << std::endl;
                     printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
-                    std::cout << "after segfault" << std::endl;
                     break;
                 default:
                     /* Errors */
                     std::cerr << "Consume failed: " << msg->errstr() << std::endl;
-                    std::cout << "pre segfault" << std::endl;
                     delete msg;
-                    std::cout << "after segfault" << std::endl;
                     //run = 0;
             }
             if constexpr (isNonRiched) {
+                std::cout << "pre segfault non rich" << std::endl;
                 run = func(*msg, *shipper); //get payload -> deser -> push forward if valid
+                std::cout << "pre segfault non rich" << std::endl;
             }
             if constexpr (isRiched) {
+                std::cout << "pre segfault non rich" << std::endl;
                 run = func(*msg, *shipper, context); //get payload -> deser -> push forward if valid
+                std::cout << "pre segfault non rich" << std::endl;
             }
             delete msg;
         }
