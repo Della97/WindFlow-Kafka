@@ -82,18 +82,13 @@ class deser_functor
 public:
     bool operator()(RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper)
     {
-        if (msg != NULL) {
-            tuple_t out;
-            std::cout << "Entered deser" << std::endl;
-            out.value = stoi(msg.key());
-            //out.value = msg.payload();
-            out.key = 0;
-            shipper.push(out);
-            return true;
-
-        } else {
-            return false;
-        }
+        tuple_t out;
+        std::cout << "Entered deser" << std::endl;
+        out.value = stoi(msg.key());
+        //out.value = msg.payload();
+        out.key = 0;
+        shipper.push(out);
+        return true;
     }
 };
 
