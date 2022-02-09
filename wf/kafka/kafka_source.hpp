@@ -250,8 +250,7 @@ public:
                     std::cout << "Timed out while fetching msg from broker" << std::endl; // bisogna usare cout non printf (solo per essere omogenei)
                     break;
                 case RdKafka::ERR_NO_ERROR:
-                    std::cout << "[PAYLOAD] -> " << std::endl;
-                    printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
+                    std::cout << "[PAYLOAD] -> " << msg->payload() << std::endl;
                     if constexpr (isNonRiched) {
                         std::cout << "pre segfault non rich" << std::endl;
                         run = func(*msg, *shipper); //get payload -> deser -> push forward if valid
