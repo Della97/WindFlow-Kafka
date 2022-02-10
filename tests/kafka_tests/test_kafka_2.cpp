@@ -116,7 +116,7 @@ int main()
 {
     std::cout << "Test creazione Kafka_Source mediante costruttore raw" << std::endl;
     string name = "my_kafka_source";
-    string brokers = "localhost";
+    string brokers = "localhost:9094";
     string groupid = "group";
     size_t outputBactchSize = 1;
     int parallelism = 1;
