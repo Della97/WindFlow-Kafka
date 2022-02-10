@@ -59,7 +59,8 @@ public:
     void operator()(optional<tuple_t> &out)
     {
         if (out) {
-            std::cout << "[SINK] -> Received: " << std::endl;
+            std::cout << "[SINK] -> Received: " << out.key() << std::endl;
+            std::cout << "[SINK] -> Received: " << out.value() << std::endl;
         }
         else {
             std::cout << "[SINK] -> Received nothing: " << std::endl;
@@ -76,7 +77,7 @@ bool deser_func(RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper)
     //out.value = atoi(static_cast<const char *>(msg->payload()));
     std::cout << "[DESER] -> msg: " << static_cast<const char *>(msg.payload()) << std::endl;
     out.value = atoi(static_cast<const char *>(msg.payload()));
-    out.key = 0;
+    out.key = atoi(static_cast<const char *>(msg.payload()));
     shipper.pushWithTimestamp(std::move(out), next_ts);
     next_ts++;
     //shipper.push(out);
