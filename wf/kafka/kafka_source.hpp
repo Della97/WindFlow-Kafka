@@ -233,6 +233,14 @@ public:
             exit(1);
         }
 
+        /* Assign partition */
+        RdKafka::ErrorCode err = consumer->subscribe(topics);
+        if (err) {
+            std::cerr << "Failed to subscribe to " << topics.size()
+                        << " topics: " << RdKafka::err2str(err) << std::endl;
+            exit(1);
+        }
+
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
 #endif
