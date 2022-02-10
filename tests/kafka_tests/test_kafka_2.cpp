@@ -59,8 +59,8 @@ public:
     void operator()(optional<tuple_t> &out)
     {
         if (out) {
-            std::cout << "[SINK] -> Received: " << out.key() << std::endl;
-            std::cout << "[SINK] -> Received: " << out.value() << std::endl;
+            std::cout << "[SINK] -> Received: " << out->key() << std::endl;
+            std::cout << "[SINK] -> Received: " << out->value() << std::endl;
         }
         else {
             std::cout << "[SINK] -> Received nothing: " << std::endl;
