@@ -62,7 +62,7 @@ public:
             std::cout << "Received: " << std::endl;
         }
         else {
-            //std::cout << "Received: " << out.value << std::endl;
+            std::cout << "Received nothing: " << out.value << std::endl;
         }
     }
 };
