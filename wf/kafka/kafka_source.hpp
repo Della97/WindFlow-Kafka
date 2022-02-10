@@ -247,20 +247,16 @@ public:
             RdKafka::Message *msg = consumer->consume(1000); // qui si può fare qualcosa di carino per gestire il timeout
             switch (msg->err()) {
                 case RdKafka::ERR__TIMED_OUT:
-                    std::cout << "Timed out while fetching msg from broker" << std::endl; // bisogna usare cout non printf (solo per essere omogenei)
+                    //std::cout << "Timed out while fetching msg from broker" << std::endl; // bisogna usare cout non printf (solo per essere omogenei)
                     break;
                 case RdKafka::ERR_NO_ERROR:
-                    std::cout << "[PAYLOAD] -> " << static_cast<const char *>(msg->payload()) << std::endl;
+                    std::cout << "[PAYLOAD - SVC-SRC] -> " << static_cast<const char *>(msg->payload()) << std::endl;
                     //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
                     if constexpr (isNonRiched) {
-                        std::cout << "pre segfault non rich" << std::endl;
                         run = func(*msg, *shipper); //get payload -> deser -> push forward if valid
-                        std::cout << "pre segfault non rich" << std::endl;
                     }
                     if constexpr (isRiched) {
-                        std::cout << "pre segfault non rich" << std::endl;
                         run = func(*msg, *shipper, context); //get payload -> deser -> push forward if valid
-                        std::cout << "pre segfault non rich" << std::endl;
                     }
                     break;
                 default:
