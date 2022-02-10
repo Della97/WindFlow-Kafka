@@ -245,6 +245,8 @@ public:
     {
         while (run) { // main loop
             RdKafka::Message *msg = consumer->consume(1000); // qui si può fare qualcosa di carino per gestire il timeout
+            static thread_local std::mt19937 generator;
+            std::uniform_int_distribution<int> distribution(0, 500);
             switch (msg->err()) {
                 case RdKafka::ERR__TIMED_OUT:
                     std::cout << "Timed out while fetching msg from broker" << std::endl; // bisogna usare cout non printf (solo per essere omogenei)
