@@ -122,7 +122,7 @@ int main(int argc, char **argv) {
          * used to assign the message to a topic based
          * on the message key, or random partition if
          * the key is not set. */
-        RdKafka::Topic::PARTITION_UA,
+        1,
         /* Make a copy of the value */
         RdKafka::Producer::RK_MSG_COPY /* Copy payload */,
         /* Value */
