@@ -75,7 +75,7 @@ bool deser_func(RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper)
     //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
     //out.value = atoi(static_cast<const char *>(msg->payload()));
     std::cout << "[DESER] -> msg: " << static_cast<const char *>(msg.payload()) << std::endl;
-    out.value = 0;
+    out.value = atoi(static_cast<const char *>(msg.payload()));
     out.key = 0;
     shipper.pushWithTimestamp(std::move(out), next_ts);
     next_ts++;
