@@ -73,9 +73,9 @@ bool deser_func(RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper)
     tuple_t out;
     uint64_t next_ts = 0;
     std::cout << "Entered deser" << std::endl;
-    printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
+    //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
     //out.value = atoi(static_cast<const char *>(msg->payload()));
-    //out.value = msg.payload();
+    out.value = msg.payload();
     out.key = 0;
     shipper.pushWithTimestamp(std::move(out), next_ts);
     next_ts++;
