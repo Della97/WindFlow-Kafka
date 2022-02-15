@@ -54,6 +54,8 @@ void print(const T& first, const Args& ... args) {
 }
 */
 
+
+
 template<typename kafka_deser_func_t>
 class Kafka_Source_Builder
 {
@@ -189,17 +191,17 @@ public:
      */ 
 
 /*
-    template <typename T, typename... Ts>
-    Kafka_Source_Builder<kafka_deser_func_t> &withTopics(T first, Ts... Ts)
-    {
-        print (first, Ts);
-        return *this;
-    }
-*/
-    
     Kafka_Source_Builder<kafka_deser_func_t> &withTopics(std::vector< std::string > _topics)
     {
         topics = _topics;
+        return *this;
+    }
+*/
+    template <typename T, typename... Ts>
+    Kafka_Source_Builder<kafka_deser_func_t> &withTopics(T first, Ts... Ts)
+    {
+        topics.push_back(first);
+        topics.push_back(Ts...);
         return *this;
     }
     
