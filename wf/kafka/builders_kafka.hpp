@@ -46,7 +46,7 @@
 #include<kafka/meta_kafka.hpp>
 
 struct Sstring {
-    vector<string> strs;
+    std::vector<std::string> strs;
 
     template<typename T>
     void add_strings(T first) {
