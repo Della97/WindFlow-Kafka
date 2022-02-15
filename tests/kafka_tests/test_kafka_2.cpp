@@ -127,19 +127,22 @@ int main()
     RdKafka::Conf *cconf;
     RdKafka::Conf *tconf;
     std:int sink1_degree = 1;
+    std::string topic1 = "items";
+    std::string topic2 = "prova";
+    std::string topic3 = "topic";
 
-    Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, groupid, parallelism, offset, closing_func);
+    Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topic1, groupid, parallelism, offset, closing_func);
     std::cout << "Creazione con funzioni -> OK!" << std::endl;
 
     auto deser_lambda = [](RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper) { return true; };
     auto closing_lambda = [](RuntimeContext &) { return; };
 
-    Kafka_Source source2 = Kafka_Source(deser_lambda, name, outputBactchSize, brokers, topics, groupid, parallelism, offset, closing_lambda);
+    Kafka_Source source2 = Kafka_Source(deser_lambda, name, outputBactchSize, brokers, topic1, groupid, parallelism, offset, closing_lambda);
     std::cout << "Creazione con lambda -> OK!" << std::endl;    
 
     deser_functor deser_functor;
     closing_functor closing_functor;
-    Kafka_Source source3 = Kafka_Source(deser_functor, name, outputBactchSize, brokers, topics, groupid, parallelism, offset, closing_functor);
+    Kafka_Source source3 = Kafka_Source(deser_functor, name, outputBactchSize, brokers, topic1, groupid, parallelism, offset, closing_functor);
     std::cout << "Creazione con funtori -> OK!" << std::endl;
 
     std::cout << "Test creazione Kafka_Source mediante builder" << std::endl;
@@ -148,7 +151,7 @@ int main()
                                 .withOutputBatchSize(outputBactchSize)
                                 .withClosingFunction(closing_func)
                                 .withBrokers(brokers)
-                                .withTopics(topics)
+                                .withTopics(topic1)
                                 .withGroupID(groupid)
                                 .withPartition(parallelism)
                                 .withOffset(offset)
@@ -160,7 +163,7 @@ int main()
                                 .withOutputBatchSize(outputBactchSize)
                                 .withClosingFunction(closing_lambda)
                                 .withBrokers(brokers)
-                                .withTopics(topics)
+                                .withTopics(topic1)
                                 .withGroupID(groupid)
                                 .withPartition(parallelism)
                                 .withOffset(offset)
@@ -173,7 +176,7 @@ int main()
                                 .withOutputBatchSize(outputBactchSize)
                                 .withClosingFunction(closing_functor)
                                 .withBrokers(brokers)
-                                .withTopics(topics)
+                                .withTopics(topic1)
                                 .withGroupID(groupid)
                                 .withPartition(parallelism)
                                 .withOffset(offset)
