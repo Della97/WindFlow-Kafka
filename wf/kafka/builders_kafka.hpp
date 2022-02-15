@@ -209,9 +209,7 @@ public:
     Kafka_Source_Builder<kafka_deser_func_t> &withTopics(T first, Args... Ts)
     {
         //std::vector<std::string> topics; <- declaration 
-        Sstring str;
-        str.push_back(first);
-        str.add_strings(Ts...);
+        topics.add_strings(frist, Ts...);
         topics = str.strs;
         return *this;
     }
