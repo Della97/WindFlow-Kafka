@@ -90,13 +90,7 @@ void closing_func(RuntimeContext &r) {}
 // deserialization functor (stub)
 class deser_functor
 {
-private:
-    uint64_t tmp;
 public:
-    //constructor
-    deser_functor (uint64_t _tmp: tmp(_tmp)) {}
-
-    //operator
     bool operator()(RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper)
     {
         tuple_t out;
@@ -173,8 +167,8 @@ int main()
                                 .build();
     std::cout << "Creazione con builder tramite lambda -> OK!" <<  std::endl;
 
-    deser_functor name(1);
-    Kafka_Source source6 = Kafka_Source_Builder(name)
+
+    Kafka_Source source6 = Kafka_Source_Builder(deser_func)
                                 .withName(name)
                                 .withOutputBatchSize(outputBactchSize)
                                 .withClosingFunction(closing_functor)
