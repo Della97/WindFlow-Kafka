@@ -119,7 +119,7 @@ int main()
     string brokers = "localhost:9094";
     string groupid = "group";
     size_t outputBactchSize = 1;
-    int parallelism = 1;
+    int parallelism = 2;
     RdKafka::Message *msg;
     std::vector<std::string> topics;
     Source_Shipper<tuple_t> *shipper;
