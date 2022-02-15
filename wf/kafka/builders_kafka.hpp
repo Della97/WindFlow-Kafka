@@ -201,8 +201,8 @@ public:
     template <typename G, typename... Args>
     Kafka_Source_Builder<kafka_deser_func_t> &withTopics(G first, Args... Ts)
     {
-        topics.push_back(first);
-        topics.push_back(Ts...);
+        topics.insert(first);
+        topics.insert(Ts...);
         return *this;
     }
     
