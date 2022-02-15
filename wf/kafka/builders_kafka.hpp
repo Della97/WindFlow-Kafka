@@ -56,7 +56,7 @@ struct Sstring {
     template <typename T, typename... Args>
     void add_strings(T first, Args... others) {
         strs.push_back(first);
-        strs.push_back(others...);
+        add_strings(others...);
     }
 };
 
