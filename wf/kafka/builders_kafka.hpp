@@ -46,15 +46,15 @@
 #include<kafka/meta_kafka.hpp>
 
 struct Sstring {
-    std:vector<std::string> strs;
+    vector<string> strs;
 
     template<typename T>
-    void add_string(T first) {
+    void add_strings(T first) {
         strs.push_back(first);
     }
 
     template <typename T, typename... Args>
-    void add_string (T first, Args... others) {
+    void add_strings(T first, Args... others) {
         strs.push_back(first);
         strs.push_back(others...);
     }
