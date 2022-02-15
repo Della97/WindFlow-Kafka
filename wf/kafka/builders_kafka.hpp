@@ -179,11 +179,20 @@ public:
      *  \return a reference to the builder object
      */ 
 
+    template <typename... Ts>
+    Kafka_Source_Builder<kafka_deser_func_t> &withTopics(Ts const & ... vals)
+    {
+        topics = ((mString += toStr(vals)), ...);
+        return *this;
+    }
+
+    /*
     Kafka_Source_Builder<kafka_deser_func_t> &withTopics(std::vector< std::string > _topics)
     {
         topics = _topics;
         return *this;
     }
+    */
 
     /** 
      *  \brief Create the Source
