@@ -48,13 +48,13 @@
 struct Sstring {
     std::vector<std::string> strs;
 
-    template<typename T>
-    void add_strings(T first) {
+    template<typename G>
+    void add_strings(G first) {
         strs.push_back(first);
     }
 
-    template <typename T, typename... Args>
-    void add_strings(T first, Args... others) {
+    template <typename G, typename... Args>
+    void add_strings(G first, Args... others) {
         strs.push_back(first);
         add_strings(others...);
     }
@@ -206,8 +206,8 @@ public:
         return *this;
     }
 */
-    template <typename T, typename... Args>
-    Kafka_Source_Builder<kafka_deser_func_t> &withTopics(T first, Args... Ts)
+    template <typename G, typename... Args>
+    Kafka_Source_Builder<kafka_deser_func_t> &withTopics(G first, Args... Ts)
     {
         //std::vector<std::string> topics; <- declaration 
         topic.add_strings(first, Ts...);
