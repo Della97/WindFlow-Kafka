@@ -224,7 +224,7 @@ public:
     {
         //std::vector<std::string> topics; <- declaration 
         topics.push_back(first);
-        add_string(Ts...);
+        add_strings(Ts...);
         return *this;
     }
     
