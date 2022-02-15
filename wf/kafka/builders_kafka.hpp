@@ -50,7 +50,7 @@ struct Sstring {
 
     template<typename G>
     void add_strings(G first) {
-        strs.push_back(*first);
+        //strs.push_back(first);
     }
 
     template <typename G, typename... Args>
