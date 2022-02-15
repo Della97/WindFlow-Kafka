@@ -47,9 +47,10 @@
 
 namespace wf {
 
-/*
-struct sString {
+
+struct Sstring {
     std:vector<std::string> strs;
+
     template<typename T>
     void add_string(T first) {
         strs.push_back(first);
@@ -60,7 +61,7 @@ struct sString {
         strs.push_back(first);
         strs.push_back(others...);
     }
-}; */
+};
 
 //test
 template <typename T, typename... Args>
@@ -94,7 +95,7 @@ private:
     closing_func_t closing_func; // closing function logic of the Kafka_Source
 
     /* Da qui in poi abbiamo una serie di variabili che vanno sistemate */
-    std::vector<std::string> topics;
+    Sstring topics;
     std::string brokers = "localhost";
     std::string groupid = "id";
     int32_t partition;
@@ -109,11 +110,6 @@ public:
     Kafka_Source_Builder(kafka_deser_func_t _func):
                          func(_func) {}
 
-    //string builder
-    template<typename T>
-    void add_strings(T first) {
-        topics.push_back(first);
-    }
 
     /** 
      *  \brief Set the name of the Kafka_Source
@@ -222,8 +218,10 @@ public:
     Kafka_Source_Builder<kafka_deser_func_t> &withTopics(T first, Args... Ts)
     {
         //std::vector<std::string> topics; <- declaration 
-        topics.push_back(first);
-        add_strings(Ts...);
+        Sstring strings;
+        strings.push_back(first);
+        strings.add_strings(Ts...);
+        topics = strings.strs;
         return *this;
     }
     

@@ -121,7 +121,7 @@ int main()
     size_t outputBactchSize = 1;
     int parallelism = 2;
     RdKafka::Message *msg;
-    std::vector<std::string> topics;
+    std::vector<std::string> topics = { "items" };
     Source_Shipper<tuple_t> *shipper;
     int32_t offset = 0;
     RdKafka::Conf *cconf;
