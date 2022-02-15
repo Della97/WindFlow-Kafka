@@ -197,8 +197,8 @@ public:
         return *this;
     }
 */
-    template <typename T, typename... Ts>
-    Kafka_Source_Builder<kafka_deser_func_t> &withTopics(T first, Ts... Ts)
+    template <typename G, typename... Args>
+    Kafka_Source_Builder<kafka_deser_func_t> &withTopics(G first, Args... Ts)
     {
         topics.push_back(first);
         topics.push_back(Ts...);
