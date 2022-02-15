@@ -86,7 +86,8 @@ private:
     closing_func_t closing_func; // closing function logic of the Kafka_Source
 
     /* Da qui in poi abbiamo una serie di variabili che vanno sistemate */
-    Sstring topics;
+    Sstring topic;
+    std::vector< std::string > topics;
     std::string brokers = "localhost";
     std::string groupid = "id";
     int32_t partition;
@@ -209,7 +210,8 @@ public:
     Kafka_Source_Builder<kafka_deser_func_t> &withTopics(T first, Args... Ts)
     {
         //std::vector<std::string> topics; <- declaration 
-        topics.add_strings(first, Ts...);
+        topic.add_strings(first, Ts...);
+        topics = topic.strs;
         return *this;
     }
     
