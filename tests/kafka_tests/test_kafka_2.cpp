@@ -137,9 +137,9 @@ int main()
     Kafka_Source source2 = Kafka_Source(deser_lambda, name, outputBactchSize, brokers, topics, groupid, parallelism, offset, closing_lambda);
     std::cout << "Creazione con lambda -> OK!" << std::endl;    
 
-    deser_functor deser_functort;
+    deser_functor deser_functor;
     closing_functor closing_functor;
-    Kafka_Source source3 = Kafka_Source(deser_functort, name, outputBactchSize, brokers, topics, groupid, parallelism, offset, closing_functor);
+    Kafka_Source source3 = Kafka_Source(deser_functor, name, outputBactchSize, brokers, topics, groupid, parallelism, offset, closing_functor);
     std::cout << "Creazione con funtori -> OK!" << std::endl;
 
     std::cout << "Test creazione Kafka_Source mediante builder" << std::endl;
@@ -168,7 +168,7 @@ int main()
     std::cout << "Creazione con builder tramite lambda -> OK!" <<  std::endl;
 
 
-    Kafka_Source source6 = Kafka_Source_Builder(deser_functort)
+    Kafka_Source source6 = Kafka_Source_Builder(deser_functor)
                                 .withName(name)
                                 .withOutputBatchSize(outputBactchSize)
                                 .withClosingFunction(closing_functor)
