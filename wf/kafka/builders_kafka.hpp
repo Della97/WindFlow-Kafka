@@ -45,9 +45,6 @@
 #include<string>
 #include<kafka/meta_kafka.hpp>
 
-namespace wf {
-
-
 struct Sstring {
     std:vector<std::string> strs;
 
@@ -63,13 +60,7 @@ struct Sstring {
     }
 };
 
-//test
-template <typename T, typename... Args>
-void print(const T& first, const Args& ... args) {
-    std::cout << first << ", ";
-    print(args...);
-}
-
+namespace wf {
 
 
 
