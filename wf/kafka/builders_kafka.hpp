@@ -42,18 +42,33 @@
 #include<vector>
 #include<functional>
 #include<basic.hpp>
+#include<string>
 #include<kafka/meta_kafka.hpp>
 
 namespace wf {
 
 /*
+struct sString {
+    std:vector<std::string> strs;
+    template<typename T>
+    void add_string(T first) {
+        strs.push_back(first);
+    }
+
+    template <typename T, typename... Args>
+    void add_string (T first, Args... others) {
+        strs.push_back(first);
+        strs.push_back(others...);
+    }
+}; */
+
 //test
 template <typename T, typename... Args>
 void print(const T& first, const Args& ... args) {
     std::cout << first << ", ";
     print(args...);
 }
-*/
+
 
 
 
@@ -94,6 +109,12 @@ public:
      */ 
     Kafka_Source_Builder(kafka_deser_func_t _func):
                          func(_func) {}
+
+    //string builder
+    template<typename T>
+    void add_strings(T first) {
+        topics.push_back(first);
+    }
 
     /** 
      *  \brief Set the name of the Kafka_Source
@@ -198,11 +219,12 @@ public:
         return *this;
     }
 */
-    template <typename G, typename... Args>
-    Kafka_Source_Builder<kafka_deser_func_t> &withTopics(G first, Args... Ts)
+    template <typename T, typename... Args>
+    Kafka_Source_Builder<kafka_deser_func_t> &withTopics(T first, Args... Ts)
     {
-        topics.insert(first);
-        topics.insert(Ts...);
+        //std::vector<std::string> topics; <- declaration 
+        topics.push_back(first);
+        add_string(Ts...);
         return *this;
     }
     
