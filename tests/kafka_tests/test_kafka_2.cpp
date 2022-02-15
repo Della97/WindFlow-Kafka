@@ -168,7 +168,7 @@ int main()
     std::cout << "Creazione con builder tramite lambda -> OK!" <<  std::endl;
 
 
-    Kafka_Source source6 = Kafka_Source_Builder(deser_functor)
+    Kafka_Source source6 = Kafka_Source_Builder(deser_func)
                                 .withName(name)
                                 .withOutputBatchSize(outputBactchSize)
                                 .withClosingFunction(closing_functor)
@@ -181,7 +181,7 @@ int main()
     std::cout << "Creazione con builder tramite funtori -> OK!" <<  std::endl;
 
     PipeGraph graph("test_tracing_1", Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
-    MultiPipe &pipe = graph.add_source(source3);
+    MultiPipe &pipe = graph.add_source(source6);
 
         //SINK
     Sink_Functor sink_functor;
