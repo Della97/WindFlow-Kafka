@@ -167,7 +167,7 @@ int main()
                                 .build();
     std::cout << "Creazione con builder tramite lambda -> OK!" <<  std::endl;
 
-    Kafka_Source source6 = Kafka_Source_Builder(deser_functor)
+    Kafka_Source source6 = Kafka_Source_Builder(deser_func)
                                 .withName(name)
                                 .withOutputBatchSize(outputBactchSize)
                                 .withClosingFunction(closing_functor)
