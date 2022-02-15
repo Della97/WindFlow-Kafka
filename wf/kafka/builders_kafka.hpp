@@ -94,7 +94,6 @@ private:
     closing_func_t closing_func; // closing function logic of the Kafka_Source
 
     /* Da qui in poi abbiamo una serie di variabili che vanno sistemate */
-    //std::string topics;
     std::vector<std::string> topics;
     std::string brokers = "localhost";
     std::string groupid = "id";
