@@ -91,6 +91,7 @@ void closing_func(RuntimeContext &r) {}
 class deser_functor
 {
 public:
+    deser_functor () {}
     bool operator()(RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper)
     {
         tuple_t out;
