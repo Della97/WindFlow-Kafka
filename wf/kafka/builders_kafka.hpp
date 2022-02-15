@@ -39,6 +39,7 @@
 
 /// includes
 #include<chrono>
+#include<vector>
 #include<functional>
 #include<basic.hpp>
 #include<kafka/meta_kafka.hpp>
