@@ -218,6 +218,11 @@ public:
         conf->set("metadata.broker.list", brokers, errstr);
         conf->set("enable.partition.eof", "true", errstr);
         conf->set("group.id", groupid, errstr);              //NEED TO GET GROUP ID AS PARAMATER!!! TO-DO
+
+        for (auto s : topics) {
+            std::cout << "SVC_INIT: " << s << std::endl;
+        }
+        
         consumer = RdKafka::KafkaConsumer::create(conf, errstr);
         if (!consumer) {
             std::cerr << "Failed to create consumer: " << errstr << std::endl;
@@ -226,9 +231,6 @@ public:
         std::cout << "% Created consumer " << consumer->name() << std::endl;
         
         /* Subscribe to topics */
-        for (auto s : topics) {
-            std::cout << "SVC_INIT: " << s << std::endl;
-        }
         RdKafka::ErrorCode err = consumer->subscribe(topics);
         if (err) {
             std::cerr << "Failed to subscribe to " << topics.size()
