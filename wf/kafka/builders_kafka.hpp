@@ -213,7 +213,7 @@ public:
         topic.add_strings(first, Ts...);
         topics = topic.strs;
         for (auto s : topic.strs) {
-            std::cout << s << endl;
+            std::cout << s << std::endl;
         }
         return *this;
     }
