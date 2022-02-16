@@ -51,8 +51,8 @@ void tokenize(std::string s, std::string delimiter = ":")
     int end = s.find(delimiter);
     while (end != -1) {
         std::cout << "TIPIC: " << s.substr(start, end - start) << std::endl;
-        start = end + del.size();
-        end = s.find(del, start);
+        start = end + delimiter.size();
+        end = s.find(delimiter, start);
     }
     std::cout << "TOPIC: " << s.substr(start, end - start);
 }
