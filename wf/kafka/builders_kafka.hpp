@@ -212,7 +212,7 @@ public:
         //std::vector<std::string> topics; <- declaration 
         topic.add_strings(first, Ts...);
         topics = topic.strs;
-        for (auto s : topic.strs) {
+        for (auto s : topics) {
             std::cout << s << std::endl;
         }
         return *this;
