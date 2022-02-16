@@ -225,7 +225,12 @@ public:
         conf->set("enable.partition.eof", "true", errstr);
         conf->set("group.id", groupid, errstr);              //NEED TO GET GROUP ID AS PARAMATER!!! TO-DO
 
-        std::cout << "SVC_INIT: " << std::endl;
+
+        if (topics) {
+            std::cout << "TOPICS ESISTE: " << std::endl;
+        } else {
+            std::cout << "TOPICS NON ESISTE: " << std::endl;
+        }
 
         for (auto s : topics) {
             std::cout << "SVC_INIT: " << s << std::endl;
