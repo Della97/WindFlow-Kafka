@@ -135,7 +135,7 @@ int main()
     std::string topic1 = "items";
     std::string topic2 = "prova";
     std::string topic3 = "topic";
-
+/*
     Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, groupid, parallelism, offset, closing_func);
     std::cout << "Creazione con funzioni -> OK!" << std::endl;
 
@@ -174,7 +174,7 @@ int main()
                                 .withOffset(offset)
                                 .build();
     std::cout << "Creazione con builder tramite lambda -> OK!" <<  std::endl;
-
+*/
 
     Kafka_Source source6 = Kafka_Source_Builder(deser_func)
                                 .withName(name)
