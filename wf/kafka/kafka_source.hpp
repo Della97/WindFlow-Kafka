@@ -116,6 +116,7 @@ public:
                          func(_other.func),
                          opName(_other.opName),
                          context(_other.context),
+                         topics(_other.topics),
                          closing_func(_other.closing_func),
                          terminated(_other.terminated),
                          execution_mode(_other.execution_mode),
@@ -138,6 +139,7 @@ public:
                          func(std::move(_other.func)),
                          opName(std::move(_other.opName)),
                          context(std::move(_other.context)),
+                         topics(std::moce(_other.topics)),
                          closing_func(std::move(_other.closing_func)),
                          terminated(_other.terminated),
                          execution_mode(_other.execution_mod),
@@ -173,6 +175,7 @@ public:
             func = _other.func;
             opName = _other.opName;
             context = _other.context;
+            topics = _other.topics;
             closing_func = _other.closing_func;
             terminated = _other.terminated;
             execution_mode = _other.execution_mode;
@@ -200,6 +203,7 @@ public:
         func = std::move(_other.func);
         opName = std::move(_other.opName);
         context = std::move(_other.context);
+        topics = std::move(_other.topics);
         closing_func = std::move(_other.closing_func);
         terminated = _other.terminated;
         execution_mode = _other.execution_mode;
