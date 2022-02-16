@@ -132,7 +132,7 @@ int main()
     RdKafka::Conf *cconf;
     RdKafka::Conf *tconf;
     std:int sink1_degree = 1;
-    std::string topic1 = "test";
+    std::string topic1 = "test:provatop:topic";
     std::string topic2 = "provatop";
     std::string topic3 = "topic";
 /*
@@ -183,7 +183,7 @@ int main()
                                 .withOutputBatchSize(outputBactchSize)
                                 .withClosingFunction(closing_functor)
                                 .withBrokers(brokers)
-                                .withTopics(topic1, topic2)
+                                .withTopics(topic1)
                                 .withGroupID(groupid)
                                 .withPartition(parallelism)
                                 .withOffset(offset)
