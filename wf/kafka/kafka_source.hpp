@@ -95,10 +95,12 @@ public:
     Kafka_Source_Replica(kafka_deser_func_t _func,
                          std::string _opName,
                          RuntimeContext _context,
+                         std::vector<std::string> _topics,
                          std::function<void(RuntimeContext &)> _closing_func):
                          func(_func),
                          opName(_opName),
                          context(_context),
+                         topics(_topics),
                          closing_func(_closing_func),
                          terminated(false),
                          execution_mode(Execution_Mode_t::DEFAULT),
@@ -222,7 +224,7 @@ public:
         for (auto s : topics) {
             std::cout << "SVC_INIT: " << s << std::endl;
         }
-        
+
         consumer = RdKafka::KafkaConsumer::create(conf, errstr);
         if (!consumer) {
             std::cerr << "Failed to create consumer: " << errstr << std::endl;
@@ -504,7 +506,7 @@ public:
         }
 
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
-            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), _closing_func));
+            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), topics, _closing_func));
         }
     }
 
