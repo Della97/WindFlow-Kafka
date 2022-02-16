@@ -50,11 +50,11 @@ void tokenize(std::string s, std::string delimiter = ":")
     int start = 0;
     int end = s.find(delimiter);
     while (end != -1) {
-        std::cout << "TIPIC: " << s.substr(start, end - start) << std::endl;
+        std::cout << "TOPIC INSIDE TOKENIZER: " << s.substr(start, end - start) << std::endl;
         start = end + delimiter.size();
         end = s.find(delimiter, start);
     }
-    std::cout << "TOPIC: " << s.substr(start, end - start);
+    std::cout << "TOPIC INSIDE TOKENIZER: " << s.substr(start, end - start);
 }
 
 struct Sstring {
@@ -227,9 +227,6 @@ public:
         //std::vector<std::string> topics; <- declaration 
         topic.add_strings(first, Ts...);
         topics = topic.strs;
-        for (auto s : topics) {
-            std::cout << s << " INSIDE BUILDER " << std::endl;
-        }
         return *this;
     }
     

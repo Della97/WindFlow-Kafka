@@ -105,11 +105,7 @@ public:
                          terminated(false),
                          execution_mode(Execution_Mode_t::DEFAULT),
                          time_policy(Time_Policy_t::INGRESS_TIME),
-                         shipper(nullptr) {
-                             for (auto s : topics) {
-                                std::cout << s << " INSIDE SOURCE REPLICA " << std::endl;
-                            }
-                         }
+                         shipper(nullptr) { }
 
     // Copy Constructor
     Kafka_Source_Replica(const Kafka_Source_Replica &_other):
@@ -234,10 +230,6 @@ public:
             std::cout << "TOPICS NON ESISTE: " << std::endl;
         } else {
             std::cout << "TOPICS ESISTE: " << std::endl;
-        }
-
-        for (auto s : topics) {
-            std::cout << "SVC_INIT: " << s << std::endl;
         }
 
         consumer = RdKafka::KafkaConsumer::create(conf, errstr);
