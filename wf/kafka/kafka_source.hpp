@@ -226,9 +226,11 @@ public:
         std::cout << "% Created consumer " << consumer->name() << std::endl;
         
         /* Subscribe to topics */
+        std::cout << "HERE" << std::endl;
         for (auto s : topics) {
             std::cout << "SVC_INIT: " << s << std::endl;
         }
+        std::cout << "HERE" << std::endl;
         RdKafka::ErrorCode err = consumer->subscribe(topics);
         if (err) {
             std::cerr << "Failed to subscribe to " << topics.size()
