@@ -105,7 +105,11 @@ public:
                          terminated(false),
                          execution_mode(Execution_Mode_t::DEFAULT),
                          time_policy(Time_Policy_t::INGRESS_TIME),
-                         shipper(nullptr) {}
+                         shipper(nullptr) {
+                             for (auto s : topics) {
+                                std::cout << s << " INSIDE SOURCE REPLICA " << std::endl;
+                            }
+                         }
 
     // Copy Constructor
     Kafka_Source_Replica(const Kafka_Source_Replica &_other):
