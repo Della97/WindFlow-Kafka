@@ -45,18 +45,33 @@
 #include<string>
 #include<kafka/meta_kafka.hpp>
 
+void tokenize(std::string s, std::string delimiter = ":")
+{
+    int start = 0;
+    int end = s.find(delimiter);
+    while (end != -1) {
+        cout << "TIPIC: " << s.substr(start, end - start) << endl;
+        start = end + del.size();
+        end = s.find(del, start);
+    }
+    cout << "TOPIC: " << s.substr(start, end - start);
+}
+
 struct Sstring {
     std::vector<std::string> strs;
 
     template<typename G>
     void add_strings(G first) {
         strs.push_back(first);
+        tokenize(first);
     }
 
     template <typename G, typename... Args>
     void add_strings(G first, Args... others) {
         strs.push_back(first);
+        tokenize(first);
         add_strings(others...);
+        tokenize(others...);
     }
 };
 
