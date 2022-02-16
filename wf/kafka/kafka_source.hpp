@@ -492,10 +492,12 @@ public:
             std::cerr << RED << "WindFlow Error: Kafka_Source has parallelism zero" << DEFAULT_COLOR << std::endl;
             exit(EXIT_FAILURE);
         }
-
-        if (true) {  //check if the parallelism and the partitions are compatible /todo
-
+        /*
+        if (parallelism > topics.size()) {  //check if the parallelism and the partitions are compatible /todo
+            std::cerr << RED << "WindFlow Error: Kafka_Source parallelism too high??" << DEFAULT_COLOR << std::endl;
+            exit(EXIT_FAILURE);
         }
+        */
 
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
             replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), _closing_func));
