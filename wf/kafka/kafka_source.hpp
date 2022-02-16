@@ -226,10 +226,10 @@ public:
         conf->set("group.id", groupid, errstr);              //NEED TO GET GROUP ID AS PARAMATER!!! TO-DO
 
 
-        if (topics != NULL) {
-            std::cout << "TOPICS ESISTE: " << std::endl;
-        } else {
+        if (topics.empty()) {
             std::cout << "TOPICS NON ESISTE: " << std::endl;
+        } else {
+            std::cout << "TOPICS ESISTE: " << std::endl;
         }
 
         for (auto s : topics) {
