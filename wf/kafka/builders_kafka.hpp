@@ -77,10 +77,10 @@ struct Sstring {
         strs.push_back(first);
         if (first.find("*") != std::string::npos) {
             tokenizeFTopic(first);
-            std::cout << "Found full topic subscription" << << std::endl;
+            std::cout << "Found full topic subscription" << std::endl;
         } else {
             tokenizePartition(first);
-            std::cout << "Found partition subscription" << << std::endl;
+            std::cout << "Found partition subscription" << std::endl;
         }
     }
 
@@ -91,10 +91,10 @@ struct Sstring {
 
         if (first.find("*") != std::string::npos) {
             tokenizeFTopic(first);
-            std::cout << "Found full topic subscription" << << std::endl;
+            std::cout << "Found full topic subscription" << std::endl;
         } else {
             tokenizePartition(first);
-            std::cout << "Found partition subscription" << << std::endl;
+            std::cout << "Found partition subscription" << std::endl;
         }
 
 
