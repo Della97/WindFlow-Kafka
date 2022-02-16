@@ -50,11 +50,11 @@ void tokenize(std::string s, std::string delimiter = ":")
     int start = 0;
     int end = s.find(delimiter);
     while (end != -1) {
-        cout << "TIPIC: " << s.substr(start, end - start) << endl;
+        std::cout << "TIPIC: " << s.substr(start, end - start) << std::endl;
         start = end + del.size();
         end = s.find(del, start);
     }
-    cout << "TOPIC: " << s.substr(start, end - start);
+    std::cout << "TOPIC: " << s.substr(start, end - start);
 }
 
 struct Sstring {
