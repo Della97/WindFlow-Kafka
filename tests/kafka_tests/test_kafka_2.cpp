@@ -132,8 +132,8 @@ int main()
     RdKafka::Conf *cconf;
     RdKafka::Conf *tconf;
     std:int sink1_degree = 1;
-    std::string topic1 = "items";
-    std::string topic2 = "prova";
+    std::string topic1 = "test";
+    std::string topic2 = "provatop";
     std::string topic3 = "topic";
 /*
     Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, groupid, parallelism, offset, closing_func);
@@ -177,7 +177,7 @@ int main()
 */
 
     closing_functor closing_functor;
-    
+
     Kafka_Source source6 = Kafka_Source_Builder(deser_func)
                                 .withName(name)
                                 .withOutputBatchSize(outputBactchSize)
