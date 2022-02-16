@@ -132,8 +132,8 @@ int main()
     RdKafka::Conf *cconf;
     RdKafka::Conf *tconf;
     std:int sink1_degree = 1;
-    std::string topic1 = "test:provatop:topic";
-    std::string topic2 = "provatop";
+    std::string topic1 = "test:0:1";
+    std::string topic2 = "provatop*";
     std::string topic3 = "topic";
 /*
     Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, groupid, parallelism, offset, closing_func);
@@ -183,12 +183,12 @@ int main()
                                 .withOutputBatchSize(outputBactchSize)
                                 .withClosingFunction(closing_functor)
                                 .withBrokers(brokers)
-                                .withTopics(topic1)
+                                .withTopics(topic1, topic2)
                                 .withGroupID(groupid)
                                 .withPartition(parallelism)
                                 .withOffset(offset)
                                 .build();
-    std::cout << "Creazione con builder tramite funtori -> OK!" <<  std::endl;
+    //std::cout << "Creazione con builder tramite funtori -> OK!" <<  std::endl;
 
     PipeGraph graph("test_tracing_1", Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
     MultiPipe &pipe = graph.add_source(source6);

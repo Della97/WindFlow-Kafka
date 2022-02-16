@@ -45,16 +45,28 @@
 #include<string>
 #include<kafka/meta_kafka.hpp>
 
-void tokenize(std::string s, std::string delimiter = ":")
+void tokenizePartition(std::string s, std::string delimiter = ":")
 {
     int start = 0;
     int end = s.find(delimiter);
     while (end != -1) {
-        std::cout << "TOPIC INSIDE TOKENIZER: " << s.substr(start, end - start) << std::endl;
+        std::cout << "TOPIC INSIDE TOKENIZER (partition): " << s.substr(start, end - start) << std::endl;
         start = end + delimiter.size();
         end = s.find(delimiter, start);
     }
-    std::cout << "TOPIC INSIDE TOKENIZER: " << s.substr(start, end - start);
+    std::cout << "TOPIC INSIDE TOKENIZER (partition): " << s.substr(start, end - start);
+}
+
+void tokenizeFTopic(std::string s, std::string delimiter = "*")
+{
+    int start = 0;
+    int end = s.find(delimiter);
+    while (end != -1) {
+        std::cout << "TOPIC INSIDE TOKENIZER (full): " << s.substr(start, end - start) << std::endl;
+        start = end + delimiter.size();
+        end = s.find(delimiter, start);
+    }
+    std::cout << "TOPIC INSIDE TOKENIZER (full): " << s.substr(start, end - start);
 }
 
 struct Sstring {
@@ -63,15 +75,30 @@ struct Sstring {
     template<typename G>
     void add_strings(G first) {
         strs.push_back(first);
-        tokenize(first);
+        if (first.find("*") != std::string::npos) {
+            tokenizeFTopic(first);
+            std::cout << "Found full topic subscription" << << std::endl;
+        } else {
+            tokenizePartition(first);
+            std::cout << "Found partition subscription" << << std::endl;
+        }
     }
 
     template <typename G, typename... Args>
     void add_strings(G first, Args... others) {
         strs.push_back(first);
-        tokenize(first);
+
+
+        if (first.find("*") != std::string::npos) {
+            tokenizeFTopic(first);
+            std::cout << "Found full topic subscription" << << std::endl;
+        } else {
+            tokenizePartition(first);
+            std::cout << "Found partition subscription" << << std::endl;
+        }
+
+
         add_strings(others...);
-        tokenize(others...);
     }
 };
 
