@@ -213,7 +213,7 @@ public:
         topic.add_strings(first, Ts...);
         topics = topic.strs;
         for (auto s : topics) {
-            std::cout << s << std::endl;
+            std::cout << s << " INSIDE BUILDER " << std::endl;
         }
         return *this;
     }
