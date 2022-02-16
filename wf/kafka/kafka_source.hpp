@@ -139,7 +139,7 @@ public:
                          func(std::move(_other.func)),
                          opName(std::move(_other.opName)),
                          context(std::move(_other.context)),
-                         topics(std::moce(_other.topics)),
+                         topics(std::move(_other.topics)),
                          closing_func(std::move(_other.closing_func)),
                          terminated(_other.terminated),
                          execution_mode(_other.execution_mod),
