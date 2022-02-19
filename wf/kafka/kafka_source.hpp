@@ -275,9 +275,9 @@ public:
                         if (stop == false) { //reached end of stream
                             std::cout << "Reached End Of Stream on topic: " << msg->topic_name() << 
                                 " At partition: " << msg->partition() << std::endl;
-                            std::vector<RdKafka::TopicPartition *> &partitions = RdKafka::TopicPartition::create(msg->topic_name(), msg->partition());
+                            std::vector<RdKafka::TopicPartition *> partitions = RdKafka::TopicPartition::create(msg->topic_name(), msg->partition());
                             consumer->incremental_unassign(partitions);
-                            delete partitions;
+                            //delete partitions;
                         }
                     }
                     if constexpr (isRiched) {
@@ -285,9 +285,9 @@ public:
                         if (stop == false) { //reached end of stream
                             std::cout << "Reached End Of Stream on topic: " << msg->topic_name() << 
                                 " At partition: " << msg->partition() << std::endl;
-                            std::vector<RdKafka::TopicPartition *> &partitions = RdKafka::TopicPartition::create(msg->topic_name(), msg->partition());
+                            std::vector<RdKafka::TopicPartition *> partitions = RdKafka::TopicPartition::create(msg->topic_name(), msg->partition());
                             consumer->incremental_unassign(partitions);
-                            delete partitions;
+                            //delete partitions;
                         }
                     }
                     break;
