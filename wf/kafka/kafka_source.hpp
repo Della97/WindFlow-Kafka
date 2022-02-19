@@ -80,6 +80,7 @@ private:
     std::string brokers = "localhost";
     std::string groupid = "id";
     std::string errstr;
+    std::int tmp;
     std::vector<std::string> topics;
     //std::vector<RdKafka::TopicPartition*> &partitions;
     std::vector<RdKafka::TopicPartition*> partitions;
@@ -294,7 +295,7 @@ public:
                     break;
                 default:
                     /* Errors */
-                    //std::cerr << "Consume failed: " << msg->errstr() << std::endl;
+                    tmp = 0;
                     //run = 0;
             }
             delete msg;
