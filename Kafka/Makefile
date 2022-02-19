@@ -5,4 +5,3 @@ server:
 listpart:
 	./bin/kafka-topics.sh --bootstrap-server=localhost:9092 --describe --topic provatop
 	./bin/kafka-topics.sh --bootstrap-server=localhost:9092 --describe --topic test
-	./bin/kafka-topics.sh --bootstrap-server=localhost:9092 --describe --topic
