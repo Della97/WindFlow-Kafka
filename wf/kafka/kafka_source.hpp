@@ -81,7 +81,7 @@ private:
     std::string groupid = "id";
     std::string errstr;
     std::vector<std::string> topics;
-    std::vector<RdKafka::TopicPartition*> partitions;
+    std::vector<RdKafka::TopicPartition*> *partitions;
     int32_t partition = 0;
     int64_t start_offset = 0;
     int use_ccb = 0;
