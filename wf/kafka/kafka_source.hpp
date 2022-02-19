@@ -273,6 +273,8 @@ public:
                     if constexpr (isNonRiched) {
                         stop = func(*msg, *shipper); //get payload -> deser -> push forward if valid
                         if (stop == false) { //reached end of stream
+                            std::cout << "Reached End Of Stream on topic: " << msg->topic_name() << 
+                                " At partition: " << msg->partition() << std::endl;
                             partitions->create(msg->topic_name(), msg->partition());
                             consumer->incremental_unassign(partitions);
                         }
@@ -280,6 +282,8 @@ public:
                     if constexpr (isRiched) {
                         stop = func(*msg, *shipper, context); //get payload -> deser -> push forward if valid
                         if (stop == false) { //reached end of stream
+                            std::cout << "Reached End Of Stream on topic: " << msg->topic_name() << 
+                                " At partition: " << msg->partition() << std::endl;
                             partitions->create(msg->topic_name(), msg->partition());
                             consumer->incremental_unassign(partitions);
                         }
