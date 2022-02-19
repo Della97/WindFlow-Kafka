@@ -278,7 +278,7 @@ public:
                                 " At partition: " << msg->partition() << std::endl;
                             partitions.push_back(RdKafka::TopicPartition::create(msg->topic_name(), msg->partition()));
                             consumer->incremental_unassign(partitions);
-                            RdKafka::TopicPartition::destroy(part);
+                            RdKafka::TopicPartition::destroy(partitions);
                         }
                     }
                     if constexpr (isRiched) {
@@ -288,7 +288,7 @@ public:
                                 " At partition: " << msg->partition() << std::endl;
                             partitions.push_back(RdKafka::TopicPartition::create(msg->topic_name(), msg->partition()));
                             consumer->incremental_unassign(partitions);
-                            RdKafka::TopicPartition::destroy(part);
+                            RdKafka::TopicPartition::destroy(partitions);
                         }
                     }
                     break;
