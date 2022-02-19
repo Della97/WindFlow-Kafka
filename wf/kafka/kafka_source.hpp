@@ -275,7 +275,7 @@ public:
                         if (stop == false) { //reached end of stream
                             std::cout << "Reached End Of Stream on topic: " << msg->topic_name() << 
                                 " At partition: " << msg->partition() << std::endl;
-                            partitions->create(msg->topic_name(), msg->partition());
+                            partitions = RdKafka::TopicPartition::create(msg->topic_name(), msg->partition());
                             consumer->incremental_unassign(partitions);
                         }
                     }
@@ -284,7 +284,7 @@ public:
                         if (stop == false) { //reached end of stream
                             std::cout << "Reached End Of Stream on topic: " << msg->topic_name() << 
                                 " At partition: " << msg->partition() << std::endl;
-                            partitions->create(msg->topic_name(), msg->partition());
+                            partitions = RdKafka::TopicPartition::create(msg->topic_name(), msg->partition());
                             consumer->incremental_unassign(partitions);
                         }
                     }
