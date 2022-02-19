@@ -294,7 +294,7 @@ public:
                     break;
                 default:
                     /* Errors */
-                    std::cerr << "Consume failed: " << msg->errstr() << std::endl;
+                    //std::cerr << "Consume failed: " << msg->errstr() << std::endl;
                     //run = 0;
             }
             delete msg;
