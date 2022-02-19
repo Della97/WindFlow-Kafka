@@ -86,6 +86,8 @@ private:
     int64_t start_offset = 0;
     int use_ccb = 0;
     bool run = true;
+    bool stop = true;
+
 #if defined (WF_TRACING_ENABLED)
     Stats_Record stats_record;
 #endif
@@ -269,10 +271,18 @@ public:
                        " from partition " << msg->partition() << std::endl;
                     //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
                     if constexpr (isNonRiched) {
-                        run = func(*msg, *shipper); //get payload -> deser -> push forward if valid
+                        stop = func(*msg, *shipper); //get payload -> deser -> push forward if valid
+                        if (stop == false) { //reached end of stream
+                            partitions->create(msg->topic_name(), msg->partition());
+                            consumer->incremental_unassign(partitions);
+                        }
                     }
                     if constexpr (isRiched) {
-                        run = func(*msg, *shipper, context); //get payload -> deser -> push forward if valid
+                        stop = func(*msg, *shipper, context); //get payload -> deser -> push forward if valid
+                        if (stop == false) { //reached end of stream
+                            partitions->create(msg->topic_name(), msg->partition());
+                            consumer->incremental_unassign(partitions);
+                        }
                     }
                     break;
                 default:
