@@ -231,13 +231,6 @@ public:
         conf->set("enable.partition.eof", "true", errstr);
         conf->set("group.id", groupid, errstr);              //NEED TO GET GROUP ID AS PARAMATER!!! TO-DO
 
-
-        if (topics.empty()) {
-            std::cout << "TOPICS NON ESISTE: " << std::endl;
-        } else {
-            std::cout << "TOPICS ESISTE: " << std::endl;
-        }
-
         consumer = RdKafka::KafkaConsumer::create(conf, errstr);
         if (!consumer) {
             std::cerr << "Failed to create consumer: " << errstr << std::endl;
