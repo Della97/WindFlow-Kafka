@@ -376,6 +376,7 @@ private:
     friend class MultiPipe; // friendship with the MultiPipe class
     friend class PipeGraph; // friendship with the PipeGraph class
     kafka_deser_func_t func; // functional logic to deserialize messages from Apache Kafka
+    using result_t = decltype(get_result_t_KafkaSource(func)); // extracting the result_t type and checking the admissible signatures
     size_t parallelism; // parallelism of the Kafka_Source
     std::string name; // name of the Kafka_Source
     size_t outputBatchSize; // batch size of the outputs produced by the Kafka_Source

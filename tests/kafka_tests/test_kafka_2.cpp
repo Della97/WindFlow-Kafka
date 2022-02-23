@@ -135,7 +135,7 @@ int main()
     std::string topic1 = "test";
     std::string topic2 = "provatop";
     std::string topic3 = "topic";
-/*
+
     Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, groupid, parallelism, offset, closing_func);
     std::cout << "Creazione con funzioni -> OK!" << std::endl;
 
@@ -145,12 +145,11 @@ int main()
     Kafka_Source source2 = Kafka_Source(deser_lambda, name, outputBactchSize, brokers, topics, groupid, parallelism, offset, closing_lambda);
     std::cout << "Creazione con lambda -> OK!" << std::endl;    
 
-    deser_functor deser_functor;
-    closing_functor closing_functor;
-    Kafka_Source source3 = Kafka_Source(deser_functor, name, outputBactchSize, brokers, topics, groupid, parallelism, offset, closing_functor);
+    deser_functor d_functor;
+    closing_functor c_functor;
+    Kafka_Source source3 = Kafka_Source(d_functor, name, outputBactchSize, brokers, topics, groupid, parallelism, offset, c_functor);
     std::cout << "Creazione con funtori -> OK!" << std::endl;
 
-    std::cout << "Test creazione Kafka_Source mediante builder" << std::endl;
     Kafka_Source source4 = Kafka_Source_Builder(deser_func)
                                 .withName(name)
                                 .withOutputBatchSize(outputBactchSize)
@@ -174,26 +173,20 @@ int main()
                                 .withOffset(offset)
                                 .build();
     std::cout << "Creazione con builder tramite lambda -> OK!" <<  std::endl;
-*/
 
-    closing_functor closing_functor;
-    deser_functor functor();
-
-    Kafka_Source source6 = Kafka_Source_Builder(functor)
+    Kafka_Source source6 = Kafka_Source_Builder(d_functor)
                                 .withName(name)
                                 .withOutputBatchSize(outputBactchSize)
-                                .withClosingFunction(closing_functor)
+                                .withClosingFunction(c_functor)
                                 .withBrokers(brokers)
                                 .withTopics(topic1, topic2)
                                 .withGroupID(groupid)
                                 .withPartition(parallelism)
                                 .withOffset(offset)
                                 .build();
-    //std::cout << "Creazione con builder tramite funtori -> OK!" <<  std::endl;
-
+    std::cout << "Creazione con builder tramite funtori -> OK!" <<  std::endl;
     PipeGraph graph("test_tracing_1", Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
     MultiPipe &pipe = graph.add_source(source6);
-
         //SINK
     Sink_Functor sink_functor;
         Sink sink1 = Sink_Builder(sink_functor)
@@ -203,6 +196,5 @@ int main()
         pipe.chain_sink(sink1);
     graph.run();
     std::cout << "Exiting..." <<  std::endl;
-
     return 0;
 }

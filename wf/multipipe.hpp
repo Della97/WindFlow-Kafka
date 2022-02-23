@@ -379,20 +379,7 @@ private:
         lastParallelism = (copied_source->replicas).size(); // save the parallelism of the operator
         localOpList.push_back(copied_source); // add the copied operator to local list
         globalOpList->push_back(copied_source); // add the copied operator to global list
-        using result1_t = decltype(get_result_t_Source(copied_source->func)); // extracting the result_t type
-        if constexpr (!std::is_same<result1_t, std::false_type>::value) { // case 1: standard Source
-            outputType = TypeName<result1_t>::getName(); // save the type of result_t as a string
-        }
-        else { // case 2: Kafka_Source
-            using result2_t = decltype(get_result_t_KafkaSource(copied_source->func)); // extracting the result_t type
-            if constexpr (!std::is_same<result2_t, std::false_type>::value) {
-                outputType = TypeName<result2_t>::getName(); // save the type of result_t as a string
-            }
-            else {
-                std::cerr << RED << "WindFlow Error: unrecognized Source operator is being added to the PipeGraph" << DEFAULT_COLOR << std::endl;
-                exit(EXIT_FAILURE);
-            }
-        }
+        outputType = TypeName<typename source_t::result_t>::getName(); // save the type of result_t as a string
 #if defined (WF_TRACING_ENABLED)
         // update the graphviz representation
         if (_source.getType() == "Kafka_Source") {
