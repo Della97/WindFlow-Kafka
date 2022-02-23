@@ -99,12 +99,20 @@ public:
     bool operator()(RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper)
     {
         tuple_t out;
-        std::cout << "Entered deser" << std::endl;
-        //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg.));
-        out.value = 0;
-        //out.value = msg.payload();
-        out.key = 0;
-        shipper.push(out);
+        uint64_t next_ts = 0;
+        //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
+        //out.value = atoi(static_cast<const char *>(msg->payload()));
+        out.value = atoi(static_cast<const char *>(msg.payload()));
+
+        if (out.value == 0) {
+            return false;
+        }
+
+        out.key = atoi(static_cast<const char *>(msg.payload()));
+        std::cout << "[DESER] -> msg: " << out.value << std::endl;
+        shipper.pushWithTimestamp(std::move(out), next_ts);
+        next_ts++;
+        //shipper.push(out);
         return true;
     }
 };
