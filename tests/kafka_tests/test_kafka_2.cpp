@@ -177,8 +177,9 @@ int main()
 */
 
     closing_functor closing_functor;
+    deser_functor functor();
 
-    Kafka_Source source6 = Kafka_Source_Builder(deser_functor)
+    Kafka_Source source6 = Kafka_Source_Builder(functor)
                                 .withName(name)
                                 .withOutputBatchSize(outputBactchSize)
                                 .withClosingFunction(closing_functor)
