@@ -249,13 +249,8 @@ public:
         */
        partitions.push_back(RdKafka::TopicPartition::create("test", 0));
        partitions.push_back(RdKafka::TopicPartition::create("provatop", 0));
-       RdKafka::ErrorCode err = consumer->incremental_assign(partitions);
-        if (err) {
-            std::cerr << "Failed to subscribe to " << topics.size()
-                        << " topics: " << RdKafka::err2str(err) << std::endl;
-            exit(1);
-        }
-        RdKafka::TopicPartition::destroy(partitions);
+       consumer->incremental_assign(partitions);
+       RdKafka::TopicPartition::destroy(partitions);
 
 
 
