@@ -73,17 +73,13 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
         error = consumer->incremental_assign(partitions);
       else
         ret_err = consumer->assign(partitions);
-      partition_cnt += (int)partitions.size();
     } else {
       if (consumer->rebalance_protocol() == "COOPERATIVE") {
         error = consumer->incremental_unassign(partitions);
-        partition_cnt -= (int)partitions.size();
       } else {
         ret_err       = consumer->unassign();
-        partition_cnt = 0;
       }
     }
-    eof_cnt = 0; /* FIXME: Won't work with COOPERATIVE */
 
     if (error) {
       std::cerr << "incremental assign failed: " << error->str() << "\n";
