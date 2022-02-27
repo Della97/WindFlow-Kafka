@@ -341,7 +341,7 @@ public:
             }
             delete msg;
         }
-        cout << "Exiting from replica " << this->myid() << std::endl;
+        std::cout << "Exiting from replica " << std::endl;
 #if defined (WF_TRACING_ENABLED)
         stats_record.setTerminated();
 #endif
