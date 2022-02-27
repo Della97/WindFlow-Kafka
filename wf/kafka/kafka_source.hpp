@@ -248,7 +248,7 @@ public:
         }
         */
        partitions.push_back(RdKafka::TopicPartition::create("test", 0));
-       partitions.push_back(RdKafka::TopicPartition::create("provatop", 0));
+       //partitions.push_back(RdKafka::TopicPartition::create("provatop", 0));
        consumer->incremental_assign(partitions);
        RdKafka::TopicPartition::destroy(partitions);
 
