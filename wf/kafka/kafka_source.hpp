@@ -322,21 +322,15 @@ public:
                     if constexpr (isNonRiched) {
                         stop = func(*msg, *shipper); //get payload -> deser -> push forward if valid
                         if (stop == false) { //reached end of stream
-                            std::cout << "Reached End Of Stream on topic: " << msg->topic_name() << 
-                                " At partition: " << msg->partition() << std::endl;
-                            partitions.push_back(RdKafka::TopicPartition::create(msg->topic_name(), msg->partition()));
-                            consumer->incremental_unassign(partitions);
-                            RdKafka::TopicPartition::destroy(partitions);
+                            std::cout << "Reached End Of Stream " << std::endl;
+                            run = false;
                         }
                     }
                     if constexpr (isRiched) {
                         stop = func(*msg, *shipper, context); //get payload -> deser -> push forward if valid
                         if (stop == false) { //reached end of stream
-                            std::cout << "Reached End Of Stream on topic: " << msg->topic_name() << 
-                                " At partition: " << msg->partition() << std::endl;
-                            partitions.push_back(RdKafka::TopicPartition::create(msg->topic_name(), msg->partition()));
-                            consumer->incremental_unassign(partitions);
-                            RdKafka::TopicPartition::destroy(partitions);
+                            std::cout << "Reached End Of Stream " << std::endl;
+                            run = false;
                         }
                     }
                     break;
@@ -347,6 +341,7 @@ public:
             }
             delete msg;
         }
+        cout << "Exiting from replica " << this->myid() << std::endl;
 #if defined (WF_TRACING_ENABLED)
         stats_record.setTerminated();
 #endif
