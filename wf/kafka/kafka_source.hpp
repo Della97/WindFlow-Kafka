@@ -278,6 +278,7 @@ public:
         if (!consumer) {
             std::cerr << "Failed to create consumer: " << errstr << std::endl;
             exit(1);
+            
         }
         std::cout << "% Created consumer " << consumer->name() << std::endl;
         
