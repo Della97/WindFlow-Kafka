@@ -295,8 +295,8 @@ public:
         
 
 
-       partitions.push_back(RdKafka::TopicPartition::create("test", 0));
-       partitions.push_back(RdKafka::TopicPartition::create("test", 3));
+       partitions.push_back(RdKafka::TopicPartition::create("provatop", 0));
+       partitions.push_back(RdKafka::TopicPartition::create("provatop", 3));
        consumer->assign(partitions);
        RdKafka::TopicPartition::destroy(partitions);
 
