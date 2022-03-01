@@ -272,7 +272,7 @@ public:
         tconf = RdKafka::Conf::create(RdKafka::Conf::CONF_TOPIC);
         conf->set("metadata.broker.list", brokers, errstr);
         //conf->set("enable.partition.eof", "true", errstr);
-        //conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
+        conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
         conf->set("group.id", groupid, errstr);              //NEED TO GET GROUP ID AS PARAMATER!!! TO-DO
         conf->set("partition.assignment.strategy", "roundrobin", errstr);
 
@@ -336,6 +336,7 @@ public:
                             std::cout << "Reached End Of Stream for: " << msg->topic_name() << " at partition " << msg->partition() << std::endl;
                             partitions.push_back(RdKafka::TopicPartition::create(msg->topic_name(), msg->partition()));
                             consumer->pause(partitions);
+                            //consumer->rebalance_protocol();
                             RdKafka::TopicPartition::destroy(partitions);
 
                             //run = false;
@@ -347,6 +348,7 @@ public:
                             std::cout << "Reached End Of Stream for: " << msg->topic_name() << " at partition " << msg->partition() << std::endl;
                             partitions.push_back(RdKafka::TopicPartition::create(msg->topic_name(), msg->partition()));
                             consumer->pause(partitions);
+                            //consumer->rebalance_protocol();
                             RdKafka::TopicPartition::destroy(partitions);
                             //run = false;
                         }
