@@ -285,13 +285,14 @@ public:
         std::cout << "% Created consumer " << consumer->name() << std::endl;
         
         /* Subscribe to topics */
-        
+        /*
         RdKafka::ErrorCode err = consumer->subscribe(topics);
         if (err) {
             std::cerr << "Failed to subscribe to " << topics.size()
                         << " topics: " << RdKafka::err2str(err) << std::endl;
             exit(1);
         }
+        */
         
         
 
