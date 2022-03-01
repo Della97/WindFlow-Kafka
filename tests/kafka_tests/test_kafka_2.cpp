@@ -77,11 +77,11 @@ bool deser_func(RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper)
     //out.value = atoi(static_cast<const char *>(msg->payload()));
     out.value = atoi(static_cast<const char *>(msg.payload()));
 
-    /*
+    
     if (out.value == 0) {
         return false;
     }
-    */
+    
 
     out.key = atoi(static_cast<const char *>(msg.payload()));
     std::cout << "[DESER] -> msg: " << out.value << std::endl;

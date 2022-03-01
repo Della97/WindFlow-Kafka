@@ -296,11 +296,12 @@ public:
         
         
 
-
+        /*
        partitions.push_back(RdKafka::TopicPartition::create("provatop", 0));
        partitions.push_back(RdKafka::TopicPartition::create("provatop", 3));
        consumer->assign(partitions);
        RdKafka::TopicPartition::destroy(partitions);
+       */
 
 
 
@@ -332,15 +333,22 @@ public:
                     if constexpr (isNonRiched) {
                         stop = func(*msg, *shipper); //get payload -> deser -> push forward if valid
                         if (stop == false) { //reached end of stream
-                            std::cout << "Reached End Of Stream " << std::endl;
-                            run = false;
+                            std::cout << "Reached End Of Stream for: " << msg->topic_name() << " at partition " << msg->partition() << std::endl;
+                            partitions.push_back(RdKafka::TopicPartition::create(msg->topic_name(), msg->partition()));
+                            consumer->pause(partitions);
+                            RdKafka::TopicPartition::destroy(partitions);
+
+                            //run = false;
                         }
                     }
                     if constexpr (isRiched) {
                         stop = func(*msg, *shipper, context); //get payload -> deser -> push forward if valid
                         if (stop == false) { //reached end of stream
-                            std::cout << "Reached End Of Stream " << std::endl;
-                            run = false;
+                            std::cout << "Reached End Of Stream for: " << msg->topic_name() << " at partition " << msg->partition() << std::endl;
+                            partitions.push_back(RdKafka::TopicPartition::create(msg->topic_name(), msg->partition()));
+                            consumer->pause(partitions);
+                            RdKafka::TopicPartition::destroy(partitions);
+                            //run = false;
                         }
                     }
                     break;
