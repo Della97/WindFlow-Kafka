@@ -319,6 +319,11 @@ public:
                     //std::cout << "Timed out while fetching msg from broker" << std::endl; // bisogna usare cout non printf (solo per essere omogenei)
                     break;
                 case RdKafka::ERR_NO_ERROR:
+                    RdKafka::ErrorCode err = consumer->commitAsync(msg);
+                    if (err) {
+                        std::cerr << "Failed to commit" << std::endl;
+                        exit(1);
+                    }
                     std::cout << "[PAYLOAD - SVC-SRC NUM " << consumer->name() <<"] -> " << static_cast<const char *>(msg->payload()) <<
                        "[ from partition " << msg->partition() << " topic -> " << msg->topic_name() << " ]" << std::endl;
                     //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
