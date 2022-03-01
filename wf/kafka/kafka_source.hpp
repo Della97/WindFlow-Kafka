@@ -120,6 +120,7 @@ private:
     RdKafka::Conf *conf = nullptr;
     RdKafka::Conf *tconf = nullptr;
     RdKafka::Topic *topic = nullptr;
+    RdKafka::ErrorCode error;
     std::string brokers = "localhost";
     std::string groupid = "id";
     std::string errstr;
@@ -319,7 +320,7 @@ public:
                     //std::cout << "Timed out while fetching msg from broker" << std::endl; // bisogna usare cout non printf (solo per essere omogenei)
                     break;
                 case RdKafka::ERR_NO_ERROR:
-                    RdKafka::ErrorCode error = consumer->commitAsync(msg);
+                    error = consumer->commitAsync(msg);
                     if (error) {
                         std::cerr << "Failed to commit" << std::endl;
                         exit(1);
