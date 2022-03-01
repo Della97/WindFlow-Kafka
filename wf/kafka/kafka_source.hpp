@@ -336,7 +336,7 @@ public:
                             std::cout << "Reached End Of Stream for: " << msg->topic_name() << " at partition " << msg->partition() << std::endl;
                             partitions.push_back(RdKafka::TopicPartition::create(msg->topic_name(), msg->partition()));
                             consumer->pause(partitions);
-                            //consumer->rebalance_protocol();
+                            consumer->rebalance_protocol();
                             RdKafka::TopicPartition::destroy(partitions);
 
                             //run = false;
@@ -348,7 +348,7 @@ public:
                             std::cout << "Reached End Of Stream for: " << msg->topic_name() << " at partition " << msg->partition() << std::endl;
                             partitions.push_back(RdKafka::TopicPartition::create(msg->topic_name(), msg->partition()));
                             consumer->pause(partitions);
-                            //consumer->rebalance_protocol();
+                            consumer->rebalance_protocol();
                             RdKafka::TopicPartition::destroy(partitions);
                             //run = false;
                         }
