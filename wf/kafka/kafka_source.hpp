@@ -296,12 +296,12 @@ public:
         
         
 
-        /*
+    
        partitions.push_back(RdKafka::TopicPartition::create("provatop", 0));
        partitions.push_back(RdKafka::TopicPartition::create("provatop", 3));
        consumer->assign(partitions);
        RdKafka::TopicPartition::destroy(partitions);
-       */
+       
 
 
 
@@ -588,9 +588,9 @@ public:
             exit(EXIT_FAILURE);
         }
         */
-
-        for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
-            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), topics, _closing_func));
+        replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, 0), topics, _closing_func));
+        for (size_t i=1; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
+            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), NULL, _closing_func));
         }
     }
 
