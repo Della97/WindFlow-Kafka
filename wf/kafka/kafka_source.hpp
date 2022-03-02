@@ -203,7 +203,6 @@ public:
         /* Qui iniziano una serie di delete della parte Kafka che vanno sistemate */
         delete consumer;
         delete conf;
-        delete topic;
     }
 
     // Copy Assignment Operator
@@ -537,7 +536,7 @@ public:
                  std::string _brokers,
                  std::vector<std::string> _topics,
                  std::string _groupid, //merge group-id
-                 std::string _strat;
+                 std::string _strat,
                  int32_t _partition,
                  int32_t _offset,
                  std::function<void(RuntimeContext &)> _closing_func):
