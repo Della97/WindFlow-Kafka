@@ -575,9 +575,7 @@ public:
             exit(EXIT_FAILURE);
         }
         */
-        replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, 0), topics, _closing_func));
-        topics.clear();
-        for (size_t i=1; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
+        for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
             replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), topics, _closing_func));
         }
     }
