@@ -119,8 +119,8 @@ private:
     RdKafka::KafkaConsumer *consumer = nullptr;
     RdKafka::Conf *conf = nullptr;
     RdKafka::ErrorCode error;
-    std::string brokers = "localhost";
-    std::string groupid = "id";
+    std::string brokers;
+    std::string groupid;
     std::string strat;
     std::string errstr;
     ExampleRebalanceCb ex_rebalance_cb; //partiotion manager
