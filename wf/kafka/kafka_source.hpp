@@ -295,7 +295,7 @@ public:
         conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
         conf->set("metadata.broker.list", brokers, errstr);
         conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
-        conf->set("group.id", groupid, errstr);              //NEED TO GET GROUP ID AS PARAMATER!!! TO-DO
+        conf->set("group.id", groupid, errstr);
         conf->set("partition.assignment.strategy", strat, errstr);
 
         consumer = RdKafka::KafkaConsumer::create(conf, errstr);
@@ -340,24 +340,16 @@ public:
                        "[ from partition " << msg->partition() << " topic -> " << msg->topic_name() << " ]" << std::endl;
                     //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
                     if constexpr (isNonRiched) {
-                        stop = func(*msg, *shipper); //get payload -> deser -> push forward if valid
-                        if (stop == false) { //reached end of stream
-                            std::cout << "Reached End Of Stream from deser func: " << std::endl;
-                            run = false;
-                        }
+                        run = func(*msg, *shipper); //get payload -> deser -> push forward if valid
+                        std::cout << "Reached End Of Stream from deser func: " << std::endl;
                     }
                     if constexpr (isRiched) {
-                        stop = func(*msg, *shipper, context); //get payload -> deser -> push forward if valid
-                        if (stop == false) { //reached end of stream
-                            std::cout << "Reached End Of Stream from deser func " << std::endl;
-                            run = false;
-                        }
+                        run = func(*msg, *shipper, context); //get payload -> deser -> push forward if valid
+                        std::cout << "Reached End Of Stream from deser func " << std::endl;
                     }
                     break;
                 default:
                     /* Errors */
-                    tmp = 0;
-                    //run = 0;
             }
             delete msg;
         }
@@ -555,9 +547,14 @@ public:
      *  \brief Constructor
      *  
      *  \param _func deserialization logic of the Kafak_Source (a function or a callable type)
-     *  \param _parallelism internal parallelism of the Kafka_Source
      *  \param _name name of the Kafka Source
-     *  \param _outputBatchSize size (in num of tuples) of the batches produced by this operator (0 for no batching)
+     *  \param _outBatchSize size (in num of tuples) of the batches produced by this operator (0 for no batching)
+     *  \param _brokers ip of the kafka broker
+     *  \param _topics name of the topics to subscribe
+     *  \param _groupid name of the group id (all replicas inthe same group)
+     *  \param _strat strategy used by he group manager to assign the partitions of the topics among consumers
+     *  \param _parallelism internal parallelism of the Kafka_Source
+     *  \param _offset offset to start fetching
      *  \param _closing_func closing functional logic of the Kafka_Source (a function or callable type)
      * 
      *  <------qui devi sistemare il doxygen!!!
@@ -569,11 +566,11 @@ public:
                  std::vector<std::string> _topics,
                  std::string _groupid, //merge group-id
                  std::string _strat,
-                 int32_t _partition,
+                 int32_t _parallelism,
                  int32_t _offset,
                  std::function<void(RuntimeContext &)> _closing_func):
                  func(_func),
-                 parallelism(_partition),
+                 parallelism(_parallelism),
                  name(_name),
                  outputBatchSize(_outputBatchSize),
                  brokers(_brokers),
@@ -586,30 +583,8 @@ public:
             std::cerr << RED << "WindFlow Error: Kafka_Source has parallelism zero" << DEFAULT_COLOR << std::endl;
             exit(EXIT_FAILURE);
         }
-        /*
-        if (parallelism > topics.size()) {  //check if the parallelism and the partitions are compatible /todo
-            std::cerr << RED << "WindFlow Error: Kafka_Source parallelism too high??" << DEFAULT_COLOR << std::endl;
-            exit(EXIT_FAILURE);
-        }
-        */
 
-       /*
-        
-        kafka_deser_func_t _func,
-                         std::string _opName,
-                         RuntimeContext _context,
-                         size_t _outputBatchSize,
-                         std::string _brokers,
-                         std::vector<std::string> _topics,
-                         std::string _groupid, //merge group-id
-                         std::string _strat,
-                         int32_t _partition,
-                         int32_t _offset,
-                         std::function<void(RuntimeContext &)> _closing_func)
-        
-        */
-       std::cout << "[GROUPID] -> " << groupid << std::endl;
-       std::cout << "[STRAT] -> " << strat << std::endl;
+        //parallelims check but we dont know the number of partitions
 
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
             replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, partition, offset, _closing_func));
