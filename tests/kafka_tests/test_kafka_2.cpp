@@ -145,19 +145,20 @@ int main()
     std::string topic1 = "test";
     std::string topic2 = "provatop";
     std::string topic3 = "topic";
+    std::string strat = "roundrobin";
 
-    Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, groupid, parallelism, offset, closing_func);
+    Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, offset, closing_func);
     std::cout << "Creazione con funzioni -> OK!" << std::endl;
 
     auto deser_lambda = [](RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper) { return true; };
     auto closing_lambda = [](RuntimeContext &) { return; };
 
-    Kafka_Source source2 = Kafka_Source(deser_lambda, name, outputBactchSize, brokers, topics, groupid, parallelism, offset, closing_lambda);
+    Kafka_Source source2 = Kafka_Source(deser_lambda, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, offset, closing_lambda);
     std::cout << "Creazione con lambda -> OK!" << std::endl;    
 
     deser_functor d_functor;
     closing_functor c_functor;
-    Kafka_Source source3 = Kafka_Source(d_functor, name, outputBactchSize, brokers, topics, groupid, parallelism, offset, c_functor);
+    Kafka_Source source3 = Kafka_Source(d_functor, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, offset, c_functor);
     std::cout << "Creazione con funtori -> OK!" << std::endl;
 
     Kafka_Source source4 = Kafka_Source_Builder(deser_func)
@@ -167,6 +168,7 @@ int main()
                                 .withBrokers(brokers)
                                 .withTopics(topic1)
                                 .withGroupID(groupid)
+                                .withAssignmentPolicy(strat)
                                 .withPartition(parallelism)
                                 .withOffset(offset)
                                 .build();
@@ -179,6 +181,7 @@ int main()
                                 .withBrokers(brokers)
                                 .withTopics(topic1, topic2)
                                 .withGroupID(groupid)
+                                .withAssignmentPolicy(strat)
                                 .withPartition(parallelism)
                                 .withOffset(offset)
                                 .build();
@@ -191,6 +194,7 @@ int main()
                                 .withBrokers(brokers)
                                 .withTopics(topic1, topic2)
                                 .withGroupID(groupid)
+                                .withAssignmentPolicy(strat)
                                 .withPartition(parallelism)
                                 .withOffset(offset)
                                 .build();

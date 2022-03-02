@@ -88,8 +88,9 @@ private:
     /* Da qui in poi abbiamo una serie di variabili che vanno sistemate */
     Sstring topic;
     std::vector< std::string > topics;
-    std::string brokers = "localhost";
-    std::string groupid = "id";
+    std::string brokers;
+    std::string groupid;
+    std::string strat;
     int32_t partition;
     int32_t offset;
 
@@ -169,6 +170,18 @@ public:
     }
 
     /** 
+     *  \brief Set the partition assignment strategy
+     *  
+     *  \param _strat for the assignment
+     *  \return a reference to the builder object
+     */ 
+    Kafka_Source_Builder<kafka_deser_func_t> &withAssignmentPolicy(std::string _strat)   //merge group-id
+    {
+        strat = _strat;
+        return *this;
+    }
+
+    /** 
      *  \brief Set the topic partition
      *  
      *  \param _partition for the consumer
@@ -229,6 +242,7 @@ public:
                               brokers,
                               topics,
                               groupid,
+                              strat,
                               partition,
                               offset,
                               closing_func);

@@ -118,20 +118,14 @@ private:
     /* Da qui in poi abbiamo una serie di variabili che vanno sistemate */
     RdKafka::KafkaConsumer *consumer = nullptr;
     RdKafka::Conf *conf = nullptr;
-    RdKafka::Conf *tconf = nullptr;
-    RdKafka::Topic *topic = nullptr;
     RdKafka::ErrorCode error;
     std::string brokers = "localhost";
     std::string groupid = "id";
+    std::string strat;
     std::string errstr;
     ExampleRebalanceCb ex_rebalance_cb; //partiotion manager
     int32_t tmp = 0;
     std::vector<std::string> topics;
-    //std::vector<RdKafka::TopicPartition*> &partitions;
-    std::vector<RdKafka::TopicPartition*> partitions;
-    int32_t partition = 0;
-    int64_t start_offset = 0;
-    int use_ccb = 0;
     bool run = true;
     bool stop = true;
 
@@ -209,7 +203,6 @@ public:
         /* Qui iniziano una serie di delete della parte Kafka che vanno sistemate */
         delete consumer;
         delete conf;
-        delete tconf;
         delete topic;
     }
 
@@ -269,12 +262,10 @@ public:
     int svc_init() override
     {
         conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
-        tconf = RdKafka::Conf::create(RdKafka::Conf::CONF_TOPIC);
         conf->set("metadata.broker.list", brokers, errstr);
-        //conf->set("enable.partition.eof", "true", errstr);
         conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
         conf->set("group.id", groupid, errstr);              //NEED TO GET GROUP ID AS PARAMATER!!! TO-DO
-        conf->set("partition.assignment.strategy", "roundrobin", errstr);
+        conf->set("partition.assignment.strategy", strat, errstr);
 
         consumer = RdKafka::KafkaConsumer::create(conf, errstr);
         if (!consumer) {
@@ -320,24 +311,15 @@ public:
                     if constexpr (isNonRiched) {
                         stop = func(*msg, *shipper); //get payload -> deser -> push forward if valid
                         if (stop == false) { //reached end of stream
-                            std::cout << "Reached End Of Stream for: " << msg->topic_name() << " at partition " << msg->partition() << std::endl;
-                            partitions.push_back(RdKafka::TopicPartition::create(msg->topic_name(), msg->partition()));
-                            consumer->pause(partitions);
-                            consumer->rebalance_protocol();
-                            RdKafka::TopicPartition::destroy(partitions);
-
-                            //run = false;
+                            std::cout << "Reached End Of Stream from deser func: " << std::endl;
+                            run = false;
                         }
                     }
                     if constexpr (isRiched) {
                         stop = func(*msg, *shipper, context); //get payload -> deser -> push forward if valid
                         if (stop == false) { //reached end of stream
-                            std::cout << "Reached End Of Stream for: " << msg->topic_name() << " at partition " << msg->partition() << std::endl;
-                            partitions.push_back(RdKafka::TopicPartition::create(msg->topic_name(), msg->partition()));
-                            consumer->pause(partitions);
-                            consumer->rebalance_protocol();
-                            RdKafka::TopicPartition::destroy(partitions);
-                            //run = false;
+                            std::cout << "Reached End Of Stream from deser func " << std::endl;
+                            run = false;
                         }
                     }
                     break;
@@ -348,7 +330,7 @@ public:
             }
             delete msg;
         }
-        std::cout << "Exiting from replica " << std::endl;
+        std::cout << "Exiting from replica " << consumer->name() << std::endl;
 #if defined (WF_TRACING_ENABLED)
         stats_record.setTerminated();
 #endif
@@ -362,6 +344,7 @@ public:
         // stop consumer
         consumer->close();
         delete consumer;
+        delete conf;
         /*
         * Wait for RdKafka to decommission.
         * This is not strictly needed (when check outq_len() above), but
@@ -369,7 +352,7 @@ public:
         * exits so that memory profilers such as valgrind wont complain about
         * memory leaks.
         */
-        //RdKafka::wait_destroyed(5000);
+        RdKafka::wait_destroyed(5000);
         closing_func(context); // call the closing function
     }
 
@@ -439,6 +422,7 @@ private:
     /* Da qui in poi abbiamo una serie di variabili che vanno sistemate */
     std::string brokers;
     std::string groupid;
+    std::string strat;
     std::vector<std::string> topics;
     int32_t partition;
     int32_t offset;
@@ -553,6 +537,7 @@ public:
                  std::string _brokers,
                  std::vector<std::string> _topics,
                  std::string _groupid, //merge group-id
+                 std::string _strat;
                  int32_t _partition,
                  int32_t _offset,
                  std::function<void(RuntimeContext &)> _closing_func):
@@ -563,6 +548,7 @@ public:
                  brokers(_brokers),
                  topics(_topics),
                  groupid(_groupid), //merge group-id
+                 strat(_strat),
                  offset(_offset)
     {
         if (parallelism == 0) { // check the validity of the parallelism value
