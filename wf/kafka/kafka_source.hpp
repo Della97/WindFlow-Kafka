@@ -123,6 +123,9 @@ private:
     std::string groupid;
     std::string strat;
     std::string errstr;
+    int32_t partition;
+    int32_t offset;
+    size_t outputBatchSize;
     ExampleRebalanceCb ex_rebalance_cb; //partiotion manager
     int32_t tmp = 0;
     std::vector<std::string> topics;
@@ -138,12 +141,24 @@ public:
     Kafka_Source_Replica(kafka_deser_func_t _func,
                          std::string _opName,
                          RuntimeContext _context,
+                         size_t _outputBatchSize,
+                         std::string _brokers,
                          std::vector<std::string> _topics,
+                         std::string _groupid, //merge group-id
+                         std::string _strat,
+                         int32_t _partition,
+                         int32_t _offset,
                          std::function<void(RuntimeContext &)> _closing_func):
                          func(_func),
                          opName(_opName),
                          context(_context),
+                         outputBatchSize(_outputBatchSize),
+                         brokers(_brokers),
                          topics(_topics),
+                         groupid(_groupid),
+                         strat(_strat),
+                         partition(_partition),
+                         offset(_offset),
                          closing_func(_closing_func),
                          terminated(false),
                          execution_mode(Execution_Mode_t::DEFAULT),
