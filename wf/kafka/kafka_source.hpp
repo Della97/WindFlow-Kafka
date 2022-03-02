@@ -580,8 +580,26 @@ public:
             exit(EXIT_FAILURE);
         }
         */
+
+       /*
+        
+        kafka_deser_func_t _func,
+                         std::string _opName,
+                         RuntimeContext _context,
+                         size_t _outputBatchSize,
+                         std::string _brokers,
+                         std::vector<std::string> _topics,
+                         std::string _groupid, //merge group-id
+                         std::string _strat,
+                         int32_t _partition,
+                         int32_t _offset,
+                         std::function<void(RuntimeContext &)> _closing_func)
+        
+        */
+
+
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
-            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), topics, _closing_func));
+            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, partition, offset, _closing_func));
         }
     }
 
