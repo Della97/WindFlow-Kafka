@@ -348,8 +348,6 @@ public:
                         std::cout << "Reached End Of Stream from deser func " << std::endl;
                     }
                     break;
-                default:
-                    /* Errors */
             }
             delete msg;
         }
