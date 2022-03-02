@@ -599,7 +599,7 @@ public:
 
 
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
-            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, partition, offset, _closing_func));
+            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, _name, RuntimeContext(parallelism, i), _outputBatchSize, _brokers, _topics, _groupid, _strat, _partition, _offset, _closing_func));
         }
     }
 
