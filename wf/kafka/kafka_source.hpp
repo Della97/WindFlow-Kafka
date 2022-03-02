@@ -262,6 +262,7 @@ public:
     {
         std::cout << "BROKER -> " << brokers << std::endl;
         std::cout << "GROUPID -> " << groupid << std::endl;
+        std::cout << "STRAT -> " << strat << std::endl;
         conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
         conf->set("metadata.broker.list", brokers, errstr);
         conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
