@@ -285,22 +285,13 @@ public:
         
         /* Subscribe to topics */
 
-        if (topics.empty()) {
-            std::cout << "% Created consumer [REPLICA] " << consumer->name() << std::endl;
-        } else {
-            std::cout << "% Created consumer [MASTER] " << consumer->name() << std::endl;
-            RdKafka::ErrorCode err = consumer->subscribe(topics);
-            if (err) {
-                std::cerr << "Failed to subscribe to " << topics.size()
-                        << " topics: " << RdKafka::err2str(err) << std::endl;
-                exit(1);
+        std::cout << "% Created consumer " << consumer->name() << std::endl;
+        RdKafka::ErrorCode err = consumer->subscribe(topics);
+        if (err) {
+            std::cerr << "Failed to subscribe to " << topics.size()
+                    << " topics: " << RdKafka::err2str(err) << std::endl;
+            exit(1);
             }
-            partitions.push_back(RdKafka::TopicPartition::create("provatop", 0));
-            partitions.push_back(RdKafka::TopicPartition::create("provatop", 3));
-            consumer->assign(partitions);
-            RdKafka::TopicPartition::destroy(partitions);
-        }
-
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
 #endif
