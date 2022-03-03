@@ -171,7 +171,7 @@ public:
                          execution_mode(Execution_Mode_t::DEFAULT),
                          time_policy(Time_Policy_t::INGRESS_TIME),
                          shipper(nullptr) { 
-                             barrier t_bar(parallelism);
+                             std::barrier t_bar(parallelism);
                          }
 
     // Copy Constructor
