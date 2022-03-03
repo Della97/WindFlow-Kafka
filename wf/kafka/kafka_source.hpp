@@ -306,6 +306,8 @@ public:
         conf->set("group.id", groupid, errstr);
         conf->set("partition.assignment.strategy", strat, errstr);
 
+        std::cout << "creating" << std::endl;
+
         consumer = RdKafka::KafkaConsumer::create(conf, errstr);
         if (!consumer) {
             std::cerr << "Failed to create consumer: " << errstr << std::endl;
