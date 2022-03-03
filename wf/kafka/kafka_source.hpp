@@ -132,6 +132,8 @@ private:
     bool run = true;
     bool stop = true;
 
+
+
 #if defined (WF_TRACING_ENABLED)
     Stats_Record stats_record;
 #endif
@@ -163,7 +165,9 @@ public:
                          terminated(false),
                          execution_mode(Execution_Mode_t::DEFAULT),
                          time_policy(Time_Policy_t::INGRESS_TIME),
-                         shipper(nullptr) { }
+                         shipper(nullptr) {
+                             
+                          }
 
     // Copy Constructor
     Kafka_Source_Replica(const Kafka_Source_Replica &_other):
@@ -287,11 +291,6 @@ public:
     // svc_init (utilized by the FastFlow runtime)
     int svc_init() override
     {
-        std::cout << "BROKER -> " << brokers << std::endl;
-        std::cout << "GROUPID -> " << groupid << std::endl;
-        std::cout << "STRAT -> " << strat << std::endl;
-        for (auto i: topics)
-            std::cout << i << ' ';
         conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
         conf->set("metadata.broker.list", brokers, errstr);
         conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
@@ -313,7 +312,9 @@ public:
             std::cerr << "Failed to subscribe to " << topics.size()
                     << " topics: " << RdKafka::err2str(err) << std::endl;
             exit(1);
-            }
+        }
+        //pthread barrier
+        pthread_barrier_wait(&barrier);
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
 #endif
@@ -341,11 +342,15 @@ public:
                     //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
                     if constexpr (isNonRiched) {
                         run = func(*msg, *shipper); //get payload -> deser -> push forward if valid
-                        std::cout << "Reached End Of Stream from deser func: " << std::endl;
+                        if (run == false) {
+                            std::cout << "Reached End Of Stream from deser func: " << std::endl;
+                        }
                     }
                     if constexpr (isRiched) {
                         run = func(*msg, *shipper, context); //get payload -> deser -> push forward if valid
-                        std::cout << "Reached End Of Stream from deser func " << std::endl;
+                        if (run == false) {
+                            std::cout << "Reached End Of Stream from deser func: " << std::endl;
+                        }
                     }
                     break;
             }
@@ -447,6 +452,10 @@ private:
     std::vector<std::string> topics;
     int32_t partition;
     int32_t offset;
+
+    //Pthread barrier
+    pthread_barrier_t barrier;
+    pthread_barrier_init(&barrier, NULL, parallelism);
 
     // Configure the Kafka_Source to receive batches instead of individual inputs (cannot be called for the Kafka_Source)
     void receiveBatches(bool _input_batching) override
@@ -583,10 +592,11 @@ public:
         }
 
         //parallelims check but we dont know the number of partitions
-
+        //pthread barrier
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
             replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, partition, offset, _closing_func));
         }
+        pthread_barrier_destroy(&barrier);
     }
 
     /// Copy constructor
