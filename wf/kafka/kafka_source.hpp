@@ -314,6 +314,8 @@ public:
             exit(1);
 
         }
+
+        std::cout << "after creating about to subscribe" << std::endl;
         
         /* Subscribe to topics */
 
