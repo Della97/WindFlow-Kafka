@@ -47,8 +47,6 @@
 #include<basic_emitter.hpp>
 #include<basic_operator.hpp>
 
-//test
-std::pthread_barrier_t barrier;
 
 class ExampleRebalanceCb : public RdKafka::RebalanceCb {
  private:
@@ -136,6 +134,8 @@ private:
     bool run = true;
     bool stop = true;
 
+    pthread_barrier_t bar;
+
 
 #if defined (WF_TRACING_ENABLED)
     Stats_Record stats_record;
@@ -171,7 +171,7 @@ public:
                          execution_mode(Execution_Mode_t::DEFAULT),
                          time_policy(Time_Policy_t::INGRESS_TIME),
                          shipper(nullptr) {
-                            pthread_barrier_init(&barrier, NULL, parallelism);
+                            pthread_barrier_init(&bar, NULL, parallelism);
                           }
 
     // Copy Constructor
@@ -239,7 +239,7 @@ public:
         }
 
         /* Qui iniziano una serie di delete della parte Kafka che vanno sistemate */
-        pthread_barrier_destroy(&barrier);
+        pthread_barrier_destroy(&bar);
         delete consumer;
         delete conf;
     }
@@ -329,7 +329,7 @@ public:
         }
         //pthread barrier
         std::cout << "before barrier id: " << std::endl;
-        pthread_barrier_wait(&barrier);
+        pthread_barrier_wait(&bar);
         std::cout << "after barrier id: " << std::endl;
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
