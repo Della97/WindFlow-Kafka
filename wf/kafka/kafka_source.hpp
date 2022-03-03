@@ -600,7 +600,7 @@ public:
         }
         std::cout << "parallelism : " << parallelism << std::endl;
         pthread_barrierattr_setpshared(&barattr, PTHREAD_PROCESS_SHARED);
-        pthread_barrier_init(&bar, NULL, parallelism);
+        pthread_barrier_init(&bar, &barattr, parallelism);
 
         //parallelims check but we dont know the number of partitions
         //pthread barrier
