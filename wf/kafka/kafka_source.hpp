@@ -47,6 +47,9 @@
 #include<basic_emitter.hpp>
 #include<basic_operator.hpp>
 
+//test
+pthread_barrier_t barrier;
+
 class ExampleRebalanceCb : public RdKafka::RebalanceCb {
  private:
   static void part_list_print(
@@ -132,8 +135,6 @@ private:
     std::vector<std::string> topics;
     bool run = true;
     bool stop = true;
-
-    pthread_barrier_t *barrier;
 
 
 #if defined (WF_TRACING_ENABLED)
@@ -328,7 +329,7 @@ public:
         }
         //pthread barrier
         std::cout << "before barrier id: " << std::endl;
-        pthread_barrier_wait(barrier);
+        pthread_barrier_wait(&barrier);
         std::cout << "after barrier id: " << std::endl;
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
