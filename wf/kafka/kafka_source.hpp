@@ -170,9 +170,7 @@ public:
                          terminated(false),
                          execution_mode(Execution_Mode_t::DEFAULT),
                          time_policy(Time_Policy_t::INGRESS_TIME),
-                         shipper(nullptr) { 
-                             std::barrier t_bar(parallelism);
-                         }
+                         shipper(nullptr) { }
 
     // Copy Constructor
     Kafka_Source_Replica(const Kafka_Source_Replica &_other):
@@ -324,8 +322,7 @@ public:
         }
         //pthread barrier
         std::cout << "before barrier id: " << consumer->name() << std::endl;
-        //pthread_barrier_wait(&bar);
-        t_bar.arrive_and_wait();
+        pthread_barrier_wait(&bar);
         std::cout << "after barrier id: " << consumer->name() << std::endl;
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
