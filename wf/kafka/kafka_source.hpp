@@ -170,7 +170,7 @@ public:
                          execution_mode(Execution_Mode_t::DEFAULT),
                          time_policy(Time_Policy_t::INGRESS_TIME),
                          shipper(nullptr) {
-                            pthread_barrier_init(&barrier, NULL, (parallelism - 1));
+                            pthread_barrier_init(&barrier, NULL, parallelism);
                           }
 
     // Copy Constructor
