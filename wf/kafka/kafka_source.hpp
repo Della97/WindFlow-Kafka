@@ -153,7 +153,7 @@ public:
                          std::string _strat,
                          int32_t _partition,
                          int32_t _offset,
-                         int32_t _parallelism,
+                         pthread_barrier_t _bar,
                          std::function<void(RuntimeContext &)> _closing_func):
                          func(_func),
                          opName(_opName),
@@ -165,7 +165,7 @@ public:
                          strat(_strat),
                          partition(_partition),
                          offset(_offset),
-                         parallelism(_parallelism),
+                         bar(_bar),
                          closing_func(_closing_func),
                          terminated(false),
                          execution_mode(Execution_Mode_t::DEFAULT),
@@ -184,7 +184,7 @@ public:
                          strat(_other.strat),
                          partition(_other.partition),
                          offset(_other.offset),
-                         parallelism(_other.parallelism),
+                         bar(_other.bar),
                          closing_func(_other.closing_func),
                          terminated(_other.terminated),
                          execution_mode(_other.execution_mode),
@@ -214,7 +214,7 @@ public:
                          strat(std::move(_other.strat)),
                          partition(std::move(_other.partition)),
                          offset(std::move(_other.offset)),
-                         parallelism(std::move(_other.parallelism)),
+                         bar(std::move(_other.bar)),
                          closing_func(std::move(_other.closing_func)),
                          terminated(_other.terminated),
                          execution_mode(_other.execution_mod),
@@ -249,7 +249,7 @@ public:
             opName = _other.opName;
             context = _other.context;
             topics = _other.topics;
-            parallelism = _other.parallelism;
+            bar = _other.bar;
             closing_func = _other.closing_func;
             terminated = _other.terminated;
             execution_mode = _other.execution_mode;
@@ -278,7 +278,7 @@ public:
         opName = std::move(_other.opName);
         context = std::move(_other.context);
         topics = std::move(_other.topics);
-        parallelism = std::move(_other.parallelism);
+        bar = std::move(_other.bar);
         closing_func = std::move(_other.closing_func);
         terminated = _other.terminated;
         execution_mode = _other.execution_mode;
@@ -298,6 +298,11 @@ public:
     // svc_init (utilized by the FastFlow runtime)
     int svc_init() override
     {
+        if (!bar) {
+            std::cout << "bar non exist" << std::endl;
+        } else {
+            std::cout << "bar exist" << std::endl;
+        }
         conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
         conf->set("metadata.broker.list", brokers, errstr);
         conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
@@ -465,6 +470,7 @@ private:
     std::vector<std::string> topics;
     int32_t partition;
     int32_t offset;
+    pthread_barrier_t bar;
 
     // Configure the Kafka_Source to receive batches instead of individual inputs (cannot be called for the Kafka_Source)
     void receiveBatches(bool _input_batching) override
@@ -599,11 +605,12 @@ public:
             std::cerr << RED << "WindFlow Error: Kafka_Source has parallelism zero" << DEFAULT_COLOR << std::endl;
             exit(EXIT_FAILURE);
         }
+        pthread_barrier_init(&bar, NULL, parallelism);
 
         //parallelims check but we dont know the number of partitions
         //pthread barrier
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
-            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, partition, offset, parallelism, _closing_func));
+            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, partition, offset, bar, _closing_func));
         }
     }
 
@@ -625,6 +632,7 @@ public:
         for (auto *r: replicas) { // delete all the replicas
             delete r;
         }
+        pthread_barrier_destroy(&bar);
 
         // C'è da cancellare roba di Kafka?
     }
