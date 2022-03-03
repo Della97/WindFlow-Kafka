@@ -598,7 +598,7 @@ public:
             exit(EXIT_FAILURE);
         }
         std::cout << "parallelism : " << parallelism << std::endl;
-        pthread_barrier_init(&bar, NULL, parallelism);
+        pthread_barrier_init(&bar, NULL, 5);
 
         //parallelims check but we dont know the number of partitions
         //pthread barrier
@@ -625,7 +625,7 @@ public:
         for (auto *r: replicas) { // delete all the replicas
             delete r;
         }
-        //pthread_barrier_destroy(&bar);
+        pthread_barrier_destroy(&bar);
 
         // C'è da cancellare roba di Kafka?
     }
