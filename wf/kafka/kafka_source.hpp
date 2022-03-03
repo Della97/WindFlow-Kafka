@@ -322,9 +322,9 @@ public:
             exit(1);
         }
         //pthread barrier
-        std::cout << "before barrier id: " << std::endl;
+        std::cout << "before barrier id: " << consumer->name() << std::endl;
         pthread_barrier_wait(&bar);
-        std::cout << "after barrier id: " << std::endl;
+        std::cout << "after barrier id: " << consumer->name() << std::endl;
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
 #endif
@@ -598,7 +598,7 @@ public:
             exit(EXIT_FAILURE);
         }
         std::cout << "parallelism : " << parallelism << std::endl;
-        pthread_barrier_init(&bar, NULL, 5);
+        pthread_barrier_init(&bar, NULL, parallelism);
 
         //parallelims check but we dont know the number of partitions
         //pthread barrier
