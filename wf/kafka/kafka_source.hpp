@@ -328,7 +328,7 @@ public:
         }
         //pthread barrier
         std::cout << "before barrier id: " << std::endl;
-        pthread_barrier_wait(&barrier);
+        pthread_barrier_wait(barrier);
         std::cout << "after barrier id: " << std::endl;
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
