@@ -327,7 +327,7 @@ public:
         }
         //pthread barrier
         std::cout << "before barrier id: " << std::endl;
-        //pthread_barrier_wait(&bar);
+        pthread_barrier_wait(&bar);
         std::cout << "after barrier id: " << std::endl;
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
@@ -608,6 +608,7 @@ public:
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
             replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, partition, offset, bar, _closing_func));
         }
+        pthread_barrier_wait(&bar);
     }
 
     /// Copy constructor
