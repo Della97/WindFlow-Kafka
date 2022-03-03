@@ -463,6 +463,7 @@ private:
     int32_t partition;
     int32_t offset;
     pthread_barrier_t bar;
+    pthread_barrierattr_t barattr;
 
     // Configure the Kafka_Source to receive batches instead of individual inputs (cannot be called for the Kafka_Source)
     void receiveBatches(bool _input_batching) override
@@ -598,6 +599,7 @@ public:
             exit(EXIT_FAILURE);
         }
         std::cout << "parallelism : " << parallelism << std::endl;
+        pthread_barrierattr_setpshared(&barattr, PTHREAD_PROCESS_SHARED);
         pthread_barrier_init(&bar, NULL, parallelism);
 
         //parallelims check but we dont know the number of partitions
