@@ -48,7 +48,7 @@
 #include<basic_operator.hpp>
 
 //test
-pthread_barrier_t barrier;
+std::pthread_barrier_t barrier;
 
 class ExampleRebalanceCb : public RdKafka::RebalanceCb {
  private:
