@@ -45,6 +45,13 @@
 
 namespace wf {
 
+// tuple_t struct (to be revisited)
+struct tuple_t
+{
+    int key;
+    int value;
+};
+
 /*************************************************** KAFKA_SOURCE OPERATOR ***************************************************/
 // declaration of functions to extract the type of the result form the deserialization function
 template<typename F_t, typename Arg> // non-riched
