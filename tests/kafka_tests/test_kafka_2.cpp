@@ -73,7 +73,7 @@ public:
 };
 
 // deserialization function (stub)
-bool deser_func(RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper, std::optional<tuple_t>)
+bool deser_func(RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper, tuple_t &output)
 {
     tuple_t out;
     uint64_t next_ts = 0;
