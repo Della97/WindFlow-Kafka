@@ -47,22 +47,22 @@ namespace wf {
 /*************************************************** KAFKA_SOURCE OPERATOR ***************************************************/
 // declaration of functions to extract the type of the result form the deserialization function
 template<typename F_t, typename Arg> // non-riched
-Arg get_result_t_KafkaSource(bool (F_t::*)(RdKafka::Message&, Source_Shipper<Arg>&) const);
+Arg get_result_t_KafkaSource(bool (F_t::*)(RdKafka::Message&, Source_Shipper<Arg>&, std::optional&) const);
 
 template<typename F_t, typename Arg> // non-riched
-Arg get_result_t_KafkaSource(bool (F_t::*)(RdKafka::Message&, Source_Shipper<Arg>&));
+Arg get_result_t_KafkaSource(bool (F_t::*)(RdKafka::Message&, Source_Shipper<Arg>&, std::optional&));
 
 template<typename Arg> // non-riched
-Arg get_result_t_KafkaSource(bool (*)(RdKafka::Message&, Source_Shipper<Arg>&));
+Arg get_result_t_KafkaSource(bool (*)(RdKafka::Message&, Source_Shipper<Arg>&, std::optional&));
 
 template<typename F_t, typename Arg> // riched
-Arg get_result_t_KafkaSource(bool (F_t::*)(RdKafka::Message&, Source_Shipper<Arg>&, RuntimeContext&) const);
+Arg get_result_t_KafkaSource(bool (F_t::*)(RdKafka::Message&, Source_Shipper<Arg>&, std::optional&, RuntimeContext&) const);
 
 template<typename F_t, typename Arg> // riched
-Arg get_result_t_KafkaSource(bool (F_t::*)(RdKafka::Message&, Source_Shipper<Arg>&, RuntimeContext&));
+Arg get_result_t_KafkaSource(bool (F_t::*)(RdKafka::Message&, Source_Shipper<Arg>&, std::optional& RuntimeContext&));
 
 template<typename Arg> // riched
-Arg get_result_t_KafkaSource(bool (*)(RdKafka::Message&, Source_Shipper<Arg>&, RuntimeContext&));
+Arg get_result_t_KafkaSource(bool (*)(RdKafka::Message&, Source_Shipper<Arg>&, std::optional& RuntimeContext&));
 
 template<typename F_t>
 decltype(get_result_t_KafkaSource(&F_t::operator())) get_result_t_KafkaSource(F_t);
