@@ -35,12 +35,16 @@
 using namespace std;
 using namespace wf;
 
+
+/*
 // tuple_t struct
 struct tuple_t
 {
     int key;
     int value;
 };
+*/
+
 
 // Sink functor
 class Sink_Functor
