@@ -154,7 +154,7 @@ int main()
     Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, offset, closing_func);
     std::cout << "Creazione con funzioni -> OK!" << std::endl;
 
-    auto deser_lambda = [](RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper) { return true; };
+    auto deser_lambda = [](RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper, std::optional<tuple_t>) { return true; };
     auto closing_lambda = [](RuntimeContext &) { return; };
 
     Kafka_Source source2 = Kafka_Source(deser_lambda, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, offset, closing_lambda);
