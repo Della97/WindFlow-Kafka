@@ -73,7 +73,7 @@ public:
 };
 
 // deserialization function (stub)
-bool deser_func(RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper)
+bool deser_func(RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper, std::optional<tuple_t>)
 {
     tuple_t out;
     uint64_t next_ts = 0;
@@ -102,7 +102,7 @@ void closing_func(RuntimeContext &r) {}
 class deser_functor
 {
 public:
-    bool operator()(RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper)
+    bool operator()(RdKafka::Message &msg, Source_Shipper<tuple_t> &shipper, std::optional<tuple_t>)
     {
         tuple_t out;
         uint64_t next_ts = 0;
