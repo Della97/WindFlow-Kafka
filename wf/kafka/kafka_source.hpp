@@ -105,7 +105,7 @@ private:
     using result_t = decltype(get_result_t_KafkaSource(func)); // extracting the result_t type and checking the admissible signatures
     // static predicates to check the type of the deserialization logic to be invoked
     static constexpr bool isNonRiched = std::is_invocable<decltype(func), RdKafka::Message &, Source_Shipper<result_t> & /* , std::optional<tuple_t> & */>::value;
-    static constexpr bool isRiched = std::is_invocable<decltype(func), RdKafka::Message &, Source_Shipper<result_t> & /* , std::optional<tuple_t> &, RuntimeContext & */>::value;
+    static constexpr bool isRiched = std::is_invocable<decltype(func), RdKafka::Message &, Source_Shipper<result_t> &, /* , std::optional<tuple_t> &,*/ RuntimeContext &>::value;
     // check the presence of a valid deserialization logic
     static_assert(isNonRiched || isRiched,
         "WindFlow Compilation Error - Kafka_Source_Replica does not have a valid deserialization logic:\n");
