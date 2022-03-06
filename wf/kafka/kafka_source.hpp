@@ -38,6 +38,7 @@
 
 /// includes
 #include<string>
+#include<optional>
 #include<functional>
 #include<context.hpp>
 #include<source_shipper.hpp>
