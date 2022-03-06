@@ -104,8 +104,8 @@ private:
     kafka_deser_func_t func; // logic for deserializing messages from Apache Kafka
     using result_t = decltype(get_result_t_KafkaSource(func)); // extracting the result_t type and checking the admissible signatures
     // static predicates to check the type of the deserialization logic to be invoked
-    static constexpr bool isNonRiched = std::is_invocable<decltype(func), RdKafka::Message &, Source_Shipper<result_t> &, std::optional<tuple_t> &>::value;
-    static constexpr bool isRiched = std::is_invocable<decltype(func), RdKafka::Message &, Source_Shipper<result_t> &, std::optional<tuple_t> &, RuntimeContext &>::value;
+    static constexpr bool isNonRiched = std::is_invocable<decltype(func), RdKafka::Message &, Source_Shipper<result_t> & /* , std::optional<tuple_t> & */>::value;
+    static constexpr bool isRiched = std::is_invocable<decltype(func), RdKafka::Message &, Source_Shipper<result_t> & /* , std::optional<tuple_t> &, RuntimeContext & */>::value;
     // check the presence of a valid deserialization logic
     static_assert(isNonRiched || isRiched,
         "WindFlow Compilation Error - Kafka_Source_Replica does not have a valid deserialization logic:\n");
@@ -323,6 +323,7 @@ public:
         }
         //pthread barrier
         std::cout << "before barrier id: " << consumer->name() << std::endl;
+        std::cout << bar.__size << std::endl;
         pthread_barrier_wait(&bar);
         std::cout << "after barrier id: " << consumer->name() << std::endl;
 #if defined (WF_TRACING_ENABLED)
