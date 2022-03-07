@@ -107,7 +107,7 @@ public:
         uint64_t next_ts = 0;
         //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
         //out.value = atoi(static_cast<const char *>(msg->payload()));
-        out.value = atoi(static_cast<const char *>(msg->payload()));
+        out.value = atoi(static_cast<const char *>(msg.payload()));
 
         if (out.value == 0) {
             return false;
