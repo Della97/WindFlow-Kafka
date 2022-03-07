@@ -166,7 +166,7 @@ public:
                          strat(_strat),
                          partition(_partition),
                          offset(_offset),
-                         bar(_bar),
+                         bar(*_bar),
                          closing_func(_closing_func),
                          terminated(false),
                          execution_mode(Execution_Mode_t::DEFAULT),
@@ -185,7 +185,7 @@ public:
                          strat(_other.strat),
                          partition(_other.partition),
                          offset(_other.offset),
-                         bar(_other.bar),
+                         bar(*_other.bar),
                          closing_func(_other.closing_func),
                          terminated(_other.terminated),
                          execution_mode(_other.execution_mode),
@@ -215,7 +215,7 @@ public:
                          strat(std::move(_other.strat)),
                          partition(std::move(_other.partition)),
                          offset(std::move(_other.offset)),
-                         bar(std::move(_other.bar)),
+                         bar(std::move(*_other.bar)),
                          closing_func(std::move(_other.closing_func)),
                          terminated(_other.terminated),
                          execution_mode(_other.execution_mod),
@@ -250,7 +250,7 @@ public:
             opName = _other.opName;
             context = _other.context;
             topics = _other.topics;
-            bar = _other.bar;
+            bar = *_other.bar;
             closing_func = _other.closing_func;
             terminated = _other.terminated;
             execution_mode = _other.execution_mode;
@@ -279,7 +279,7 @@ public:
         opName = std::move(_other.opName);
         context = std::move(_other.context);
         topics = std::move(_other.topics);
-        bar = std::move(_other.bar);
+        bar = std::move(*_other.bar);
         closing_func = std::move(_other.closing_func);
         terminated = _other.terminated;
         execution_mode = _other.execution_mode;
@@ -602,7 +602,7 @@ public:
         //parallelims check but we dont know the number of partitions
         //pthread barrier
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
-            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, partition, offset, &bar, _closing_func));
+            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, partition, offset, bar, _closing_func));
         }
     }
 
