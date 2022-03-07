@@ -599,7 +599,7 @@ public:
             exit(EXIT_FAILURE);
         }
         std::cout << "parallelism : " << parallelism << std::endl;
-        pthread_barrier_init(&bar, NULL, parallelism);
+        pthread_barrier_init(&bar, NULL, 1);
         std::cout << "KAFKA-SOURCE(NOT REPLICA) " << bar.__size << " " << bar.__align << std::endl;
 
         //parallelims check but we dont know the number of partitions
