@@ -72,13 +72,13 @@ public:
 };
 
 // deserialization function (stub)
-bool deser_func(std::optional<std::reference_wrapper<RdKafka::Message>> msg = {}, Source_Shipper<tuple_t> &shipper /*, tuple_t &output*/)
+bool deser_func(std::optional<std::reference_wrapper<RdKafka::Message>> msg, Source_Shipper<tuple_t> &shipper /*, tuple_t &output*/)
 {
     tuple_t out;
     uint64_t next_ts = 0;
     //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
     //out.value = atoi(static_cast<const char *>(msg->payload()));
-    out.value = atoi(static_cast<const char *>(msg.payload()));
+    out.value = atoi(static_cast<const char *>(msg->payload()));
 
     
     if (out.value == 0) {
@@ -86,7 +86,7 @@ bool deser_func(std::optional<std::reference_wrapper<RdKafka::Message>> msg = {}
     }
     
 
-    out.key = atoi(static_cast<const char *>(msg.payload()));
+    out.key = atoi(static_cast<const char *>(msg->payload()));
     std::cout << "[DESER] -> msg: " << out.value << std::endl;
     shipper.pushWithTimestamp(std::move(out), next_ts);
     next_ts++;
@@ -101,19 +101,19 @@ void closing_func(RuntimeContext &r) {}
 class deser_functor
 {
 public:
-    bool operator()(std::optional<std::reference_wrapper<RdKafka::Message>> msg = {}, Source_Shipper<tuple_t> &shipper /* , tuple_t &output */)
+    bool operator()(std::optional<std::reference_wrapper<RdKafka::Message>> msg, Source_Shipper<tuple_t> &shipper /* , tuple_t &output */)
     {
         tuple_t out;
         uint64_t next_ts = 0;
         //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
         //out.value = atoi(static_cast<const char *>(msg->payload()));
-        out.value = atoi(static_cast<const char *>(msg.payload()));
+        out.value = atoi(static_cast<const char *>(msg->payload()));
 
         if (out.value == 0) {
             return false;
         }
 
-        out.key = atoi(static_cast<const char *>(msg.payload()));
+        out.key = atoi(static_cast<const char *>(msg->payload()));
         std::cout << "[DESER] -> msg: " << out.value << std::endl;
         shipper.pushWithTimestamp(std::move(out), next_ts);
         next_ts++;
