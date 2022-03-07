@@ -135,7 +135,7 @@ private:
     bool run = true;
     bool stop = true;
 
-    pthread_barrier_t bar;
+    pthread_barrier_t *bar;
 
 
 #if defined (WF_TRACING_ENABLED)
