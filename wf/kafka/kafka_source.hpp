@@ -135,7 +135,7 @@ private:
     bool run = true;
     bool stop = true;
 
-    pthread_barrier_t *bar;
+    pthread_barrier_t bar;
 
 
 #if defined (WF_TRACING_ENABLED)
@@ -154,7 +154,7 @@ public:
                          std::string _strat,
                          int32_t _partition,
                          int32_t _offset,
-                         pthread_barrier_t *_bar,
+                         pthread_barrier_t _bar,
                          std::function<void(RuntimeContext &)> _closing_func):
                          func(_func),
                          opName(_opName),
@@ -166,7 +166,7 @@ public:
                          strat(_strat),
                          partition(_partition),
                          offset(_offset),
-                         bar(&_bar),
+                         bar(_bar),
                          closing_func(_closing_func),
                          terminated(false),
                          execution_mode(Execution_Mode_t::DEFAULT),
@@ -462,7 +462,7 @@ private:
     std::vector<std::string> topics;
     int32_t partition;
     int32_t offset;
-    pthread_barrier_t &bar = nullptr;
+    pthread_barrier_t bar;
 
     // Configure the Kafka_Source to receive batches instead of individual inputs (cannot be called for the Kafka_Source)
     void receiveBatches(bool _input_batching) override
@@ -602,7 +602,7 @@ public:
         //parallelims check but we dont know the number of partitions
         //pthread barrier
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
-            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, partition, offset, bar, _closing_func));
+            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, partition, offset, &bar, _closing_func));
         }
     }
 
