@@ -59,22 +59,22 @@ struct tuple_t
 /*************************************************** KAFKA_SOURCE OPERATOR ***************************************************/
 // declaration of functions to extract the type of the result form the deserialization function
 template<typename F_t, typename Arg> // non-riched
-Arg get_result_t_KafkaSource(bool (F_t::*)(RdKafka::Message&, Source_Shipper<Arg>& /*, std::optional<tuple_t>& */) const);
+Arg get_result_t_KafkaSource(bool (F_t::*)(std::optional<std::reference_wrapper<RdKafka::Message>>, Source_Shipper<Arg>& /*, std::optional<tuple_t>& */) const);
 
 template<typename F_t, typename Arg> // non-riched
-Arg get_result_t_KafkaSource(bool (F_t::*)(RdKafka::Message&, Source_Shipper<Arg>& /*, std::optional<tuple_t>& */));
+Arg get_result_t_KafkaSource(bool (F_t::*)(std::optional<std::reference_wrapper<RdKafka::Message>>, Source_Shipper<Arg>& /*, std::optional<tuple_t>& */));
 
 template<typename Arg> // non-riched
-Arg get_result_t_KafkaSource(bool (*)(RdKafka::Message&, Source_Shipper<Arg>& /*, std::optional<tuple_t>& */));
+Arg get_result_t_KafkaSource(bool (*)(std::optional<std::reference_wrapper<RdKafka::Message>>, Source_Shipper<Arg>& /*, std::optional<tuple_t>& */));
 
 template<typename F_t, typename Arg> // riched
-Arg get_result_t_KafkaSource(bool (F_t::*)(RdKafka::Message&, Source_Shipper<Arg>&, /* std::optional<tuple_t>&, */ RuntimeContext&) const);
+Arg get_result_t_KafkaSource(bool (F_t::*)(std::optional<std::reference_wrapper<RdKafka::Message>>, Source_Shipper<Arg>&, /* std::optional<tuple_t>&, */ RuntimeContext&) const);
 
 template<typename F_t, typename Arg> // riched
-Arg get_result_t_KafkaSource(bool (F_t::*)(RdKafka::Message&, Source_Shipper<Arg>&, /* std::optional<tuple_t>&, */ RuntimeContext&));
+Arg get_result_t_KafkaSource(bool (F_t::*)(std::optional<std::reference_wrapper<RdKafka::Message>>, Source_Shipper<Arg>&, /* std::optional<tuple_t>&, */ RuntimeContext&));
 
 template<typename Arg> // riched
-Arg get_result_t_KafkaSource(bool (*)(RdKafka::Message&, Source_Shipper<Arg>&, /* std::optional<tuple_t>&, */ RuntimeContext&));
+Arg get_result_t_KafkaSource(bool (*)(std::optional<std::reference_wrapper<RdKafka::Message>>, Source_Shipper<Arg>&, /* std::optional<tuple_t>&, */ RuntimeContext&));
 
 template<typename F_t>
 decltype(get_result_t_KafkaSource(&F_t::operator())) get_result_t_KafkaSource(F_t);
