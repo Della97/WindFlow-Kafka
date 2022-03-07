@@ -597,7 +597,8 @@ public:
             std::cerr << RED << "WindFlow Error: Kafka_Source has parallelism zero" << DEFAULT_COLOR << std::endl;
             exit(EXIT_FAILURE);
         }
-        pthread_barrier_init(&bar, NULL, parallelism - 1);
+        std::cout << parallelism << std::endl;
+        pthread_barrier_init(&bar, NULL, 4);
 
         //parallelims check but we dont know the number of partitions
         //pthread barrier
