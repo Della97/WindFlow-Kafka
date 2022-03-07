@@ -39,6 +39,7 @@
 // includes
 #include<basic.hpp>
 #include<context.hpp>
+#include<functional>
 #include<source_shipper.hpp>
 #include<librdkafka/rdkafkacpp.h>
 #include<optional>
