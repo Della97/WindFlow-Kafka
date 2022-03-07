@@ -150,6 +150,7 @@ int main()
     std::string topic3 = "topic";
     std::string strat = "roundrobin";
 
+    std::cout << "QUII" << std:endl;
     Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, offset, closing_func);
     std::cout << "Creazione con funzioni -> OK!" << std::endl;
 
