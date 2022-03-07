@@ -462,7 +462,7 @@ private:
     std::vector<std::string> topics;
     int32_t partition;
     int32_t offset;
-    pthread_barrier_t &bar;
+    pthread_barrier_t &bar = nullptr;
 
     // Configure the Kafka_Source to receive batches instead of individual inputs (cannot be called for the Kafka_Source)
     void receiveBatches(bool _input_batching) override
