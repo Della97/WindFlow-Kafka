@@ -598,7 +598,7 @@ public:
             exit(EXIT_FAILURE);
         }
         std::cout << parallelism << std::endl;
-        pthread_barrier_init(&bar, NULL, 2);
+        pthread_barrier_init(&bar, NULL, 1);
 
         //parallelims check but we dont know the number of partitions
         //pthread barrier
