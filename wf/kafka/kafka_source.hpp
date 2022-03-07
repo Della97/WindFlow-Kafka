@@ -323,7 +323,6 @@ public:
         }
         //pthread barrier
         //std::cout << "before barrier id: " << consumer->name() << std::endl;
-        std::cout << "-> " << bar.__size << " " << bar.__align << std::endl;
         pthread_barrier_wait(&bar);
         std::cout << "after barrier id: " << consumer->name() << std::endl;
 #if defined (WF_TRACING_ENABLED)
@@ -598,9 +597,7 @@ public:
             std::cerr << RED << "WindFlow Error: Kafka_Source has parallelism zero" << DEFAULT_COLOR << std::endl;
             exit(EXIT_FAILURE);
         }
-        std::cout << "parallelism : " << parallelism << std::endl;
-        pthread_barrier_init(&bar, NULL, 1);
-        std::cout << "KAFKA-SOURCE(NOT REPLICA) " << bar.__size << " " << bar.__align << std::endl;
+        pthread_barrier_init(&bar, NULL, parallelism - 1);
 
         //parallelims check but we dont know the number of partitions
         //pthread barrier
