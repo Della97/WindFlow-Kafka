@@ -625,7 +625,7 @@ public:
         for (auto *r: replicas) { // delete all the replicas
             delete r;
         }
-        pthread_barrier_destroy(&bar);
+        pthread_barrier_destroy(bar);
 
         // C'è da cancellare roba di Kafka?
     }
