@@ -462,7 +462,7 @@ private:
     std::vector<std::string> topics;
     int32_t partition;
     int32_t offset;
-    pthread_barrier_t bar;
+    pthread_barrier_t *bar;
 
     // Configure the Kafka_Source to receive batches instead of individual inputs (cannot be called for the Kafka_Source)
     void receiveBatches(bool _input_batching) override
@@ -598,12 +598,12 @@ public:
             exit(EXIT_FAILURE);
         }
         std::cout << parallelism << std::endl;
-        pthread_barrier_init(&bar, NULL, 1);
+        pthread_barrier_init(bar, NULL, 1);
 
         //parallelims check but we dont know the number of partitions
         //pthread barrier
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
-            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, partition, offset, &bar, _closing_func));
+            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, partition, offset, bar, _closing_func));
         }
     }
 
