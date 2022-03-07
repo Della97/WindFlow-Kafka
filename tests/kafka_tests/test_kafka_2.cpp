@@ -74,9 +74,6 @@ public:
 // deserialization function (stub)
 bool deser_func(std::optional<std::reference_wrapper<RdKafka::Message>> msg = {}, Source_Shipper<tuple_t> &shipper /*, tuple_t &output*/)
 {
-    if (!msg) {
-            msg = nullptr;
-        }
     tuple_t out;
     uint64_t next_ts = 0;
     //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
@@ -106,9 +103,6 @@ class deser_functor
 public:
     bool operator()(std::optional<std::reference_wrapper<RdKafka::Message>> msg = {}, Source_Shipper<tuple_t> &shipper /* , tuple_t &output */)
     {
-        if (!msg) {
-            msg = nullptr;
-        }
         tuple_t out;
         uint64_t next_ts = 0;
         //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
