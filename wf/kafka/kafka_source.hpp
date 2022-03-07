@@ -166,7 +166,7 @@ public:
                          strat(_strat),
                          partition(_partition),
                          offset(_offset),
-                         bar(_bar),
+                         bar(&_bar),
                          closing_func(_closing_func),
                          terminated(false),
                          execution_mode(Execution_Mode_t::DEFAULT),
