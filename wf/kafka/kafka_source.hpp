@@ -154,7 +154,7 @@ public:
                          std::string _strat,
                          int32_t _partition,
                          int32_t _offset,
-                         pthread_barrier_t _bar,
+                         pthread_barrier_t *_bar,
                          std::function<void(RuntimeContext &)> _closing_func):
                          func(_func),
                          opName(_opName),
