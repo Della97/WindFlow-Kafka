@@ -78,7 +78,7 @@ bool deser_func(std::optional<std::reference_wrapper<RdKafka::Message>> msg, Sou
     uint64_t next_ts = 0;
     //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
     //out.value = atoi(static_cast<const char *>(msg->payload()));
-    out.value = atoi(static_cast<const char *>(&msg.payload()));
+    out.value = atoi(static_cast<const char *>(static_cast<RdKafka::Message>(msg).payload()));
 
     
     if (out.value == 0) {
@@ -86,7 +86,7 @@ bool deser_func(std::optional<std::reference_wrapper<RdKafka::Message>> msg, Sou
     }
     
 
-    out.key = atoi(static_cast<const char *>(&msg.payload()));
+    out.key = atoi(static_cast<const char *>(static_cast<RdKafka::Message>(msg).payload()));
     std::cout << "[DESER] -> msg: " << out.value << std::endl;
     shipper.pushWithTimestamp(std::move(out), next_ts);
     next_ts++;
@@ -107,13 +107,15 @@ public:
         uint64_t next_ts = 0;
         //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
         //out.value = atoi(static_cast<const char *>(msg->payload()));
-        out.value = atoi(static_cast<const char *>(&msg.payload()));
+        out.value = atoi(static_cast<const char *>(static_cast<RdKafka::Message>(msg).payload()));
 
         if (out.value == 0) {
             return false;
         }
 
-        out.key = atoi(static_cast<const char *>(&msg.payload()));
+        //static_cast<T&>(Foo).f()
+
+        out.key = atoi(static_cast<const char *>(static_cast<RdKafka::Message>(msg).payload()));
         
         std::cout << "[DESER] -> msg: " << out.value << std::endl;
         shipper.pushWithTimestamp(std::move(out), next_ts);
