@@ -72,18 +72,18 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
 
     if (err == RdKafka::ERR__ASSIGN_PARTITIONS) {
       if (consumer->rebalance_protocol() == "COOPERATIVE") {
-        std::cout << " Consumer " << consumer->name() << " ";
+        std::cout << "Consumer " << consumer->name() << " ";
         error = consumer->incremental_assign(partitions);
       } else {
-        std::cout << " Consumer " << consumer->name() << " ";
+        std::cout << "Consumer " << consumer->name() << " ";
         ret_err = consumer->assign(partitions);
       }
     } else {
       if (consumer->rebalance_protocol() == "COOPERATIVE") {
-        std::cout << " Consumer " << consumer->name() << " ";
+        std::cout << "Consumer " << consumer->name() << " ";
         error = consumer->incremental_unassign(partitions);
       } else {
-        std::cout << " Consumer " << consumer->name() << " ";
+        std::cout << "Consumer " << consumer->name() << " ";
         ret_err = consumer->unassign();
       }
     }
