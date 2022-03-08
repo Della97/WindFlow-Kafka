@@ -86,6 +86,7 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
         ret_err       = consumer->unassign();
       }
     }
+    }
 
     if (error) {
       std::cerr << "incremental assign failed: " << error->str() << "\n";
