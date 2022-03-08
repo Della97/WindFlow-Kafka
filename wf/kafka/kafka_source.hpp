@@ -332,15 +332,6 @@ public:
         //std::cout << "before barrier id: " << consumer->name() << std::endl;
 
         pthread_barrier_wait(bar);
-        std::cout << partitions.size() << std::endl;
-        while (partitions.size() == 0) {
-            consumer->assignment(partitions);
-            std::cout << "cicle" <<std::endl;
-        }
-        for (auto i: partitions) {
-            std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
-        }
-        std::cout << partitions.size() << std::endl;
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
 #endif
@@ -351,6 +342,15 @@ public:
     // svc (utilized by the FastFlow runtime)
     void *svc(void *) override
     {
+        std::cout << partitions.size() << std::endl;
+        while (partitions.size() == 0) {
+            consumer->assignment(partitions);
+            std::cout << "cicle" << std::endl;
+        }
+        for (auto i: partitions) {
+            std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
+        }
+        std::cout << partitions.size() << std::endl;
         while (run) { // main loop
             RdKafka::Message *msg = consumer->consume(1000); // qui si può fare qualcosa di carino per gestire il timeout
             switch (msg->err()) {
