@@ -138,6 +138,7 @@ private:
     ExampleRebalanceCb ex_rebalance_cb; //partiotion manager
     int32_t tmp = 0;
     std::vector<std::string> topics;
+    std::vector<RdKafka::TopicPartition *> *partitions;
     bool run = true;
     bool stop = true;
 
@@ -329,6 +330,10 @@ public:
         }
         //pthread barrier
         //std::cout << "before barrier id: " << consumer->name() << std::endl;
+        partitions = consumer->assignment();
+        for (auto i: partitions) {
+            std::cout << "PARTIZIONE: " << i << " ";
+        }
 
         pthread_barrier_wait(bar);
 #if defined (WF_TRACING_ENABLED)
