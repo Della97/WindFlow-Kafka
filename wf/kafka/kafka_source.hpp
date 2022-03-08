@@ -332,6 +332,10 @@ public:
         //std::cout << "before barrier id: " << consumer->name() << std::endl;
 
         pthread_barrier_wait(bar);
+        consumer->assignment(partitions);
+        for (auto i: partitions) {
+            std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
+        }
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
 #endif
@@ -343,10 +347,6 @@ public:
     void *svc(void *) override
     {
         while (run) { // main loop
-            consumer->assignment(partitions);
-        for (auto i: partitions) {
-            std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
-        }
             RdKafka::Message *msg = consumer->consume(1000); // qui si può fare qualcosa di carino per gestire il timeout
             switch (msg->err()) {
                 case RdKafka::ERR__TIMED_OUT:
