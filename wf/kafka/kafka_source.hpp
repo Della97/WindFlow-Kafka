@@ -335,6 +335,7 @@ public:
         std::cout << partitions.size() << std::endl;
         while (partitions.size() == 0) {
             consumer->assignment(partitions);
+            std::cout << "cicle" <<std::endl;
         }
         for (auto i: partitions) {
             std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
