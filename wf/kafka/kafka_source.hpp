@@ -138,7 +138,7 @@ private:
     ExampleRebalanceCb ex_rebalance_cb; //partiotion manager
     int32_t tmp = 0;
     std::vector<std::string> topics;
-    std::vector<RdKafka::TopicPartition *> *partitions;
+    std::vector<RdKafka::TopicPartition *> partitions;
     bool run = true;
     bool stop = true;
 
