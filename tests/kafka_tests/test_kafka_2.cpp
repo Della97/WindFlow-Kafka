@@ -74,24 +74,31 @@ public:
 // deserialization function (stub)
 bool deser_func(std::optional<std::reference_wrapper<RdKafka::Message>> msg, Source_Shipper<tuple_t> &shipper /*, tuple_t &output*/)
 {
-    tuple_t out;
-    uint64_t next_ts = 0;
-    //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
-    //out.value = atoi(static_cast<const char *>(msg->payload()));
-    out.value = atoi(static_cast<const char *>(msg->get().payload()));
+    if (msg) {
+        tuple_t out;
+        uint64_t next_ts = 0;
+        //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
+        //out.value = atoi(static_cast<const char *>(msg->payload()));
 
+        //DESER THE MSG
+        out.value = atoi(static_cast<const char *>(msg->get().payload()));
+
+        //CHECK IF END OF STREAM
+        if (out.value == 0) {
+            return false;
+        }
     
-    if (out.value == 0) {
-        return false;
+        //PACK THE TUPLE_T
+        out.key = atoi(static_cast<const char *>(msg->get().payload()));
+        std::cout << "[DESER] -> msg: " << out.value << std::endl;
+        //PUSH FORWARD THE TUPLE
+        shipper.pushWithTimestamp(std::move(out), next_ts);
+        next_ts++;
+        return true;
+    } else {
+        std::cout << "Received MSG as NULLPTR " << std::endl;
+        return true;
     }
-    
-
-    out.key = atoi(static_cast<const char *>(msg->get().payload()));
-    std::cout << "[DESER] -> msg: " << out.value << std::endl;
-    shipper.pushWithTimestamp(std::move(out), next_ts);
-    next_ts++;
-    //shipper.push(out);
-    return true;
 }
 
 // closing logic (stub)
