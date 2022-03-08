@@ -330,7 +330,7 @@ public:
         }
         //pthread barrier
         //std::cout << "before barrier id: " << consumer->name() << std::endl;
-        partitions = consumer->assignment(&partitions);
+        consumer->assignment(&partitions);
         for (auto i: partitions) {
             std::cout << "PARTIZIONE: " << i << " ";
         }
