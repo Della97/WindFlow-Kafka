@@ -345,7 +345,7 @@ public:
         while (run) { // main loop
             consumer->assignment(partitions);
         for (auto i: partitions) {
-            std::cout << "PARTIZIONE: " << i << " ";
+            std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
         }
             RdKafka::Message *msg = consumer->consume(1000); // qui si può fare qualcosa di carino per gestire il timeout
             switch (msg->err()) {
