@@ -332,6 +332,8 @@ public:
         //std::cout << "before barrier id: " << consumer->name() << std::endl;
 
         pthread_barrier_wait(bar);
+        consumer->rebalance_protocol();
+        std::cout << "rebalanced "<< std::endl;
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
 #endif
@@ -342,8 +344,6 @@ public:
     // svc (utilized by the FastFlow runtime)
     void *svc(void *) override
     {
-        consumer->rebalance_protocol();
-        std::cout << "rebalanced "<< std::endl;
         std::cout << partitions.size() << std::endl;
         consumer->assignment(partitions);
         for (auto i: partitions) {
