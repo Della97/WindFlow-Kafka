@@ -340,10 +340,10 @@ public:
             switch (msg->err()) {
                 case RdKafka::ERR__TIMED_OUT:
                     if constexpr (isNonRiched) {
-                        run = func(nullptr, *shipper); //get payload -> deser -> push forward if valid
+                        run = func(std::nullptr_t, *shipper); //get payload -> deser -> push forward if valid
                     }
                     if constexpr (isRiched) {
-                        run = func(nullptr, *shipper, context); //get payload -> deser -> push forward if valid
+                        run = func(std::nullptr_t, *shipper, context); //get payload -> deser -> push forward if valid
                     }
                     break;
                 case RdKafka::ERR_NO_ERROR:
