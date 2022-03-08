@@ -101,7 +101,7 @@ void closing_func(RuntimeContext &r) {}
 class deser_functor
 {
 public:
-    bool operator()(std::optional<std::reference_wrapper<RdKafka::Message &>> msg, Source_Shipper<tuple_t> &shipper /* , tuple_t &output */)
+    bool operator()(std::optional<std::reference_wrapper<RdKafka::Message *>> msg, Source_Shipper<tuple_t> &shipper /* , tuple_t &output */)
     {
         tuple_t out;
         uint64_t next_ts = 0;
@@ -157,7 +157,7 @@ int main()
     Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, offset, closing_func);
     std::cout << "Creazione con funzioni -> OK!" << std::endl;
 
-    auto deser_lambda = [](std::optional<std::reference_wrapper<RdKafka::Message &>> msg, Source_Shipper<tuple_t> &shipper /*, tuple_t &output */) { return true; };
+    auto deser_lambda = [](std::optional<std::reference_wrapper<RdKafka::Message *>> msg, Source_Shipper<tuple_t> &shipper /*, tuple_t &output */) { return true; };
     auto closing_lambda = [](RuntimeContext &) { return; };
 
     Kafka_Source source2 = Kafka_Source(deser_lambda, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, offset, closing_lambda);
