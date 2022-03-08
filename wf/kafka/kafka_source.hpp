@@ -342,6 +342,7 @@ public:
     // svc (utilized by the FastFlow runtime)
     void *svc(void *) override
     {
+        consumer->rebalance_protocol();
         std::cout << partitions.size() << std::endl;
         consumer->assignment(partitions);
         for (auto i: partitions) {
