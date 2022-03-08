@@ -77,6 +77,7 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
       } else {
         std::cout << "Consumer " << consumer->name();
         ret_err = consumer->assign(partitions);
+      }
     } else {
       if (consumer->rebalance_protocol() == "COOPERATIVE") {
         std::cout << "Consumer " << consumer->name();
@@ -90,8 +91,9 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
     if (error) {
       std::cerr << "incremental assign failed: " << error->str() << "\n";
       delete error;
-    } else if (ret_err)
+    } else if (ret_err) {
       std::cerr << "assign failed: " << RdKafka::err2str(ret_err) << "\n";
+    }
   }
 };
 
