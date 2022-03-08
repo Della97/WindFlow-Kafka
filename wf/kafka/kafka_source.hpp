@@ -336,9 +336,11 @@ public:
     void *svc(void *) override
     {
         while (run) { // main loop
+            std::cout << "QUIII" << std::endl;
             RdKafka::Message *msg = consumer->consume(1000); // qui si può fare qualcosa di carino per gestire il timeout
             switch (msg->err()) {
                 case RdKafka::ERR__TIMED_OUT:
+                    std::cout << "QUIII" << std::endl;
                     if constexpr (isNonRiched) {
                         run = func(std::nullopt, *shipper); //get payload -> deser -> push forward if valid
                     }

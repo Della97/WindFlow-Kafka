@@ -74,7 +74,6 @@ public:
 // deserialization function (stub)
 bool deser_func(std::optional<std::reference_wrapper<RdKafka::Message>> msg, Source_Shipper<tuple_t> &shipper /*, tuple_t &output*/)
 {
-    std::cout << "QUIII" << std::endl;
     if (msg) {
         tuple_t out;
         uint64_t next_ts = 0;
