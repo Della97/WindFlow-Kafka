@@ -343,6 +343,7 @@ public:
     void *svc(void *) override
     {
         consumer->rebalance_protocol();
+        std::cout << "rebalanced "<< std::endl;
         std::cout << partitions.size() << std::endl;
         consumer->assignment(partitions);
         for (auto i: partitions) {
