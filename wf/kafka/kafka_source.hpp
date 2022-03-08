@@ -83,9 +83,8 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
         error = consumer->incremental_unassign(partitions);
       } else {
         std::cout << "Consumer " << consumer->name();
-        ret_err       = consumer->unassign();
+        ret_err = consumer->unassign();
       }
-    }
     }
 
     if (error) {
