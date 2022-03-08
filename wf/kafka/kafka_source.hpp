@@ -332,7 +332,9 @@ public:
         //std::cout << "before barrier id: " << consumer->name() << std::endl;
 
         pthread_barrier_wait(bar);
-        consumer->assignment(partitions);
+        while (partitions.empty()) {
+            consumer->assignment(partitions);
+        }
         for (auto i: partitions) {
             std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
         }
