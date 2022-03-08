@@ -71,15 +71,15 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
     RdKafka::ErrorCode ret_err = RdKafka::ERR_NO_ERROR;
 
     if (err == RdKafka::ERR__ASSIGN_PARTITIONS) {
-      if (consumer->rebalance_protocol() == "COOPERATIVE")
+      if (consumer->rebalance_protocol() == "COOPERATIVE") {
         std::cout << "Consumer " << consumer->name();
         error = consumer->incremental_assign(partitions);
-      else
+      } else {
         std::cout << "Consumer " << consumer->name();
         ret_err = consumer->assign(partitions);
     } else {
       if (consumer->rebalance_protocol() == "COOPERATIVE") {
-          std::cout << "Consumer " << consumer->name();
+        std::cout << "Consumer " << consumer->name();
         error = consumer->incremental_unassign(partitions);
       } else {
         std::cout << "Consumer " << consumer->name();
