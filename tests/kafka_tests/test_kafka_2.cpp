@@ -132,7 +132,7 @@ public:
             next_ts++;
             return true;
         } else {
-            std::cout << "Received MSG as NULLPTR " << std::endl;
+            //std::cout << "Received MSG as NULLPTR " << std::endl;
             return true;
         }
     }
