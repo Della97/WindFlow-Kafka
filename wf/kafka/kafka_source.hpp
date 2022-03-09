@@ -309,7 +309,7 @@ public:
         //std::cout << "barrier: " << bar.count() << std::endl;
         conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
         conf->set("metadata.broker.list", brokers, errstr);
-        //conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
+        conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
         conf->set("group.id", groupid, errstr);
         conf->set("partition.assignment.strategy", strat, errstr);
 
@@ -355,8 +355,7 @@ public:
             for (auto i: partitions) {
                 std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
             }
-        std::cout << partitions.size() << std::endl;
-            std::cout << "loop" << std::endl;
+            std::cout << partitions.size() << std::endl;
             RdKafka::Message *msg = consumer->consume(1000); // qui si può fare qualcosa di carino per gestire il timeout
             switch (msg->err()) {
                 case RdKafka::ERR__TIMED_OUT:
