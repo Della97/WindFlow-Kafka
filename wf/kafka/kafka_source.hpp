@@ -62,8 +62,7 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
  public:
   void rebalance_cb(RdKafka::KafkaConsumer *consumer,
                     RdKafka::ErrorCode err,
-                    std::vector<RdKafka::TopicPartition *> &partitions,
-                    int count) {
+                    std::vector<RdKafka::TopicPartition *> &partitions) {
     std::cerr << "RebalanceCb: " << RdKafka::err2str(err) << ": ";
 
     part_list_print(partitions);
@@ -310,7 +309,7 @@ public:
         //std::cout << "barrier: " << bar.count() << std::endl;
         conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
         conf->set("metadata.broker.list", brokers, errstr);
-        conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
+        //conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
         conf->set("group.id", groupid, errstr);
         conf->set("partition.assignment.strategy", strat, errstr);
 
@@ -333,7 +332,12 @@ public:
         //std::cout << "before barrier id: " << consumer->name() << std::endl;
 
         pthread_barrier_wait(bar);
-        consumer->rebalance_protocol();
+        std::cout << partitions.size() << std::endl;
+        consumer->assignment(partitions);
+        for (auto i: partitions) {
+            std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
+        }
+        std::cout << partitions.size() << std::endl;
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
 #endif
@@ -344,12 +348,6 @@ public:
     // svc (utilized by the FastFlow runtime)
     void *svc(void *) override
     {
-        std::cout << partitions.size() << std::endl;
-        consumer->assignment(partitions);
-        for (auto i: partitions) {
-            std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
-        }
-        std::cout << partitions.size() << std::endl;
         std::cout << "starting loop" << std::endl;
         while (run) { // main loop
             std::cout << "loop" << std::endl;
