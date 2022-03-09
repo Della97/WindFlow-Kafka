@@ -332,7 +332,11 @@ public:
         //std::cout << "before barrier id: " << consumer->name() << std::endl;
 
         pthread_barrier_wait(bar);
-        consumer->position(partitions);
+        if (consumer->name() == "rdkafka#consumer-1") {
+            std::cout << "KAFKA CONSUMER NUMBER 1" << std::endl;
+        }
+        std::cout << consumer->name() << std::endl;
+        consumer->assignment(partitions);
         for (auto i: partitions) {
                     std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
                 }
