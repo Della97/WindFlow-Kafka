@@ -350,7 +350,7 @@ public:
     {
         while (run) { // main loop
             
-            std::cout << partitions.size() << std::endl;
+            std::cout << consumer->name() << " -> " << partitions.size() << std::endl;
             consumer->assignment(partitions);
             for (auto i: partitions) {
                 std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
