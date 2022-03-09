@@ -334,6 +334,13 @@ public:
         pthread_barrier_wait(bar);
         if (consumer->name() == "rdkafka#consumer-1") {
             std::cout << "KAFKA CONSUMER NUMBER 1" << std::endl;
+            RdKafka::KafkaConsumer consumer1 = RdKafka::KafkaConsumer::create(conf, errstr);
+            if (!consumer) {
+                std::cerr << "Failed to create consumer: " << errstr << std::endl;
+                exit(1);
+            }
+            consumer1->subscribe(topics);
+            consumer1.close();
         }
         std::cout << consumer->name() << std::endl;
         consumer->assignment(partitions);
