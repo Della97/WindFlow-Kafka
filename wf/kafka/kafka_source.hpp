@@ -357,13 +357,12 @@ public:
             std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
         }
         */
-       if (partitions.empty()) {
-           std::cout << "partiotions vuota" << std::endl;
-       } else {
-           std::cout << "partiotions NON vuota" << std::endl;
-       }
         while (run) { // main loop          
-            std::cout << "loop" << std::endl;
+            if (partitions.empty()) {
+           std::cout << "partiotions vuota" << std::endl;
+        } else {
+           std::cout << "partiotions NON vuota" << std::endl;
+        }
             RdKafka::Message *msg = consumer->consume(1000); // qui si può fare qualcosa di carino per gestire il timeout
             switch (msg->err()) {
                 case RdKafka::ERR__TIMED_OUT:
