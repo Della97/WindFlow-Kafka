@@ -125,6 +125,7 @@ private:
 
     /* Da qui in poi abbiamo una serie di variabili che vanno sistemate */
     RdKafka::KafkaConsumer *consumer = nullptr;
+    RdKafka::KafkaConsumer *consumer1 = nullptr;
     RdKafka::Conf *conf = nullptr;
     RdKafka::ErrorCode error;
     std::string brokers;
@@ -334,13 +335,13 @@ public:
         pthread_barrier_wait(bar);
         if (consumer->name() == "rdkafka#consumer-1") {
             std::cout << "KAFKA CONSUMER NUMBER 1" << std::endl;
-            RdKafka::KafkaConsumer consumer1 = RdKafka::KafkaConsumer::create(conf, errstr);
+            consumer1 = RdKafka::KafkaConsumer::create(conf, errstr);
             if (!consumer) {
                 std::cerr << "Failed to create consumer: " << errstr << std::endl;
                 exit(1);
             }
-            consumer1.subscribe(topics);
-            consumer1.close();
+            consumer1->subscribe(topics);
+            consumer1->close();
         }
         std::cout << consumer->name() << std::endl;
         consumer->assignment(partitions);
