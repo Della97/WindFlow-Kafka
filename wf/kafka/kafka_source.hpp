@@ -341,9 +341,7 @@ public:
                 exit(1);
             }
             consumer1->subscribe(topics);
-            consumer1->close();
         }
-        std::cout << consumer->name() << std::endl;
         consumer->assignment(partitions);
         for (auto i: partitions) {
                     std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
@@ -358,6 +356,13 @@ public:
     // svc (utilized by the FastFlow runtime)
     void *svc(void *) override
     {
+        if (consumer->name() == "rdkafka#consumer-1") {
+            consumer1->close();
+        }
+        consumer->assignment(partitions);
+        for (auto i: partitions) {
+            std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
+        }
         while (run) { // main loop            
             RdKafka::Message *msg = consumer->consume(1000); // qui si può fare qualcosa di carino per gestire il timeout
             switch (msg->err()) {
