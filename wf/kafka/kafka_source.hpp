@@ -364,7 +364,8 @@ public:
             std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
         }
         std::cout << "entering loop" << std::endl;
-        while (run) { // main loop            
+        while (run) { // main loop          
+            std::cout << "loop" << std::endl;
             RdKafka::Message *msg = consumer->consume(1000); // qui si può fare qualcosa di carino per gestire il timeout
             switch (msg->err()) {
                 case RdKafka::ERR__TIMED_OUT:
