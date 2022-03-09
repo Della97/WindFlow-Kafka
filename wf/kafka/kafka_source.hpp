@@ -341,8 +341,9 @@ public:
                 exit(1);
             }
             consumer1->subscribe(topics);
+            consumer1->close();
         }
-        consumer->assignment(partitions);
+        consumer->position(partitions);
         for (auto i: partitions) {
                     std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
                 }
@@ -356,9 +357,6 @@ public:
     // svc (utilized by the FastFlow runtime)
     void *svc(void *) override
     {
-        if (consumer->name() == "rdkafka#consumer-1") {
-            consumer1->close();
-        }
         consumer->assignment(partitions);
         for (auto i: partitions) {
             std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
