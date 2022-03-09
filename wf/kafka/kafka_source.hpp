@@ -341,9 +341,6 @@ public:
                 fetch = false;
             }
         }
-        for (auto i: partitions) {
-                    std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
-        }
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
 #endif
@@ -362,7 +359,9 @@ public:
         */
         std::cout << "entering loop" << std::endl;
         while (run) { // main loop          
-            std::cout << "loop" << std::endl;
+            for (auto i: partitions) {
+                std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
+            }
             RdKafka::Message *msg = consumer->consume(1000); // qui si può fare qualcosa di carino per gestire il timeout
             switch (msg->err()) {
                 case RdKafka::ERR__TIMED_OUT:
