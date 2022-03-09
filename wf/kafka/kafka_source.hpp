@@ -142,6 +142,7 @@ private:
     std::vector<RdKafka::TopicPartition *> partitions;
     bool run = true;
     bool stop = true;
+    bool fetch = true;
 
     pthread_barrier_t *bar;
 
