@@ -62,7 +62,8 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
  public:
   void rebalance_cb(RdKafka::KafkaConsumer *consumer,
                     RdKafka::ErrorCode err,
-                    std::vector<RdKafka::TopicPartition *> &partitions) {
+                    std::vector<RdKafka::TopicPartition *> &partitions,
+                    int count) {
     std::cerr << "RebalanceCb: " << RdKafka::err2str(err) << ": ";
 
     part_list_print(partitions);
@@ -333,7 +334,6 @@ public:
 
         pthread_barrier_wait(bar);
         consumer->rebalance_protocol();
-        std::cout << "rebalanced "<< std::endl;
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
 #endif
