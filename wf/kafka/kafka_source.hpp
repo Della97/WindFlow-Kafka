@@ -309,7 +309,7 @@ public:
         //std::cout << "barrier: " << bar.count() << std::endl;
         conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
         conf->set("metadata.broker.list", brokers, errstr);
-        //conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
+        conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
         conf->set("group.id", groupid, errstr);
         conf->set("partition.assignment.strategy", strat, errstr);
 
