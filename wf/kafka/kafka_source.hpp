@@ -334,13 +334,8 @@ public:
         //std::cout << "before barrier id: " << consumer->name() << std::endl;
 
         pthread_barrier_wait(bar);
-        while (fetch) {
-            consumer->poll(0);
-            consumer->assignment(partitions);
-            if (!(partitions.empty())) {
-                fetch = false;
-            }
-        }
+        consumer->poll(0);
+        consumer->assignment(partitions);
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
 #endif
