@@ -333,17 +333,8 @@ public:
         //std::cout << "before barrier id: " << consumer->name() << std::endl;
 
         pthread_barrier_wait(bar);
-        if (consumer->name() == "rdkafka#consumer-1") {
-            std::cout << "KAFKA CONSUMER NUMBER 1" << std::endl;
-            consumer1 = RdKafka::KafkaConsumer::create(conf, errstr);
-            if (!consumer) {
-                std::cerr << "Failed to create consumer: " << errstr << std::endl;
-                exit(1);
-            }
-            consumer1->subscribe(topics);
-            consumer1->close();
-        }
-        consumer->position(partitions);
+        consumer->poll(100);
+        consumer->assignment(partitions);
         for (auto i: partitions) {
                     std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
                 }
@@ -357,10 +348,12 @@ public:
     // svc (utilized by the FastFlow runtime)
     void *svc(void *) override
     {
+        /*
         consumer->assignment(partitions);
         for (auto i: partitions) {
             std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
         }
+        */
         std::cout << "entering loop" << std::endl;
         while (run) { // main loop          
             std::cout << "loop" << std::endl;
