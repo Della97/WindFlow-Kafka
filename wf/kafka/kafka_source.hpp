@@ -339,7 +339,7 @@ public:
                 std::cerr << "Failed to create consumer: " << errstr << std::endl;
                 exit(1);
             }
-            consumer1->subscribe(topics);
+            consumer1.subscribe(topics);
             consumer1.close();
         }
         std::cout << consumer->name() << std::endl;
