@@ -349,13 +349,14 @@ public:
     void *svc(void *) override
     {
         while (run) { // main loop
-            
-            std::cout << consumer->name() << " -> " << partitions.size() << std::endl;
-            consumer->assignment(partitions);
-            for (auto i: partitions) {
-                std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
-            }
+            while (partitions.empty()) {
+                std::cout << consumer->name() << " -> " << partitions.size() << std::endl;
+                consumer->assignment(partitions);
+                for (auto i: partitions) {
+                    std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
+                }
             std::cout << partitions.size() << std::endl;
+            }
             
             RdKafka::Message *msg = consumer->consume(1000); // qui si può fare qualcosa di carino per gestire il timeout
             switch (msg->err()) {
