@@ -626,7 +626,7 @@ public:
                  std::string _groupid, //merge group-id
                  std::string _strat,
                  int32_t _parallelism,
-                 int32_t _offset,
+                 std::vector<int> _offset,
                  std::function<void(RuntimeContext &)> _closing_func):
                  func(_func),
                  parallelism(_parallelism),
