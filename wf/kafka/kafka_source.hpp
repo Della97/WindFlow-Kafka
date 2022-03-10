@@ -73,7 +73,7 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
 
     RdKafka::Error *error      = NULL;
     RdKafka::ErrorCode ret_err = RdKafka::ERR_NO_ERROR;
-    std::cout << "OOOOOOOOOOOOOOOOOOOOOOO" << offset << std::endl;
+    //std::cout << "OOOOOOOOOOOOOOOOOOOOOOO" << offset << std::endl;
 
     if (err == RdKafka::ERR__ASSIGN_PARTITIONS) {
       if (consumer->rebalance_protocol() == "COOPERATIVE") {
