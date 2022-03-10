@@ -217,7 +217,7 @@ int main()
                                 .withGroupID(groupid)
                                 .withAssignmentPolicy(strat)
                                 .withPartition(parallelism)
-                                .withOffset(40, 40)
+                                .withOffset(40, 40, 40, 40, 40, 40, 40, 40, 40)
                                 .build();
     std::cout << "Creazione con builder tramite funtori -> OK!" <<  std::endl;
     PipeGraph graph("test_tracing_1", Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
