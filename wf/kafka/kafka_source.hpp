@@ -79,18 +79,18 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
 
     if (err == RdKafka::ERR__ASSIGN_PARTITIONS) {
       if (consumer->rebalance_protocol() == "COOPERATIVE") {
-        std::cout << "AHHHHHHHHHHHHHHHHH " << consumer->name() << " ";
+        std::cout << "AHHHHHHHHHHHHHHHHH " << consumer->name() << topics.size() << offsets.size() << " ";
         error = consumer->incremental_assign(partitions);
       } else {
-        std::cout << "AHHHHHHHHHHHHHHHHHH " << consumer->name() << " ";
+        std::cout << "AHHHHHHHHHHHHHHHHHH " << consumer->name() << topics.size() << offsets.size() << " ";
         ret_err = consumer->assign(partitions);
       }
     } else {
       if (consumer->rebalance_protocol() == "COOPERATIVE") {
-        std::cout << "AHHHHHHHHHHHHHHHHH " << consumer->name() << " ";
+        std::cout << "AHHHHHHHHHHHHHHHHH " << consumer->name() << topics.size() << offsets.size() << " ";
         error = consumer->incremental_unassign(partitions);
       } else {
-        std::cout << "AHHHHHHHHHHHHHHHHH " << consumer->name() << " ";
+        std::cout << "AHHHHHHHHHHHHHHHHH " << consumer->name() << topics.size() << offsets.size() << " ";
         ret_err = consumer->unassign();
       }
     }
@@ -320,6 +320,7 @@ public:
         //std::cout << "barrier: " << bar.count() << std::endl;
         std::cout << "GRANDEZZA TOPICS: " << topics.size() << std::endl;
         std::cout << "GRANDEZZA OFFSETS: " << offset.size() << std::endl;
+        ex_rebalance_cb.initOffsetTopics(offset, topics);
         conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
         conf->set("metadata.broker.list", brokers, errstr);
         conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
