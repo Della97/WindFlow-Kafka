@@ -77,9 +77,9 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
 
     if (offsets.size() != 0){
         for (int i = 0; i<size; i++) {
-            for (auto i:partitions) {
-                if (i->topic() == topics[i]) {
-                    i->set_offset(offsets[i]);
+            for (auto j:partitions) {
+                if (j->topic() == topics[i]) {
+                    j->set_offset(offsets[i]);
                 }
             }
         }
