@@ -68,7 +68,7 @@ struct Iint {
         offsets.push_back(first);
     }
 
-    template <typename G, typename... OSets>
+    template <typename O, typename... OSets>
     void add_ints(O first, OSets... others) {
         offsets.push_back(first);
         add_ints(others...);
