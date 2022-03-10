@@ -62,7 +62,7 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
   }
 
  public:
-  void initOffsetTopics (std::vector<int> _offsets, std::vector<string> _topics) {
+  void initOffsetTopics (std::vector<int> _offsets, std::vector<std::string> _topics) {
       offsets = std::move(_offsets);
       topics = std::move(_topics);
   }
@@ -319,7 +319,7 @@ public:
     {
         //std::cout << "barrier: " << bar.count() << std::endl;
         std::cout << "GRANDEZZA TOPICS: " << topics.size() << std::endl;
-        std::cout << "GRANDEZZA OFFSETS: " << offsets.size() << std::endl;
+        std::cout << "GRANDEZZA OFFSETS: " << offset.size() << std::endl;
         conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
         conf->set("metadata.broker.list", brokers, errstr);
         conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
