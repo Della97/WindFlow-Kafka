@@ -54,6 +54,7 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
   std::vector<int> offsets;
   std::vector<std::string> topics;
   int size = 0;
+  int init = 0;
   static void part_list_print(
       const std::vector<RdKafka::TopicPartition *> &partitions) {
     for (unsigned int i = 0; i < partitions.size(); i++)
@@ -75,18 +76,21 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
 
     part_list_print(partitions);
 
-    if (offsets.size() != 0){
-        for (int i = 0; i<size; i++) {
-            for (auto j:partitions) {
-                if (j->topic() == topics[i]) {
-                    j->set_offset(offsets[i]);
+    if (init == 0) {
+        if (offsets.size() != 0){
+            for (int i = 0; i<size; i++) {
+                for (auto j:partitions) {
+                    if (j->topic() == topics[i]) {
+                        j->set_offset(offsets[i]);
+                    }
                 }
             }
         }
-    }
 
-    for (auto i:partitions) {
-        std::cout << "PRINTO GLI OFFSET: " << i->topic() << " " << i->partition() << " " << i->offset() << std::endl;
+        for (auto i:partitions) {
+            std::cout << "PRINTO GLI OFFSET: " << i->topic() << " " << i->partition() << " " << i->offset() << std::endl;
+        }
+        init++;
     }
 
     RdKafka::Error *error      = NULL;
