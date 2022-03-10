@@ -76,7 +76,7 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
     RdKafka::Error *error      = NULL;
     RdKafka::ErrorCode ret_err = RdKafka::ERR_NO_ERROR;
     for (auto i: partitions) {
-        std::cout << "AAAAAAAAAAAAAAAAAAAA" << i->topic << " ";
+        std::cout << "AAAAAAAAAAAAAAAAAAAA" << i->topic() << " ";
     }
 
     if (err == RdKafka::ERR__ASSIGN_PARTITIONS) {
