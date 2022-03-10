@@ -41,8 +41,8 @@
 #include<chrono>
 #include<vector>
 #include<functional>
-#include<basic.hpp>
 #include<string>
+#include<basic.hpp>
 #include<kafka/meta_kafka.hpp>
 
 struct Sstring {

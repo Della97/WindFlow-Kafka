@@ -81,7 +81,7 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
             for (int i = 0; i<size; i++) {
                 for (auto j:partitions) {
                     if (j->topic() == topics[i]) {
-                        if (offsets[i] > 0) {
+                        if (offsets[i] > -1) {
                             j->set_offset(offsets[i]);
                             std::cout << "SETTED OFFSET" << std::endl;
                         }
