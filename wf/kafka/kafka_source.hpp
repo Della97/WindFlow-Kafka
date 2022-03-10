@@ -658,6 +658,10 @@ public:
             std::cerr << RED << "WindFlow Error: Kafka_Source has parallelism zero" << DEFAULT_COLOR << std::endl;
             exit(EXIT_FAILURE);
         }
+        if (topics.size() != offset.size() {
+            std::cerr << RED << "WindFlow Error: Number of offsets given are less than the number of topics" << DEFAULT_COLOR << std::endl;
+            exit(EXIT_FAILURE);
+        }
         pthread_barrier_init(&bar, NULL, parallelism);
 
         //parallelims check but we dont know the number of partitions
