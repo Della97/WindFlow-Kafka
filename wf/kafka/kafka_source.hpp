@@ -658,7 +658,7 @@ public:
             std::cerr << RED << "WindFlow Error: Kafka_Source has parallelism zero" << DEFAULT_COLOR << std::endl;
             exit(EXIT_FAILURE);
         }
-        if (topics.size() != offset.size()) {
+        if (offset.size() < topics.size()) {
             std::cerr << RED << "WindFlow Error: Number of offsets given are less than the number of topics" << DEFAULT_COLOR << std::endl;
             exit(EXIT_FAILURE);
         }
