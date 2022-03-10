@@ -204,7 +204,7 @@ int main()
                                 .withGroupID(groupid)
                                 .withAssignmentPolicy(strat)
                                 .withPartition(parallelism)
-                                .withOffset(10)
+                                .withOffset(10, 10)
                                 .build();
     std::cout << "Creazione con builder tramite lambda -> OK!" <<  std::endl;
 
