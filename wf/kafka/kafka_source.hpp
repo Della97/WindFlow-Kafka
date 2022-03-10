@@ -73,11 +73,17 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
 
     part_list_print(partitions);
 
+    std::cout << "partiotions count: " << partitions.size() << std::endl;
+/*
+    for (auto i:partitions) {
+        if (i->topic() == topics[0]) {
+            i->set_offset(offsets[0]);
+        }
+
+    }
+*/
     RdKafka::Error *error      = NULL;
     RdKafka::ErrorCode ret_err = RdKafka::ERR_NO_ERROR;
-    for (auto i: partitions) {
-        std::cout << "AAAAAAAAAAAAAAAAAAAA" << i->topic() << " ";
-    }
 
     if (err == RdKafka::ERR__ASSIGN_PARTITIONS) {
       if (consumer->rebalance_protocol() == "COOPERATIVE") {
