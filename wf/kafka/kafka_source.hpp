@@ -409,7 +409,7 @@ public:
                         exit(1);
                     }
                     std::cout << "[PAYLOAD - SVC-SRC NUM " << consumer->name() <<"] -> " << static_cast<const char *>(msg->payload()) <<
-                       "[ from partition " << msg->partition() << " topic -> " << msg->topic_name() << " ]" << std::endl;
+                       "[ from partition " << msg->partition() << " topic -> " << msg->topic_name() << " partition -> " << msg->partition() << " ]" << std::endl;
                     //printf("%.*s\n", static_cast<int>(msg->len()), static_cast<const char *>(msg->payload()));
                     if constexpr (isNonRiched) {
                         run = func(*msg, *shipper); //get payload -> deser -> push forward if valid
