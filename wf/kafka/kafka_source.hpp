@@ -52,6 +52,7 @@
 class ExampleRebalanceCb : public RdKafka::RebalanceCb {
  private:
   std::vector<int> offsets;
+  std::vector<std::string> topics;
   static void part_list_print(
       const std::vector<RdKafka::TopicPartition *> &partitions) {
     for (unsigned int i = 0; i < partitions.size(); i++)
