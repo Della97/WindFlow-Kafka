@@ -157,7 +157,7 @@ int main()
     RdKafka::Message *msg;
     std::vector<std::string> topics = { "items" };
     Source_Shipper<tuple_t> *shipper;
-    int32_t offset = 0;
+    std::vector<int> offset;
     RdKafka::Conf *cconf;
     RdKafka::Conf *tconf;
     std:int sink1_degree = 1;
@@ -165,6 +165,8 @@ int main()
     std::string topic2 = "provatop";
     std::string topic3 = "topic";
     std::string strat = "roundrobin";
+    offset.push_back(50);
+    offset.push_back(50);
 
     std::cout << "QUII" << std::endl;
     Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, offset, closing_func);

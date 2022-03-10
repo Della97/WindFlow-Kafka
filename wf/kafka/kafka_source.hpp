@@ -62,8 +62,9 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
   }
 
  public:
-  void initOffset (std::vector<int> _offsets) {
+  void initOffsetTopics (std::vector<int> _offsets, std::vector<string> _topics) {
       offsets = std::move(_offsets);
+      topics = std::move(_topics);
   }
   void rebalance_cb(RdKafka::KafkaConsumer *consumer,
                     RdKafka::ErrorCode err,
@@ -139,7 +140,7 @@ private:
     std::string strat;
     std::string errstr;
     int32_t partition;
-    int32_t offset = 1000;
+    std::vector<int> offset;
     int32_t parallelism;
     size_t outputBatchSize;
     ExampleRebalanceCb ex_rebalance_cb; //partiotion manager
@@ -168,7 +169,7 @@ public:
                          std::string _groupid, //merge group-id
                          std::string _strat,
                          int32_t _partition,
-                         int32_t _offset,
+                         std::vector<int> _offset,
                          pthread_barrier_t *_bar,
                          std::function<void(RuntimeContext &)> _closing_func):
                          func(_func),
@@ -265,6 +266,7 @@ public:
             opName = _other.opName;
             context = _other.context;
             topics = _other.topics;
+            offset = _other.offset;
             bar = _other.bar;
             closing_func = _other.closing_func;
             terminated = _other.terminated;
@@ -294,6 +296,7 @@ public:
         opName = std::move(_other.opName);
         context = std::move(_other.context);
         topics = std::move(_other.topics);
+        offset = std::move(_other.offset);
         bar = std::move(_other.bar);
         closing_func = std::move(_other.closing_func);
         terminated = _other.terminated;
@@ -315,6 +318,8 @@ public:
     int svc_init() override
     {
         //std::cout << "barrier: " << bar.count() << std::endl;
+        std::cout << "GRANDEZZA TOPICS: " << topics.size() << std::endl;
+        std::cout << "GRANDEZZA OFFSETS: " << offsets.size() << std::endl;
         conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
         conf->set("metadata.broker.list", brokers, errstr);
         conf->set("rebalance_cb", &ex_rebalance_cb, errstr);

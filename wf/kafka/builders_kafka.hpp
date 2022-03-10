@@ -92,7 +92,7 @@ private:
     std::string groupid;
     std::string strat;
     int32_t partition;
-    int32_t offset;
+    std::vector<int> offset;
 
 public:
     /** 
@@ -199,7 +199,7 @@ public:
      *  \param _offset for the consumer
      *  \return a reference to the builder object
      */ 
-    Kafka_Source_Builder<kafka_deser_func_t> &withOffset(int32_t _offset)
+    Kafka_Source_Builder<kafka_deser_func_t> &withOffset(std::vector<int> _offset)
     {
         offset = _offset;
         return *this;
