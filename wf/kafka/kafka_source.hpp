@@ -51,6 +51,7 @@
 
 class ExampleRebalanceCb : public RdKafka::RebalanceCb {
  private:
+  std::vector<int> offsets;
   static void part_list_print(
       const std::vector<RdKafka::TopicPartition *> &partitions) {
     for (unsigned int i = 0; i < partitions.size(); i++)
@@ -60,6 +61,9 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
   }
 
  public:
+  void initOffset (std::vector<int> _offsets) {
+      offsets = std::move(_offsets);
+  }
   void rebalance_cb(RdKafka::KafkaConsumer *consumer,
                     RdKafka::ErrorCode err,
                     std::vector<RdKafka::TopicPartition *> &partitions) {
@@ -69,6 +73,7 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
 
     RdKafka::Error *error      = NULL;
     RdKafka::ErrorCode ret_err = RdKafka::ERR_NO_ERROR;
+    std::cout << "OOOOOOOOOOOOOOOOOOOOOOO" << offset << std::endl;
 
     if (err == RdKafka::ERR__ASSIGN_PARTITIONS) {
       if (consumer->rebalance_protocol() == "COOPERATIVE") {
@@ -133,13 +138,13 @@ private:
     std::string strat;
     std::string errstr;
     int32_t partition;
-    int32_t offset;
+    int32_t offset = 1000;
     int32_t parallelism;
     size_t outputBatchSize;
     ExampleRebalanceCb ex_rebalance_cb; //partiotion manager
     int32_t tmp = 0;
     std::vector<std::string> topics;
-    std::vector<RdKafka::TopicPartition *> partitions;
+    std::vector<RdKafka::TopicPartition *> partitionss;
     bool run = true;
     bool stop = true;
     bool fetch = true;
@@ -336,8 +341,8 @@ public:
         pthread_barrier_wait(bar);
         while (fetch) {
             consumer->poll(0);
-            consumer->assignment(partitions);
-            if (!(partitions.empty())) {
+            consumer->assignment(partitionss);
+            if (!(partitionss.empty())) {
                 fetch = false;
             }
         }
@@ -360,7 +365,7 @@ public:
         }
         */
         while (run) { // main loop          
-            if (partitions.empty()) {
+            if (partitionss.empty()) {
            std::cout << "partiotions vuota" << std::endl;
         } else {
            std::cout << "partiotions NON vuota" << std::endl;
