@@ -76,21 +76,21 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
     RdKafka::Error *error      = NULL;
     RdKafka::ErrorCode ret_err = RdKafka::ERR_NO_ERROR;
     //std::cout << "OOOOOOOOOOOOOOOOOOOOOOO" << offset << std::endl;
+    for (int i = 0, i < 6, i++) {
+        std::cout << "AHHHHHHHHHHHHHHHHH " << topics.size() << offsets.size() << std::endl;
+
+    }
 
     if (err == RdKafka::ERR__ASSIGN_PARTITIONS) {
       if (consumer->rebalance_protocol() == "COOPERATIVE") {
-        std::cout << "AHHHHHHHHHHHHHHHHH " << consumer->name() << topics.size() << offsets.size() << " ";
         error = consumer->incremental_assign(partitions);
       } else {
-        std::cout << "AHHHHHHHHHHHHHHHHHH " << consumer->name() << topics.size() << offsets.size() << " ";
         ret_err = consumer->assign(partitions);
       }
     } else {
       if (consumer->rebalance_protocol() == "COOPERATIVE") {
-        std::cout << "AHHHHHHHHHHHHHHHHH " << consumer->name() << topics.size() << offsets.size() << " ";
         error = consumer->incremental_unassign(partitions);
       } else {
-        std::cout << "AHHHHHHHHHHHHHHHHH " << consumer->name() << topics.size() << offsets.size() << " ";
         ret_err = consumer->unassign();
       }
     }
