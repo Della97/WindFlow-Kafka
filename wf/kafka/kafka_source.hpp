@@ -66,7 +66,7 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
   void initOffsetTopics (std::vector<int> _offsets, std::vector<std::string> _topics) {
       offsets = std::move(_offsets);
       topics = std::move(_topics);
-      size = offset.size();
+      size = offsets.size();
   }
   void rebalance_cb(RdKafka::KafkaConsumer *consumer,
                     RdKafka::ErrorCode err,
