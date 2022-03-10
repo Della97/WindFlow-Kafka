@@ -506,7 +506,7 @@ private:
     std::string strat;
     std::vector<std::string> topics;
     int32_t partition;
-    int32_t offset;
+    std::vector<int> offset;
     pthread_barrier_t bar;
 
     // Configure the Kafka_Source to receive batches instead of individual inputs (cannot be called for the Kafka_Source)
