@@ -165,22 +165,20 @@ int main()
     std::string topic2 = "provatop";
     std::string topic3 = "topic";
     std::string strat = "roundrobin";
-    offset.push_back(100);
-    offset.push_back(100);
 
     std::cout << "QUII" << std::endl;
-    Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, offset, closing_func);
+    Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, 10, closing_func);
     std::cout << "Creazione con funzioni -> OK!" << std::endl;
 
     auto deser_lambda = [](std::optional<std::reference_wrapper<RdKafka::Message>> msg, Source_Shipper<tuple_t> &shipper /*, tuple_t &output */) { return true; };
     auto closing_lambda = [](RuntimeContext &) { return; };
 
-    Kafka_Source source2 = Kafka_Source(deser_lambda, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, offset, closing_lambda);
+    Kafka_Source source2 = Kafka_Source(deser_lambda, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, 10, closing_lambda);
     std::cout << "Creazione con lambda -> OK!" << std::endl;    
 
     deser_functor d_functor;
     closing_functor c_functor;
-    Kafka_Source source3 = Kafka_Source(d_functor, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, offset, c_functor);
+    Kafka_Source source3 = Kafka_Source(d_functor, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, 10, c_functor);
     std::cout << "Creazione con funtori -> OK!" << std::endl;
 
     Kafka_Source source4 = Kafka_Source_Builder(deser_func)
@@ -192,7 +190,7 @@ int main()
                                 .withGroupID(groupid)
                                 .withAssignmentPolicy(strat)
                                 .withPartition(parallelism)
-                                .withOffset(offset)
+                                .withOffset(10)
                                 .build();
     std::cout << "Creazione con builder tramite funzioni -> OK!" <<  std::endl;
 
@@ -205,7 +203,7 @@ int main()
                                 .withGroupID(groupid)
                                 .withAssignmentPolicy(strat)
                                 .withPartition(parallelism)
-                                .withOffset(offset)
+                                .withOffset(10)
                                 .build();
     std::cout << "Creazione con builder tramite lambda -> OK!" <<  std::endl;
 
@@ -218,7 +216,7 @@ int main()
                                 .withGroupID(groupid)
                                 .withAssignmentPolicy(strat)
                                 .withPartition(parallelism)
-                                .withOffset(offset)
+                                .withOffset(40, 40, 40)
                                 .build();
     std::cout << "Creazione con builder tramite funtori -> OK!" <<  std::endl;
     PipeGraph graph("test_tracing_1", Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);

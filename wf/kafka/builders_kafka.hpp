@@ -60,6 +60,21 @@ struct Sstring {
     }
 };
 
+struct Iint {
+    std::vector<int> offsets;
+
+    template<typename O>
+    void add_ints(O first) {
+        offsets.push_back(first);
+    }
+
+    template <typename G, typename... OSets>
+    void add_ints(O first, OSets... others) {
+        offsets.push_back(first);
+        add_ints(others...);
+    }
+};
+
 namespace wf {
 
 
@@ -87,12 +102,13 @@ private:
 
     /* Da qui in poi abbiamo una serie di variabili che vanno sistemate */
     Sstring topic;
+    Iint offset;
     std::vector< std::string > topics;
     std::string brokers;
     std::string groupid;
     std::string strat;
     int32_t partition;
-    std::vector<int> offset;
+    std::vector<int> offsets;
 
 public:
     /** 
@@ -199,9 +215,12 @@ public:
      *  \param _offset for the consumer
      *  \return a reference to the builder object
      */ 
-    Kafka_Source_Builder<kafka_deser_func_t> &withOffset(std::vector<int> _offset)
+
+    template <typename O, typename... OSets>
+    Kafka_Source_Builder<kafka_deser_func_t> &withOffset(O first, OSets... Os)
     {
-        offset = _offset;
+        offset.add_ints(first, Os...);
+        offsets = offset.offsets;
         return *this;
     }
 
@@ -212,13 +231,6 @@ public:
      *  \return a reference to the builder object
      */ 
 
-/*
-    Kafka_Source_Builder<kafka_deser_func_t> &withTopics(std::vector< std::string > _topics)
-    {
-        topics = _topics;
-        return *this;
-    }
-*/
     template <typename G, typename... Args>
     Kafka_Source_Builder<kafka_deser_func_t> &withTopics(G first, Args... Ts)
     {
@@ -244,7 +256,7 @@ public:
                               groupid,
                               strat,
                               partition,
-                              offset,
+                              offsets,
                               closing_func);
     }
 };
