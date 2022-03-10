@@ -390,7 +390,7 @@ public:
             if (partitionss.empty()) {
            std::cout << "partiotions vuota" << std::endl;
         } else {
-           std::cout << "partiotions NON vuota" << std::endl;
+           std::cout << "partiotions NON vuota" << consumer->name() <<  std::endl;
         }
             RdKafka::Message *msg = consumer->consume(1000); // qui si può fare qualcosa di carino per gestire il timeout
             switch (msg->err()) {
