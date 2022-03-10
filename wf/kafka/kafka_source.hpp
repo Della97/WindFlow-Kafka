@@ -66,7 +66,7 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
   void initOffsetTopics (std::vector<int> _offsets, std::vector<std::string> _topics) {
       offsets = std::move(_offsets);
       topics = std::move(_topics);
-      size = topics.size();
+      size = offset.size();
   }
   void rebalance_cb(RdKafka::KafkaConsumer *consumer,
                     RdKafka::ErrorCode err,
@@ -75,12 +75,12 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
 
     part_list_print(partitions);
 
-    std::cout << "partiotions count: " << partitions.size() << std::endl;
-
-    for (int i = 0; i<size; i++) {
-        for (auto i:partitions) {
-            if (i->topic() == topics[i]) {
-                i->set_offset(offsets[i]);
+    if (offsets.size() != 0){
+        for (int i = 0; i<size; i++) {
+            for (auto i:partitions) {
+                if (i->topic() == topics[i]) {
+                    i->set_offset(offsets[i]);
+                }
             }
         }
     }
