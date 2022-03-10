@@ -165,8 +165,8 @@ int main()
     std::string topic2 = "provatop";
     std::string topic3 = "topic";
     std::string strat = "roundrobin";
-    offset.push_back(140);
-    offset.push_back(140);
+    offset.push_back(100);
+    offset.push_back(100);
 
     std::cout << "QUII" << std::endl;
     Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, offset, closing_func);
