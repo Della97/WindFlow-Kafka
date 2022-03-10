@@ -85,6 +85,10 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
         }
     }
 
+    for (auto i:partitions) {
+        std::cout << "PRINTO GLI OFFSET: " << i->topic() << " " << i->partition() << " " << i->offset() << std::endl;
+    }
+
     RdKafka::Error *error      = NULL;
     RdKafka::ErrorCode ret_err = RdKafka::ERR_NO_ERROR;
 
