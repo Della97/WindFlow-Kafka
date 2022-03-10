@@ -165,20 +165,21 @@ int main()
     std::string topic2 = "provatop";
     std::string topic3 = "topic";
     std::string strat = "roundrobin";
+    std::vector<int> offsetss = {10, 10};
 
     std::cout << "QUII" << std::endl;
-    Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, 10, closing_func);
+    Kafka_Source source1 = Kafka_Source(deser_func, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, offsetss, closing_func);
     std::cout << "Creazione con funzioni -> OK!" << std::endl;
 
     auto deser_lambda = [](std::optional<std::reference_wrapper<RdKafka::Message>> msg, Source_Shipper<tuple_t> &shipper /*, tuple_t &output */) { return true; };
     auto closing_lambda = [](RuntimeContext &) { return; };
 
-    Kafka_Source source2 = Kafka_Source(deser_lambda, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, 10, closing_lambda);
+    Kafka_Source source2 = Kafka_Source(deser_lambda, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, offsetss, closing_lambda);
     std::cout << "Creazione con lambda -> OK!" << std::endl;    
 
     deser_functor d_functor;
     closing_functor c_functor;
-    Kafka_Source source3 = Kafka_Source(d_functor, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, 10, c_functor);
+    Kafka_Source source3 = Kafka_Source(d_functor, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, offsetss, c_functor);
     std::cout << "Creazione con funtori -> OK!" << std::endl;
 
     Kafka_Source source4 = Kafka_Source_Builder(deser_func)
