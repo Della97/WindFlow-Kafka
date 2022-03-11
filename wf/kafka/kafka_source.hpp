@@ -68,6 +68,7 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
       offsets = std::move(_offsets);
       topics = std::move(_topics);
       size = topics.size();
+      init = 0; //reload offset mid execution (at next rebalance callback) (need to test)
   }
   void rebalance_cb(RdKafka::KafkaConsumer *consumer,
                     RdKafka::ErrorCode err,
@@ -150,7 +151,6 @@ private:
 
     /* Da qui in poi abbiamo una serie di variabili che vanno sistemate */
     RdKafka::KafkaConsumer *consumer = nullptr;
-    RdKafka::KafkaConsumer *consumer1 = nullptr;
     RdKafka::Conf *conf = nullptr;
     RdKafka::ErrorCode error;
     std::string brokers;
