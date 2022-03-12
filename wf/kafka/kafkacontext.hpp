@@ -36,30 +36,23 @@ private:
     std::string kafkaName;
     std::vector<RdKafka::TopicPartition *> partitions;
 
-    
-
-public:
-    /// Constructor
-    KafkaRuntimeContext(std::string _kafkaName,
-                   std::vector<RdKafka::TopicPartition *> _partitions):
-                   kafkaName(_kafkaName),
-                   partitions(_partitions) {}
-
-    /// Copy Constructor
-    KafkaRuntimeContext(const KafkaRuntimeContext &_other): // do not copy the storage
-                   kafkaName(_other.kafkaName),
-                   partitions(_other.partitions) {}
-
-    /// Copy Assignment Operator
-    KafkaRuntimeContext &operator=(const KafkaRuntimeContext &_other) // do not copy the storage
+    // Set the configuration parameters
+    void setContextParameters(std::string _kafkaName,
+                              std::vector<RdKafka::TopicPartition *> _partitions)
     {
-        if (this != &_other) {
-            kafkaName = _other.kafkaName;
-            partitions = _other.partitions;
-        }
-        return *this;
+        kafkaName = _kafkaName;
+        partitions = _partitions;
     }
 
+public:
+    
+    std::string getName () {
+        return kafkaName;
+    }
+
+    std::vector<RdKafka::TopicPartition *> getPartitions () {
+        return partitions;
+    }
 
 };
 
