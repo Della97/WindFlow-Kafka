@@ -41,7 +41,7 @@
 #include<optional>
 #include<functional>
 #include<context.hpp>
-#include<kafkacontext.hpp>
+#include"kafkacontext.hpp"
 #include<source_shipper.hpp>
 #if defined (WF_TRACING_ENABLED)
     #include<stats_record.hpp>
