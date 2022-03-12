@@ -185,7 +185,7 @@ int main()
     Kafka_Source source4 = Kafka_Source_Builder(deser_func)
                                 .withName(name)
                                 .withOutputBatchSize(outputBactchSize)
-                                .withClosingFunction(closing_func)
+                                .withClosingFunction(c_functor)                //check
                                 .withBrokers(brokers)
                                 .withTopics(topic1)
                                 .withGroupID(groupid)
