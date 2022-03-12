@@ -84,7 +84,7 @@ std::true_type check_kafka_closing_t(void (F_t::*)(KafkaRuntimeContext&));
 std::true_type check_kafka_closing_t(void (*)(KafkaRuntimeContext&));
 
 template<typename F_t>
-decltype(check_kafka_closing_t(&F_t::operator())) check_closing_t(F_t);
+decltype(check_kafka_closing_t(&F_t::operator())) check_kafka_closing_t(F_t);
 
 std::false_type check_kafka_closing_t(...); // black hole
 } // namespace wf
