@@ -36,6 +36,10 @@ private:
     template<typename T1, typename T2, typename T3> friend class FFAT_Replica; // friendship with FFAT_Replica class
     std::string kafkaName;
     std::vector<RdKafka::TopicPartition *> partitions;
+    size_t parallelism; // parallelism of the operator
+    size_t index; // index of the replica
+    uint64_t timestamp; // timestamp of the current input
+    uint64_t watermark; // last received watermark
 
     // Set the configuration parameters
     void setContextParameters(std::string _kafkaName,
@@ -46,6 +50,19 @@ private:
     }
 
 public:
+    KafkaRuntimeContext(size_t _parallelism,
+                   size_t _index):
+                   parallelism(_parallelism),
+                   index(_index),
+                   timestamp(0),
+                   watermark(0) {}
+
+    /// Copy Constructor
+    KafkaRuntimeContext(const KafkaRuntimeContext &_other): // do not copy the storage
+                   parallelism(_other.parallelism),
+                   index(_other.index),
+                   timestamp(_other.timestamp),
+                   watermark(_other.watermark) {}
     
     std::string getName () {
         return kafkaName;
