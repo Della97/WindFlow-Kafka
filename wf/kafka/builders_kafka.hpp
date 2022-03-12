@@ -44,6 +44,7 @@
 #include<string>
 #include<basic.hpp>
 #include<kafka/meta_kafka.hpp>
+#include<kafkacontext.hpp>
 
 struct Sstring {
     std::vector<std::string> strs;
@@ -94,7 +95,7 @@ private:
     static_assert(std::is_default_constructible<result_t>::value,
         "WindFlow Compilation Error - result_t type must be default constructible (Kafka_Source_Builder):\n");
     using kafka_source_t = Kafka_Source<kafka_deser_func_t>; // type of the Kafka_Source to be created by the builder
-    using closing_func_t = std::function<void(wf::RuntimeContext&)>; // type of the closing functional logic
+    using closing_func_t = std::function<void(wf::KafkaRuntimeContext&)>; // type of the closing functional logic
     std::string name = "kafka_source"; // name of the Kafka_Source
     size_t parallelism = 1; // parallelism of the Kafka_Source
     size_t outputBatchSize = 0; // output batch size of the Kafka_Source

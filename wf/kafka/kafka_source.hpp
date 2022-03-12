@@ -138,12 +138,12 @@ private:
     using result_t = decltype(get_result_t_KafkaSource(func)); // extracting the result_t type and checking the admissible signatures
     // static predicates to check the type of the deserialization logic to be invoked
     static constexpr bool isNonRiched = std::is_invocable<decltype(func), std::optional<std::reference_wrapper<RdKafka::Message>>, Source_Shipper<result_t> & >::value;
-    static constexpr bool isRiched = std::is_invocable<decltype(func), std::optional<std::reference_wrapper<RdKafka::Message>>, Source_Shipper<result_t> &, RuntimeContext &>::value;
+    static constexpr bool isRiched = std::is_invocable<decltype(func), std::optional<std::reference_wrapper<RdKafka::Message>>, Source_Shipper<result_t> &, KafkaRuntimeContext &>::value;
     // check the presence of a valid deserialization logic
     static_assert(isNonRiched || isRiched,
         "WindFlow Compilation Error - Kafka_Source_Replica does not have a valid deserialization logic:\n");
     std::string opName; // name of the Kafka_Source containing the replica
-    RuntimeContext context; // RuntimeContext object
+    KafkaRuntimeContext context; // RuntimeContext object
     std::function<void(RuntimeContext &)> closing_func; // closing functional logic used by the Kafka_Source replica
     bool terminated; // true if the Kafka_Source replica has finished its work
     Execution_Mode_t execution_mode;// execution mode of the Kafka_Source replica
@@ -190,7 +190,7 @@ public:
                          int32_t _partition,
                          std::vector<int> _offset,
                          pthread_barrier_t *_bar,
-                         std::function<void(RuntimeContext &)> _closing_func):
+                         std::function<void(KafkaRuntimeContext &)> _closing_func):
                          func(_func),
                          opName(_opName),
                          context(_context),

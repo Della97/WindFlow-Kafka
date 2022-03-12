@@ -43,6 +43,7 @@
 #include<source_shipper.hpp>
 #include<librdkafka/rdkafkacpp.h>
 #include<optional>
+#include<kafkacontext.hpp>
 
 namespace wf {
 
@@ -69,13 +70,13 @@ template<typename Arg> // non-riched
 Arg get_result_t_KafkaSource(bool (*)(std::optional<std::reference_wrapper<RdKafka::Message>>, Source_Shipper<Arg>& /*, std::optional<tuple_t>& */));
 
 template<typename F_t, typename Arg> // riched
-Arg get_result_t_KafkaSource(bool (F_t::*)(std::optional<std::reference_wrapper<RdKafka::Message>>, Source_Shipper<Arg>&, /* std::optional<tuple_t>&, */ RuntimeContext&) const);
+Arg get_result_t_KafkaSource(bool (F_t::*)(std::optional<std::reference_wrapper<RdKafka::Message>>, Source_Shipper<Arg>&, /* std::optional<tuple_t>&, */ KafkaRuntimeContext&) const);
 
 template<typename F_t, typename Arg> // riched
-Arg get_result_t_KafkaSource(bool (F_t::*)(std::optional<std::reference_wrapper<RdKafka::Message>>, Source_Shipper<Arg>&, /* std::optional<tuple_t>&, */ RuntimeContext&));
+Arg get_result_t_KafkaSource(bool (F_t::*)(std::optional<std::reference_wrapper<RdKafka::Message>>, Source_Shipper<Arg>&, /* std::optional<tuple_t>&, */ KafkaRuntimeContext&));
 
 template<typename Arg> // riched
-Arg get_result_t_KafkaSource(bool (*)(std::optional<std::reference_wrapper<RdKafka::Message>>, Source_Shipper<Arg>&, /* std::optional<tuple_t>&, */ RuntimeContext&));
+Arg get_result_t_KafkaSource(bool (*)(std::optional<std::reference_wrapper<RdKafka::Message>>, Source_Shipper<Arg>&, /* std::optional<tuple_t>&, */ KafkaRuntimeContext&));
 
 template<typename F_t>
 decltype(get_result_t_KafkaSource(&F_t::operator())) get_result_t_KafkaSource(F_t);
