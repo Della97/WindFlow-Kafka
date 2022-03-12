@@ -9,6 +9,7 @@
 #include<context.hpp>
 #include<local_storage.hpp>
 #include<kafka/kafkacontext.hpp>
+#include<librdkafka/rdkafkacpp.h>
 
 namespace wf {
 
@@ -21,7 +22,7 @@ namespace wf {
  *  information accessible with the "riched" variants of the functional logic of some
  *  operators.
  */ 
-class KafkaRuntimeContext : public RuntimeContext
+class KafkaRuntimeContext : RuntimeContext
 {
 private:
     template<typename T> friend class Source_Replica; // friendship with Source_Replica class
@@ -45,6 +46,25 @@ private:
     }
 
 public:
+    /// Constructor
+    KafkaRuntimeContext(std::string _kafkaName,
+                   std::vector<RdKafka::TopicPartition *> _partitions):
+                   kafkaName(_kafkaName),
+                   partitions(_partitions) {}
+    /// Copy Constructor
+    KafkaRuntimeContext(const KafkaRuntimeContext &_other): // do not copy the storage
+                   kafkaName(_other.kafkaName),
+                   partitions(_other.partitions) {}
+
+    /// Copy Assignment Operator
+    KafkaRuntimeContext &operator=(const KafkaRuntimeContext &_other) // do not copy the storage
+    {
+        if (this != &_other) {
+            kafkaName = _other.kafkaName;
+            partitions = _other.partitions;
+        }
+        return *this;
+    }
     
     std::string getName () {
         return kafkaName;
