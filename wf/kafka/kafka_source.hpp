@@ -144,7 +144,7 @@ private:
         "WindFlow Compilation Error - Kafka_Source_Replica does not have a valid deserialization logic:\n");
     std::string opName; // name of the Kafka_Source containing the replica
     KafkaRuntimeContext context; // RuntimeContext object
-    std::function<void(RuntimeContext &)> closing_func; // closing functional logic used by the Kafka_Source replica
+    std::function<void(KafkaRuntimeContext &)> closing_func; // closing functional logic used by the Kafka_Source replica
     bool terminated; // true if the Kafka_Source replica has finished its work
     Execution_Mode_t execution_mode;// execution mode of the Kafka_Source replica
     Time_Policy_t time_policy; // time policy of the Kafka_Source replica
@@ -181,7 +181,7 @@ public:
     // Constructor
     Kafka_Source_Replica(kafka_deser_func_t _func,
                          std::string _opName,
-                         RuntimeContext _context,
+                         KafkaRuntimeContext _context,
                          size_t _outputBatchSize,
                          std::string _brokers,
                          std::vector<std::string> _topics,
@@ -647,7 +647,7 @@ public:
                  std::string _strat,
                  int32_t _parallelism,
                  std::vector<int> _offset,
-                 std::function<void(RuntimeContext &)> _closing_func):
+                 std::function<void(KafkaRuntimeContext &)> _closing_func):
                  func(_func),
                  parallelism(_parallelism),
                  name(_name),
@@ -672,7 +672,7 @@ public:
         //parallelims check but we dont know the number of partitions
         //pthread barrier
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
-            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, RuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, partition, offset, &bar, _closing_func));
+            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, kafkaRuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, partition, offset, &bar, _closing_func));
         }
     }
 
