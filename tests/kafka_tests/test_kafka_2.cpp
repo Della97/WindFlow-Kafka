@@ -102,7 +102,7 @@ bool deser_func(std::optional<std::reference_wrapper<RdKafka::Message>> msg, Sou
 }
 
 // closing logic (stub)
-void closing_func(kafkaRuntimeContext &r) {}
+void closing_func(KafkaRuntimeContext &r) {}
 
 // deserialization functor (stub)
 class deser_functor
