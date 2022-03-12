@@ -43,7 +43,7 @@
 #include<source_shipper.hpp>
 #include<librdkafka/rdkafkacpp.h>
 #include<optional>
-#include"kafkacontext.hpp"
+#include<kafka/kafkacontext.hpp>
 
 namespace wf {
 

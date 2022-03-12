@@ -8,7 +8,7 @@
 #include<string>
 #include<context.hpp>
 #include<local_storage.hpp>
-#include"meta_kafka.hpp"
+#include<kafka/kafkacontext.hpp>
 
 namespace wf {
 
