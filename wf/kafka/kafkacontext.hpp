@@ -21,12 +21,11 @@ namespace wf {
  *  information accessible with the "riched" variants of the functional logic of some
  *  operators.
  */ 
-class KafkaRuntimeContext
+class KafkaRuntimeContext : public RuntimeContext
 {
 private:
     template<typename T> friend class Source_Replica; // friendship with Source_Replica class
     template<typename T> friend class Kafka_Source_Replica; // friendship with Kafka_Source_Replica class
-    template<typename T> friend class RuntimeContext; // friendship with RuntimeContext class
     template<typename T1> friend class Map_Replica; // friendship with Map_Replica class
     template<typename T1> friend class Filter_Replica; // friendship with Filter_Replica class
     template<typename T1, typename T2> friend class Reduce_Replica; // friendship with Reduce_Replica class
