@@ -47,16 +47,6 @@
 
 namespace wf {
 
-/*
-
-// tuple_t struct (to be revisited)
-struct tuple_t
-{
-    int key;
-    int value;
-};
-*/
-
 
 /*************************************************** KAFKA_SOURCE OPERATOR ***************************************************/
 // declaration of functions to extract the type of the result form the deserialization function
@@ -83,7 +73,20 @@ decltype(get_result_t_KafkaSource(&F_t::operator())) get_result_t_KafkaSource(F_
 
 std::false_type get_result_t_KafkaSource(...); // black hole
 /*****************************************************************************************************************************/
+/**************************************************CLOSING_FUNC KAFKA**************************************/
+// declaration of functions to check the signature of the closing logic
+template<typename F_t>
+std::true_type check_kafka_closing_t(void (F_t::*)(KafkaRuntimeContext&) const);
 
+template<typename F_t>
+std::true_type check_kafka_closing_t(void (F_t::*)(KafkaRuntimeContext&));
+
+std::true_type check_kafka_closing_t(void (*)(KafkaRuntimeContext&));
+
+template<typename F_t>
+decltype(check_kafka_closing_t(&F_t::operator())) check_closing_t(F_t);
+
+std::false_type check_kafka_closing_t(...); // black hole
 } // namespace wf
 
 #endif
