@@ -55,7 +55,7 @@ namespace wf {
 class RuntimeContext
 {
 private:
-    friend class KafkaRuntimeContext;
+    friend class KafkaRuntimeContext;  //NOT SURE
     template<typename T> friend class Source_Replica; // friendship with Source_Replica class
     template<typename T1> friend class Map_Replica; // friendship with Map_Replica class
     template<typename T1> friend class Filter_Replica; // friendship with Filter_Replica class
