@@ -102,7 +102,7 @@ bool deser_func(std::optional<std::reference_wrapper<RdKafka::Message>> msg, Sou
 }
 
 // closing logic (stub)
-void closing_func(KafkaRuntimeContext &r) {}
+void closing_func(RuntimeContext &r) {}
 
 // deserialization functor (stub)
 class deser_functor
@@ -142,7 +142,7 @@ public:
 class closing_functor
 {
 public:
-    void operator()(KafkaRuntimeContext &r) {}
+    void operator()(RuntimeContext &r) {}
 };
 
 // main
@@ -172,7 +172,7 @@ int main()
     std::cout << "Creazione con funzioni -> OK!" << std::endl;
 
     auto deser_lambda = [](std::optional<std::reference_wrapper<RdKafka::Message>> msg, Source_Shipper<tuple_t> &shipper /*, tuple_t &output */) { return true; };
-    auto closing_lambda = [](KafkaRuntimeContext &) { return; };
+    auto closing_lambda = [](RuntimeContext &) { return; };
 
     Kafka_Source source2 = Kafka_Source(deser_lambda, name, outputBactchSize, brokers, topics, groupid, strat, parallelism, offsetss, closing_lambda);
     std::cout << "Creazione con lambda -> OK!" << std::endl;    

@@ -157,7 +157,7 @@ public:
         // static assert to check the signature
         static_assert(!std::is_same<decltype(check_closing_t(_closing_func)), std::false_type>::value,
             "WindFlow Compilation Error - unknown signature passed to withClosingFunction (Kafka_Source_Builder):\n"
-            "  Candidate : void(RuntimeContext &)\n");
+            "  Candidate : void(KafkaRuntimeContext &)\n");
         closing_func = _closing_func;
         return *this;
     }
