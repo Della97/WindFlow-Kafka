@@ -269,6 +269,7 @@ public:
                               topics,
                               groupid,
                               strat,
+                              idleTime,
                               partition,
                               offsets,
                               closing_func);

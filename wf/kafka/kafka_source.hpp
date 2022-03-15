@@ -648,7 +648,7 @@ public:
                  std::vector<std::string> _topics,
                  std::string _groupid, //merge group-id
                  std::string _strat,
-                 int _idletime,
+                 int _idleTime,
                  int32_t _parallelism,
                  std::vector<int> _offset,
                  std::function<void(KafkaRuntimeContext &)> _closing_func):
