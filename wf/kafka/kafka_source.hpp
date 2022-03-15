@@ -154,7 +154,7 @@ private:
     RdKafka::KafkaConsumer *consumer = nullptr;
     RdKafka::Conf *conf = nullptr;
     RdKafka::ErrorCode error;
-    int idleTime = 1000; //default value
+    int idleTime; //default value
     std::string brokers;
     std::string groupid;
     std::string strat;
@@ -354,7 +354,7 @@ public:
             exit(1);
 
         }
-        
+        std::cout << consumer->name() << std::endl;
         /* Subscribe to topics */
 
         RdKafka::ErrorCode err = consumer->subscribe(topics);
@@ -393,11 +393,6 @@ public:
         }
         */
         while (run) { // main loop          
-            if (partitionss.empty()) {
-           std::cout << "partiotions vuota" << std::endl;
-        } else {
-           std::cout << "partiotions NON vuota" << consumer->name() <<  std::endl;
-        }
             RdKafka::Message *msg = consumer->consume(idleTime); // qui si può fare qualcosa di carino per gestire il timeout
             switch (msg->err()) {
                 case RdKafka::ERR__TIMED_OUT:
