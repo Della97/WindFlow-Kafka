@@ -154,6 +154,7 @@ private:
     RdKafka::KafkaConsumer *consumer = nullptr;
     RdKafka::Conf *conf = nullptr;
     RdKafka::ErrorCode error;
+    std::string provaBroker = "localhost:9094";  //NEEDED TO DELETE
     std::string brokers;
     std::string groupid;
     std::string strat;
@@ -339,6 +340,7 @@ public:
         ex_rebalance_cb.initOffsetTopics(offset, topics);
         conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
         conf->set("metadata.broker.list", brokers, errstr);
+        conf->set("metadata.broker.list", provaBroker, errstr);
         conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
         conf->set("group.id", groupid, errstr);
         conf->set("partition.assignment.strategy", strat, errstr);
