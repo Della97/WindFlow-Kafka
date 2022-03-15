@@ -91,10 +91,6 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
                 }
             }
         }
-
-        for (auto i:partitions) {
-            std::cout << "PRINTO GLI OFFSET: " << i->topic() << " " << i->partition() << " " << i->offset() << std::endl;
-        }
         init++;
     }
 
@@ -355,6 +351,7 @@ public:
 
         }
         std::cout << consumer->name() << std::endl;
+        std::cout << parallelism << std::endl;
         /* Subscribe to topics */
 
         RdKafka::ErrorCode err = consumer->subscribe(topics);
