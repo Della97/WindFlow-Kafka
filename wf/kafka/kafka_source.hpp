@@ -351,7 +351,7 @@ public:
 
         }
         std::cout << consumer->name() << std::endl;
-        std::cout << parallelism << std::endl;
+        std::cout << idleTime << std::endl;
         /* Subscribe to topics */
 
         RdKafka::ErrorCode err = consumer->subscribe(topics);
