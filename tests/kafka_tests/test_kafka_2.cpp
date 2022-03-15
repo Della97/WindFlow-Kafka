@@ -190,7 +190,7 @@ int main()
                                 .withTopics(topic1)
                                 .withGroupID(groupid)
                                 .withAssignmentPolicy(strat)
-                                .withPartition(parallelism)
+                                .withParallelism(parallelism)
                                 .withOffset(10)
                                 .build();
     std::cout << "Creazione con builder tramite funzioni -> OK!" <<  std::endl;
@@ -203,7 +203,7 @@ int main()
                                 .withTopics(topic1, topic2)
                                 .withGroupID(groupid)
                                 .withAssignmentPolicy(strat)
-                                .withPartition(parallelism)
+                                .withParallelism(parallelism)
                                 .withOffset(10, 10)
                                 .build();
     std::cout << "Creazione con builder tramite lambda -> OK!" <<  std::endl;
@@ -216,7 +216,7 @@ int main()
                                 .withTopics(topic1, topic2)
                                 .withGroupID(groupid)
                                 .withAssignmentPolicy(strat)
-                                .withPartition(parallelism)
+                                .withParallelism(parallelism)
                                 .withOffset(-1, -1)
                                 .build();
     std::cout << "Creazione con builder tramite funtori -> OK!" <<  std::endl;
