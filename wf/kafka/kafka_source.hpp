@@ -154,6 +154,7 @@ private:
     RdKafka::KafkaConsumer *consumer = nullptr;
     RdKafka::Conf *conf = nullptr;
     RdKafka::ErrorCode error;
+    int idleTime = 1000; //default value
     std::string brokers;
     std::string groupid;
     std::string strat;
@@ -188,6 +189,7 @@ public:
                          std::string _groupid, //merge group-id
                          std::string _strat,
                          int32_t _parallelism,
+                         int _idleTime;
                          std::vector<int> _offset,
                          pthread_barrier_t *_bar,
                          std::function<void(KafkaRuntimeContext &)> _closing_func):
@@ -199,6 +201,7 @@ public:
                          topics(_topics),
                          groupid(_groupid),
                          strat(_strat),
+                         idleTime(_idleTime),
                          parallelism(_parallelism),
                          offset(_offset),
                          bar(_bar),
@@ -218,6 +221,7 @@ public:
                          topics(_other.topics),
                          groupid(_other.groupid),
                          strat(_other.strat),
+                         idleTime(_other.idleTime),
                          parallelism(_other.parallelism),
                          offset(_other.offset),
                          bar(_other.bar),
@@ -248,6 +252,7 @@ public:
                          topics(std::move(_other.topics)),
                          groupid(std::move(_other.groupid)),
                          strat(std::move(_other.strat)),
+                         idleTime(std::move(_other.idleTime)),
                          parallelism(std::move(_other.parallelism)),
                          offset(std::move(_other.offset)),
                          bar(std::move(_other.bar)),
@@ -393,7 +398,7 @@ public:
         } else {
            std::cout << "partiotions NON vuota" << consumer->name() <<  std::endl;
         }
-            RdKafka::Message *msg = consumer->consume(1000); // qui si può fare qualcosa di carino per gestire il timeout
+            RdKafka::Message *msg = consumer->consume(idleTime); // qui si può fare qualcosa di carino per gestire il timeout
             switch (msg->err()) {
                 case RdKafka::ERR__TIMED_OUT:
                     if constexpr (isNonRiched) {
@@ -521,6 +526,7 @@ private:
     std::string brokers;
     std::string groupid;
     std::string strat;
+    int idleTime;
     std::vector<std::string> topics;
     int32_t partition;
     std::vector<int> offset;
@@ -642,11 +648,13 @@ public:
                  std::vector<std::string> _topics,
                  std::string _groupid, //merge group-id
                  std::string _strat,
+                 int _idletime,
                  int32_t _parallelism,
                  std::vector<int> _offset,
                  std::function<void(KafkaRuntimeContext &)> _closing_func):
                  func(_func),
                  parallelism(_parallelism),
+                 idleTime(_idleTime),
                  name(_name),
                  outputBatchSize(_outputBatchSize),
                  brokers(_brokers),
@@ -669,7 +677,7 @@ public:
         //parallelims check but we dont know the number of partitions
         //pthread barrier
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
-            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, KafkaRuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, partition, offset, &bar, _closing_func));
+            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, KafkaRuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, idleTime, partition, offset, &bar, _closing_func));
         }
     }
 

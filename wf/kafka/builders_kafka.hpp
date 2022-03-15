@@ -104,6 +104,7 @@ private:
     /* Da qui in poi abbiamo una serie di variabili che vanno sistemate */
     Sstring topic;
     Iint offset;
+    int idleTime;
     std::vector< std::string > topics;
     std::string brokers;
     std::string groupid;
@@ -195,6 +196,18 @@ public:
     Kafka_Source_Builder<kafka_deser_func_t> &withAssignmentPolicy(std::string _strat)   //merge group-id
     {
         strat = _strat;
+        return *this;
+    }
+
+    /** 
+     *  \brief Set the idle time while fetching from broker
+     *  
+     *  \param _idelTime for the assignment
+     *  \return a reference to the builder object
+     */ 
+    Kafka_Source_Builder<kafka_deser_func_t> &withIdleness(int _idleTime)   //merge group-id
+    {
+        idleTime = _idleTime;
         return *this;
     }
 
