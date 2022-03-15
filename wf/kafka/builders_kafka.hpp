@@ -97,7 +97,7 @@ private:
     using kafka_source_t = Kafka_Source<kafka_deser_func_t>; // type of the Kafka_Source to be created by the builder
     using closing_func_t = std::function<void(wf::KafkaRuntimeContext&)>; // type of the closing functional logic
     std::string name = "kafka_source"; // name of the Kafka_Source
-    size_t parallelism = 1; // parallelism of the Kafka_Source
+    size_t parallelism; // parallelism of the Kafka_Source
     size_t outputBatchSize = 0; // output batch size of the Kafka_Source
     closing_func_t closing_func; // closing function logic of the Kafka_Source
 
@@ -204,9 +204,9 @@ public:
      *  \param _partition for the consumer
      *  \return a reference to the builder object
      */ 
-    Kafka_Source_Builder<kafka_deser_func_t> &withPartition(int32_t _partition)
+    Kafka_Source_Builder<kafka_deser_func_t> &withParallelism(int32_t _parallelism)
     {
-        partition = _partition;
+        parallelism = _parallelism;
         return *this;
     }
 

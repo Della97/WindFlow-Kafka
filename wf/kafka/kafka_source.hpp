@@ -154,7 +154,6 @@ private:
     RdKafka::KafkaConsumer *consumer = nullptr;
     RdKafka::Conf *conf = nullptr;
     RdKafka::ErrorCode error;
-    std::string provaBroker = "localhost:9094";  //NEEDED TO DELETE
     std::string brokers;
     std::string groupid;
     std::string strat;
@@ -188,7 +187,7 @@ public:
                          std::vector<std::string> _topics,
                          std::string _groupid, //merge group-id
                          std::string _strat,
-                         int32_t _partition,
+                         int32_t _parallelism,
                          std::vector<int> _offset,
                          pthread_barrier_t *_bar,
                          std::function<void(KafkaRuntimeContext &)> _closing_func):
@@ -200,7 +199,7 @@ public:
                          topics(_topics),
                          groupid(_groupid),
                          strat(_strat),
-                         partition(_partition),
+                         parallelism(_parallelism),
                          offset(_offset),
                          bar(_bar),
                          closing_func(_closing_func),
@@ -219,7 +218,7 @@ public:
                          topics(_other.topics),
                          groupid(_other.groupid),
                          strat(_other.strat),
-                         partition(_other.partition),
+                         parallelism(_other.parallelism),
                          offset(_other.offset),
                          bar(_other.bar),
                          closing_func(_other.closing_func),
@@ -249,7 +248,7 @@ public:
                          topics(std::move(_other.topics)),
                          groupid(std::move(_other.groupid)),
                          strat(std::move(_other.strat)),
-                         partition(std::move(_other.partition)),
+                         parallelism(std::move(_other.parallelism)),
                          offset(std::move(_other.offset)),
                          bar(std::move(_other.bar)),
                          closing_func(std::move(_other.closing_func)),
@@ -340,7 +339,6 @@ public:
         ex_rebalance_cb.initOffsetTopics(offset, topics);
         conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
         conf->set("metadata.broker.list", brokers, errstr);
-        conf->set("metadata.broker.list", provaBroker, errstr);
         conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
         conf->set("group.id", groupid, errstr);
         conf->set("partition.assignment.strategy", strat, errstr);
