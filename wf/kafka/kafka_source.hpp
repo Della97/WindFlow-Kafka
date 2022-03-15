@@ -189,7 +189,7 @@ public:
                          std::string _groupid, //merge group-id
                          std::string _strat,
                          int32_t _parallelism,
-                         int _idleTime;
+                         int _idleTime,
                          std::vector<int> _offset,
                          pthread_barrier_t *_bar,
                          std::function<void(KafkaRuntimeContext &)> _closing_func):
