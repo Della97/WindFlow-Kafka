@@ -627,6 +627,7 @@ public:
      *  \param _topics name of the topics to subscribe
      *  \param _groupid name of the group id (all replicas inthe same group)
      *  \param _strat strategy used by he group manager to assign the partitions of the topics among consumers
+     *  \param _idleTime interval after each consume by the consumer
      *  \param _parallelism internal parallelism of the Kafka_Source
      *  \param _offset offset to start fetching
      *  \param _closing_func closing functional logic of the Kafka_Source (a function or callable type)
@@ -664,6 +665,12 @@ public:
             exit(EXIT_FAILURE);
         }
         pthread_barrier_init(&bar, NULL, parallelism);
+
+        std::cout << "************************" << std::cout;
+        std::cout << "strat: " << strat << std::endl;
+        std::cout << "parallelism: " << parallelism << std::endl;
+        std::cout << "idletime: " << idleTime << std::endl;
+        std::cout << "************************" << std::cout;
 
         //parallelims check but we dont know the number of partitions
         //pthread barrier
