@@ -270,7 +270,7 @@ public:
                               groupid,
                               strat,
                               idleTime,
-                              partition,
+                              parallelism,
                               offsets,
                               closing_func);
     }
