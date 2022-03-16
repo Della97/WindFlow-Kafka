@@ -666,11 +666,11 @@ public:
         }
         pthread_barrier_init(&bar, NULL, parallelism);
 
-        std::cout << "************************" << std::cout;
+        std::cout << "************************" << std::endl;
         std::cout << "strat: " << strat << std::endl;
         std::cout << "parallelism: " << parallelism << std::endl;
         std::cout << "idletime: " << idleTime << std::endl;
-        std::cout << "************************" << std::cout;
+        std::cout << "************************" << std::endl;
 
         //parallelims check but we dont know the number of partitions
         //pthread barrier
