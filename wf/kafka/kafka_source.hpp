@@ -383,12 +383,10 @@ public:
     // svc (utilized by the FastFlow runtime)
     void *svc(void *) override
     {
-        /*
         consumer->assignment(partitions);
         for (auto i: partitions) {
             std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
         }
-        */
         while (run) { // main loop          
             RdKafka::Message *msg = consumer->consume(idleTime); // qui si può fare qualcosa di carino per gestire il timeout
             switch (msg->err()) {
