@@ -351,7 +351,7 @@ public:
 
         }
         std::cout << consumer->name() << std::endl;
-        std::cout << idleTime << std::endl;
+        std::cout << parallelism << std::endl;
         /* Subscribe to topics */
 
         RdKafka::ErrorCode err = consumer->subscribe(topics);
@@ -659,8 +659,6 @@ public:
             std::cerr << RED << "WindFlow Error: Kafka_Source has parallelism zero" << DEFAULT_COLOR << std::endl;
             exit(EXIT_FAILURE);
         }
-        std::cout << "PROIMA DELLE REPLICHE" << parallelism << std::endl;
-        std::cout << "topics -> " << topics.size() << " offsets -> " << offset.size() << std::endl;
         if (offset.size() < topics.size()) {
             std::cerr << RED << "WindFlow Error: Number of offsets given are less than the number of topics" << DEFAULT_COLOR << std::endl;
             exit(EXIT_FAILURE);
