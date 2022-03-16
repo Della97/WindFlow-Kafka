@@ -383,8 +383,8 @@ public:
     // svc (utilized by the FastFlow runtime)
     void *svc(void *) override
     {
-        consumer->assignment(partitions);
-        for (auto i: partitions) {
+        consumer->assignment(partitionss);
+        for (auto i: partitionss) {
             std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
         }
         while (run) { // main loop          
