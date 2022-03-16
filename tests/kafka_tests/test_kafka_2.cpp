@@ -221,7 +221,7 @@ int main()
                                 .withAssignmentPolicy(strat)
                                 .withIdleness(2000)
                                 .withParallelism(parallelism)
-                                .withOffset(100, -1)
+                                .withOffset(-1, -1)
                                 .build();
     std::cout << "Creazione con builder tramite funtori -> OK!" <<  std::endl;
     PipeGraph graph("test_tracing_1", Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);

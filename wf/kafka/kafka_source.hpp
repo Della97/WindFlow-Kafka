@@ -85,7 +85,6 @@ class ExampleRebalanceCb : public RdKafka::RebalanceCb {
                     if (j->topic() == topics[i]) {
                         if (offsets[i] > -1) {
                             j->set_offset(offsets[i]);
-                            std::cout << "SETTED OFFSET" << std::endl;
                         }
                     }
                 }
@@ -350,8 +349,6 @@ public:
             exit(1);
 
         }
-        std::cout << consumer->name() << std::endl;
-        std::cout << parallelism << std::endl;
         /* Subscribe to topics */
 
         RdKafka::ErrorCode err = consumer->subscribe(topics);
@@ -383,10 +380,6 @@ public:
     // svc (utilized by the FastFlow runtime)
     void *svc(void *) override
     {
-        consumer->assignment(partitionss);
-        for (auto i: partitionss) {
-            std::cout << "PARTIZIONE: " << i->partition() << i->topic() << " ";
-        }
         while (run) { // main loop          
             RdKafka::Message *msg = consumer->consume(idleTime); // qui si può fare qualcosa di carino per gestire il timeout
             switch (msg->err()) {
