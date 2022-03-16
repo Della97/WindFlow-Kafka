@@ -210,6 +210,7 @@ int main()
                                 .build();
     std::cout << "Creazione con builder tramite lambda -> OK!" <<  std::endl;
 
+    std::cout << "HEREEEEEEEEEEEEE " << parallelism << std::endl;
     Kafka_Source source6 = Kafka_Source_Builder(d_functor)
                                 .withName(name)
                                 .withOutputBatchSize(outputBactchSize)
