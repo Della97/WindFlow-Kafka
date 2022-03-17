@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -g -finline-functions CMakeFiles/test_win_mrw_tb.dir/test_win_mrw_tb.cpp.o -o ../../bin/win_tests/test_win_mrw_tb  -lpthread 

@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -g -finline-functions CMakeFiles/test_merge_3.dir/test_merge_3.cpp.o -o ../../bin/merge_tests/test_merge_3  -lpthread 

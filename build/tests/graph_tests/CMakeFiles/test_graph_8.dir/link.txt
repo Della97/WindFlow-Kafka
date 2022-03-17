@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -g -finline-functions CMakeFiles/test_graph_8.dir/test_graph_8.cpp.o -o ../../bin/graph_tests/test_graph_8  -lpthread 

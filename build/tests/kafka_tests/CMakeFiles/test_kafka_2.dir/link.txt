@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -g -finline-functions CMakeFiles/test_kafka_2.dir/test_kafka_2.cpp.o -o ../../bin/kafka_tests/test_kafka_2  -lpthread -lrdkafka++ 

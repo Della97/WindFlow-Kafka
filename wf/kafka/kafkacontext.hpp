@@ -22,7 +22,7 @@ namespace wf {
  *  information accessible with the "riched" variants of the functional logic of some
  *  operators.
  */ 
-class KafkaRuntimeContext : public RuntimeContext
+class KafkaRuntimeContext
 {
 private:
     std::string kafkaName;
