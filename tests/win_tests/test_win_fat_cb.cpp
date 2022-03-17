@@ -61,6 +61,7 @@ int main(int argc, char *argv[])
     global_sum = 0;
     // arguments from command line
     if (argc != 11) {
+        
         cout << argv[0] << " -r [runs] -l [stream_length] -k [n_keys] -w [win length usec] -s [win slide usec]" << endl;
         exit(EXIT_SUCCESS);
     }
