@@ -261,10 +261,10 @@ CMakeFiles/docs.dir/clean:
 # Target rules for target tests/CMakeFiles/all_cpu.dir
 
 # All Build rule for target.
-tests/CMakeFiles/all_cpu.dir/all: tests/graph_tests/CMakeFiles/graph_tests.dir/all
 tests/CMakeFiles/all_cpu.dir/all: tests/merge_tests/CMakeFiles/merge_tests.dir/all
 tests/CMakeFiles/all_cpu.dir/all: tests/split_tests/CMakeFiles/split_tests.dir/all
 tests/CMakeFiles/all_cpu.dir/all: tests/win_tests/CMakeFiles/win_tests.dir/all
+tests/CMakeFiles/all_cpu.dir/all: tests/graph_tests/CMakeFiles/graph_tests.dir/all
 tests/CMakeFiles/all_cpu.dir/all: tests/kafka_tests/CMakeFiles/kafka_tests.dir/all
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/all_cpu.dir/build.make tests/CMakeFiles/all_cpu.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/all_cpu.dir/build.make tests/CMakeFiles/all_cpu.dir/build
@@ -525,15 +525,15 @@ tests/graph_tests/CMakeFiles/test_graph_5.dir/clean:
 # Target rules for target tests/graph_tests/CMakeFiles/graph_tests.dir
 
 # All Build rule for target.
+tests/graph_tests/CMakeFiles/graph_tests.dir/all: tests/graph_tests/CMakeFiles/test_graph_8.dir/all
+tests/graph_tests/CMakeFiles/graph_tests.dir/all: tests/graph_tests/CMakeFiles/test_graph_4.dir/all
+tests/graph_tests/CMakeFiles/graph_tests.dir/all: tests/graph_tests/CMakeFiles/test_graph_6.dir/all
+tests/graph_tests/CMakeFiles/graph_tests.dir/all: tests/graph_tests/CMakeFiles/test_graph_3.dir/all
 tests/graph_tests/CMakeFiles/graph_tests.dir/all: tests/graph_tests/CMakeFiles/test_graph_2.dir/all
 tests/graph_tests/CMakeFiles/graph_tests.dir/all: tests/graph_tests/CMakeFiles/test_graph_9.dir/all
 tests/graph_tests/CMakeFiles/graph_tests.dir/all: tests/graph_tests/CMakeFiles/test_graph_1.dir/all
 tests/graph_tests/CMakeFiles/graph_tests.dir/all: tests/graph_tests/CMakeFiles/test_graph_7.dir/all
 tests/graph_tests/CMakeFiles/graph_tests.dir/all: tests/graph_tests/CMakeFiles/test_graph_5.dir/all
-tests/graph_tests/CMakeFiles/graph_tests.dir/all: tests/graph_tests/CMakeFiles/test_graph_8.dir/all
-tests/graph_tests/CMakeFiles/graph_tests.dir/all: tests/graph_tests/CMakeFiles/test_graph_4.dir/all
-tests/graph_tests/CMakeFiles/graph_tests.dir/all: tests/graph_tests/CMakeFiles/test_graph_6.dir/all
-tests/graph_tests/CMakeFiles/graph_tests.dir/all: tests/graph_tests/CMakeFiles/test_graph_3.dir/all
 	$(MAKE) $(MAKESILENT) -f tests/graph_tests/CMakeFiles/graph_tests.dir/build.make tests/graph_tests/CMakeFiles/graph_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/graph_tests/CMakeFiles/graph_tests.dir/build.make tests/graph_tests/CMakeFiles/graph_tests.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/della/git/WindFlow-Kafka/build/CMakeFiles --progress-num= "Built target graph_tests"
