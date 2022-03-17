@@ -46,6 +46,23 @@
 #include<kafka/meta_kafka.hpp>
 #include<kafka/kafkacontext.hpp>
 
+struct createString {
+    std::string strs;
+
+    template<typename H>
+    void add_strings(H first) {
+        strs.append(first);
+        strs.append(", ");
+    }
+
+    template <typename H, typename... Args>
+    void add_strings(H first, Args... others) {
+        strs.append(first);
+        strs.append(", ");
+        add_strings(others...);
+    }
+};
+
 struct Sstring {
     std::vector<std::string> strs;
 
@@ -104,6 +121,7 @@ private:
     /* Da qui in poi abbiamo una serie di variabili che vanno sistemate */
     Sstring topic;
     Iint offset;
+    createString broker;
     int idleTime;
     std::vector< std::string > topics;
     std::string brokers;
@@ -169,9 +187,11 @@ public:
      *  \param _brokers for kafka server
      *  \return a reference to the builder object
      */ 
-    Kafka_Source_Builder<kafka_deser_func_t> &withBrokers(std::string _brokers)
+    template <typename H, typename... Args>
+    Kafka_Source_Builder<kafka_deser_func_t> &withBrokers(H first, Args... Ts)
     {
-        brokers = _brokers;
+        broker.add_strings(first, Ts...);
+        brokers = broker.strs;
         return *this;
     }
 
