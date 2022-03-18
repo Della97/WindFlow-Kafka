@@ -7,6 +7,7 @@
 #include<functional>
 #include<string>
 #include<context.hpp>
+#include<basic.hpp>
 #include<local_storage.hpp>
 #include<kafka/kafkacontext.hpp>
 #include<librdkafka/rdkafkacpp.h>
@@ -22,38 +23,26 @@ namespace wf {
  *  information accessible with the "riched" variants of the functional logic of some
  *  operators.
  */ 
-class KafkaRuntimeContext
+
+
+class KafkaRuntimeContext : public RuntimeContext
 {
 private:
+    template<typename T> friend class Kafka_Source_Replica; // friendship with Kafka_Source_Replica class
     std::string kafkaName;
     std::vector<RdKafka::TopicPartition *> partitions;
-    size_t parallelism; // parallelism of the operator
-    size_t index; // index of the replica
-    uint64_t timestamp; // timestamp of the current input
-    uint64_t watermark; // last received watermark
 
-    // Set the configuration parameters
-    void setContextParameters(std::string _kafkaName,
-                              std::vector<RdKafka::TopicPartition *> _partitions)
-    {
-        kafkaName = _kafkaName;
+    void setPartitions (std::vector<RdKafka::TopicPartition *> _partitions) {
         partitions = _partitions;
     }
 
 public:
-    KafkaRuntimeContext(size_t _parallelism,
-                   size_t _index):
-                   parallelism(_parallelism),
-                   index(_index),
-                   timestamp(0),
-                   watermark(0) {}
+    KafkaRuntimeContext (std::string _kafkaName,
+                         size_t _parallelism,
+                         size_t _index):
+                         RuntimeContext(_parallelism, _index),
+                         kafkaName(_kafkaName) {}
 
-    /// Copy Constructor
-    KafkaRuntimeContext(const KafkaRuntimeContext &_other): // do not copy the storage
-                   parallelism(_other.parallelism),
-                   index(_other.index),
-                   timestamp(_other.timestamp),
-                   watermark(_other.watermark) {}
     
     std::string getName () {
         return kafkaName;

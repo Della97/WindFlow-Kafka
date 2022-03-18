@@ -114,6 +114,10 @@ class Reduce;
 template<typename sink_func_t, typename key_extractor_func_t>
 class Sink;
 
+/// Foward declaration of the KafkaSink operator
+template<typename kafka_sink_func_t, typename key_extractor_func_t>
+class Kafka_Sink;
+
 /// Forward declaration of the Keyed_Windows operator
 template<typename win_func_t, typename key_extractor_func_t>
 class Keyed_Windows;
@@ -142,6 +146,9 @@ class PipeGraph;
 
 /// Forward declaration of the RuntimeContext class
 class RuntimeContext;
+
+/// Forward declaration of the KafkaRuntimeContext class
+class KafkaRuntimeContext;
 
 //@cond DOXY_IGNORE
 

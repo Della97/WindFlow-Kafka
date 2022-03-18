@@ -46,7 +46,7 @@ struct tuple_t
 
 
 // Sink functor
-class Sink_Functor
+class Kafka_Sink_Functor
 {
 private:
     size_t received; // counter of received results
@@ -54,12 +54,12 @@ private:
 
 public:
     // Constructor
-    Sink_Functor():
+    Kafka_Sink_Functor():
                  received(0),
                  totalsum(0) {}
 
     // operator()
-    void operator()(optional<tuple_t> &out)
+    void operator()(std::optional<tuple_t> &out)
     {
         if (out) {
             //std::cout << "[SINK] -> Received: " << (*out).key << std::endl;
@@ -210,25 +210,24 @@ int main()
                                 .build();
     std::cout << "Creazione con builder tramite lambda -> OK!" <<  std::endl;
 
-    std::cout << "HEREEEEEEEEEEEEE " << parallelism << std::endl;
     Kafka_Source source6 = Kafka_Source_Builder(d_functor)
                                 .withName(name)
                                 .withOutputBatchSize(outputBactchSize)
                                 .withClosingFunction(c_functor)
-                                .withBrokers("localhost", "localhost:9494")
-                                .withTopics(topic1, topic2)
+                                .withBrokers("localhost:9092", "localhost:9093")
+                                .withTopics(topic1, topic2, "topic-name")
                                 .withGroupID(groupid)
                                 .withAssignmentPolicy(strat)
                                 .withIdleness(2000)
                                 .withParallelism(parallelism)
-                                .withOffset(-1, -1)
+                                .withOffset(-1, -1, -1)
                                 .build();
     std::cout << "Creazione con builder tramite funtori -> OK!" <<  std::endl;
     PipeGraph graph("test_tracing_1", Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
     MultiPipe &pipe = graph.add_source(source6);
         //SINK
-    Sink_Functor sink_functor;
-        Sink sink1 = Sink_Builder(sink_functor)
+    Kafka_Sink_Functor sink_functor;
+    Kafka_Sink sink1 = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(sink1_degree)
                         .build();

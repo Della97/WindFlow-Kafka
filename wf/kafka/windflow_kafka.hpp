@@ -39,6 +39,7 @@
 /// includes
 #include<kafka/builders_kafka.hpp>
 #include<kafka/kafka_source.hpp>
+#include<kafka/kafka_sink.hpp>
 #include<kafka/kafkacontext.hpp>
 
 #endif

@@ -87,6 +87,51 @@ template<typename F_t>
 decltype(check_kafka_closing_t(&F_t::operator())) check_kafka_closing_t(F_t);
 
 std::false_type check_kafka_closing_t(...); // black hole
+
+/*************************************************** KAFKA_SINK OPERATOR ***************************************************/
+// declaration of functions to extract the input type of the KafkaSink operator
+template<typename F_t, typename Arg> // optional version
+Arg get_tuple_t_KafkaSink(void (F_t::*)(std::optional<Arg>&) const);
+
+template<typename F_t, typename Arg> // optional version
+Arg get_tuple_t_KafkaSink(void (F_t::*)(std::optional<Arg>&));
+
+template<typename Arg> // optional version
+Arg get_tuple_t_KafkaSink(void (*)(std::optional<Arg>&));
+
+template<typename F_t, typename Arg> // optional riched version
+Arg get_tuple_t_KafkaSink(void (F_t::*)(std::optional<Arg>&, KafkaRuntimeContext&) const);
+
+template<typename F_t, typename Arg> // optional riched version
+Arg get_tuple_t_KafkaSink(void (F_t::*)(std::optional<Arg>&, KafkaRuntimeContext&));
+
+template<typename Arg> // optional riched version
+Arg get_tuple_t_KafkaSink(void (*)(std::optional<Arg>&, KafkaRuntimeContext&));
+
+template<typename F_t, typename Arg> // optional (reference wrapper) version
+Arg get_tuple_t_KafkaSink(void (F_t::*)(std::optional<std::reference_wrapper<Arg>>) const);
+
+template<typename F_t, typename Arg> // optional (reference wrapper) version
+Arg get_tuple_t_KafkaSink(void (F_t::*)(std::optional<std::reference_wrapper<Arg>>));
+
+template<typename Arg> // optional (reference wrapper) version
+Arg get_tuple_t_KafkaSink(void (*)(std::optional<std::reference_wrapper<Arg>>));
+
+template<typename F_t, typename Arg> // optional (reference wrapper) riched version
+Arg get_tuple_t_KafkaSink(void (F_t::*)(std::optional<std::reference_wrapper<Arg>>, KafkaRuntimeContext&) const);
+
+template<typename F_t, typename Arg> // optional (reference wrapper) riched version
+Arg get_tuple_t_KafkaSink(void (F_t::*)(std::optional<std::reference_wrapper<Arg>>, KafkaRuntimeContext&));
+
+template<typename Arg> // optional (reference wrapper) riched version
+Arg get_tuple_t_KafkaSink(void (*)(std::optional<std::reference_wrapper<Arg>>, KafkaRuntimeContext&));
+
+template<typename F_t>
+decltype(get_tuple_t_KafkaSink(&F_t::operator())) get_tuple_t_Sink(F_t);
+
+std::false_type get_tuple_t_KafkaSink(...); // black hole
+
+
 } // namespace wf
 
 #endif

@@ -191,6 +191,8 @@ public:
     Kafka_Source_Builder<kafka_deser_func_t> &withBrokers(H first, Args... Ts)
     {
         broker.add_strings(first, Ts...);
+        broker.strs.pop_back();
+        broker.strs.pop_back();
         brokers = broker.strs;
         return *this;
     }
@@ -293,6 +295,123 @@ public:
                               parallelism,
                               offsets,
                               closing_func);
+    }
+};
+
+//**************************************************SINK_BUILDER*******************************************************
+
+template<typename kafka_sink_func_t, typename key_t=empty_key_t>
+class Kafka_Sink_Builder
+{
+private:
+    template<typename T1, typename T2> friend class Kafka_Sink_Builder;
+    kafka_sink_func_t func; // deserialization logic of the Kafka_Source
+    using tuple_t = decltype(get_tuple_t_KafkaSink(func)); // extracting the result_t type and checking the admissible signatures
+    // static assert to check the signature of the Kafka_Source functional logic
+    static_assert(!(std::is_same<tuple_t, std::false_type>::value),
+        "WindFlow Compilation Error - unknown signature passed to the Kafka_Source_Builder:\n"
+        "  Candidate 1 : void(std::optional<tuple_t> &)\n"
+        "  Candidate 2 : void(std::optional<tuple_t> &, KafkaRuntimeContext &)\n");
+    // static assert to check that the result_t type must be default constructible
+    static_assert(std::is_default_constructible<tuple_t>::value,
+        "WindFlow Compilation Error - tuple_t type must be default constructible (Kafka_Sink_Builder):\n");
+    using key_extractor_func_t = std::function<key_t(const tuple_t&)>;
+    using kafka_sink_t = Kafka_Sink<kafka_sink_func_t, key_extractor_func_t>; // type of the Kafka_Source to be created by the builder
+    using closing_func_t = std::function<void(wf::KafkaRuntimeContext&)>; // type of the closing functional logic
+    std::string name = "kafka_sink"; // name of the Kafka_Source
+    size_t parallelism; // parallelism of the Kafka_Source
+    Routing_Mode_t input_routing_mode = Routing_Mode_t::FORWARD;
+    key_extractor_func_t key_extr = [](const tuple_t &t) -> key_t { return key_t(); };
+    closing_func_t closing_func = [](KafkaRuntimeContext &r) -> void { return; }; // closing function logic of the Kafka_Sink
+
+    /* Da qui in poi abbiamo una serie di variabili che vanno sistemate */
+    Sstring topic;
+    Iint offset;
+    createString broker;
+    int idleTime;
+    std::vector< std::string > topics;
+    std::string brokers;
+    std::string groupid;
+    std::string strat;
+    int32_t partition;
+    std::vector<int> offsets;
+
+public:
+    /** 
+     *  \brief Constructor
+     *  
+     *  \param _func functional logic of the Kafka_Source (a function or a callable type)
+     */ 
+    Kafka_Sink_Builder(kafka_sink_func_t _func):
+                         func(_func) {}
+
+
+    /** 
+     *  \brief Set the name of the Kafka_Source
+     *  
+     *  \param _name of the Kafka_Source
+     *  \return a reference to the builder object
+     */ 
+    Kafka_Sink_Builder<kafka_sink_func_t, key_t> &withName(std::string _name)
+    {
+        name = _name;
+        return *this;
+    }
+
+
+    /** 
+     *  \brief Set the parallelism
+     *  
+     *  \param _parallelism for the sink
+     *  \return a reference to the builder object
+     */ 
+    Kafka_Sink_Builder<kafka_sink_func_t> &withParallelism(int32_t _parallelism)
+    {
+        parallelism = _parallelism;
+        return *this;
+    }
+
+    /** 
+     *  \brief Set the closing functional logic used by the Kafka_Source
+     *  
+     *  \param _closing_func closing functional logic (a function or a callable type)
+     *  \return a reference to the builder object
+     */ 
+    template<typename closing_F_t>
+    Kafka_Sink_Builder<kafka_sink_func_t, key_t> &withClosingFunction(closing_F_t _closing_func)
+    {
+        // static assert to check the signature
+        static_assert(!std::is_same<decltype(check_kafka_closing_t(_closing_func)), std::false_type>::value,
+            "WindFlow Compilation Error - unknown signature passed to withClosingFunction (Kafka_Sink_Builder):\n"
+            "  Candidate : void(KafkaRuntimeContext &)\n");
+        closing_func = _closing_func;
+        return *this;
+    }
+
+    
+
+/**
+ * kafka_sink_func_t _func,
+         key_extractor_func_t _key_extr,
+         size_t _parallelism,
+         std::string _name,
+         Routing_Mode_t _input_routing_mode,
+         std::function<void(RuntimeContext &)> _closing_func):
+*/
+
+    /** 
+     *  \brief Create the Source
+     *  
+     *  \return a new Source instance
+     */ 
+    kafka_sink_t build()
+    {
+        return kafka_sink_t(func,
+                            key_extr,
+                            parallelism,
+                            name,
+                            input_routing_mode,
+                            closing_func);
     }
 };
 
