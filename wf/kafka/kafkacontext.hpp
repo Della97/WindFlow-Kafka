@@ -46,11 +46,12 @@ public:
                          kafkaName(_kafkaName) {}
 
     
+    //NOT SURE
     void setContext (uint64_t _timestamp, uint64_t _watermark) {
         timestamp = _timestamp;
         watermark = _watermark;
     }
-    
+
     std::string getName () {
         return kafkaName;
     }
