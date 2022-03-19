@@ -59,7 +59,7 @@ public:
                  totalsum(0) {}
 
     // operator()
-    void operator()(std::optional<tuple_t> &out)
+    void operator()(std::optional<tuple_t> &out, KafkaRuntimeContext &rc)
     {
         if (out) {
             //std::cout << "[SINK] -> Received: " << (*out).key << std::endl;
