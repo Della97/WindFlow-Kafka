@@ -165,7 +165,7 @@ public:
             func(opt_tuple);
         }
         if constexpr (isRichedNonWrapper)  { // riched non-wrapper version
-            context.setContextParameters(_timestamp, _watermark); // set the parameter of the RuntimeContext
+            context.setContext(_timestamp, _watermark); // set the parameter of the KafkaRuntimeContext
             std::optional<decltype(get_tuple_t_KafkaSink(func))> opt_tuple = std::make_optional(std::move(_tuple)); // move the input tuple in the optional
             func(opt_tuple, context);
         }
@@ -174,7 +174,7 @@ public:
             func(opt_wtuple);
         }
         if constexpr (isRichedWrapper) { // riched wrapper version
-            context.setContextParameters(_timestamp, _watermark); // set the parameter of the RuntimeContext
+            context.setContext(_timestamp, _watermark); // set the parameter of the KafkaRuntimeContext
             std::optional<std::reference_wrapper<decltype(get_tuple_t_KafkaSink(func))>> opt_wtuple = std::make_optional(std::ref(_tuple));
             func(opt_wtuple, context);
         }

@@ -31,6 +31,8 @@ private:
     template<typename T> friend class Kafka_Source_Replica; // friendship with Kafka_Source_Replica class
     std::string kafkaName;
     std::vector<RdKafka::TopicPartition *> partitions;
+    uint64_t timestamp;
+    uint64_t watermark;
 
     void setPartitions (std::vector<RdKafka::TopicPartition *> _partitions) {
         partitions = _partitions;
@@ -43,6 +45,11 @@ public:
                          RuntimeContext(_parallelism, _index),
                          kafkaName(_kafkaName) {}
 
+    
+    void setContext (uint64_t _timestamp, uint64_t _watermark) {
+        timestamp = _timestamp;
+        watermark = _watermark;
+    }
     
     std::string getName () {
         return kafkaName;

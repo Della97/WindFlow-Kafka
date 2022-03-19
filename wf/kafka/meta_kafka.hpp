@@ -127,7 +127,7 @@ template<typename Arg> // optional (reference wrapper) riched version
 Arg get_tuple_t_KafkaSink(void (*)(std::optional<std::reference_wrapper<Arg>>, KafkaRuntimeContext&));
 
 template<typename F_t>
-decltype(get_tuple_t_KafkaSink(&F_t::operator())) get_tuple_t_Sink(F_t);
+decltype(get_tuple_t_KafkaSink(&F_t::operator())) get_tuple_t_KafkaSink(F_t);
 
 std::false_type get_tuple_t_KafkaSink(...); // black hole
 
