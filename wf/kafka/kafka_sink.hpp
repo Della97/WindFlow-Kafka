@@ -91,9 +91,8 @@ private:
     size_t parallelism; // parallelism of the Sink
 
     //KAFKA DECLARATIONS
-    std::string brokers = "localhost";
+    std::string broker;
     std::vector<int> offsets;
-    std::vector< std::string > topics;
     std::string topic;
     RdKafka::Conf *conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
     std::string errstr;
@@ -112,19 +111,19 @@ public:
     Kafka_Sink_Replica(kafka_sink_func_t _func,
                  std::string _opName,
                  KafkaRuntimeContext _context,
-                 std::string _brokers,
+                 std::string _broker,
                  size_t _parallelism,
                  std::vector<int> _offsets,
-                 std::vector< std::string > _topics,
+                 std::string _topic,
                  std::function<void(KafkaRuntimeContext &)> _closing_func):
                  func(_func),
                  opName(_opName),
                  input_batching(false),
                  context(_context),
-                 brokers(_brokers),
+                 broker(_broker),
                  parallelism(_parallelism),
                  offsets(_offsets),
-                 topics(_topics),
+                 topic(_topic),
                  closing_func(_closing_func),
                  terminated(false),
                  execution_mode(Execution_Mode_t::DEFAULT) {}
@@ -132,11 +131,10 @@ public:
     // svc_init (utilized by the FastFlow runtime)
     int svc_init() override
     {
-        std::string brokers = "localhost"; //test
-        std::cout << "ENTERED INIT " << brokers << std::endl;
+        std::cout << "ENTERED INIT " << broker << std::endl;
 
     //SET UP PRODUCER
-    if (conf->set("bootstrap.servers", brokers, errstr) !=
+    if (conf->set("bootstrap.servers", broker, errstr) !=
         RdKafka::Conf::CONF_OK) {
         std::cerr << errstr << std::endl;
         exit(1);
@@ -336,9 +334,9 @@ private:
     std::vector<Kafka_Sink_Replica<kafka_sink_func_t>*> replicas; // vector of pointers to the replicas of the Sink
 
     //KAFKA DECLARATION
-    std::string brokers;
+    std::string broker;
     std::vector<int> offsets;
-    std::vector< std::string > topics;
+    std::string topic;
 
     // Configure the Sink to receive batches instead of individual inputs
     void receiveBatches(bool _input_batching) override
@@ -453,18 +451,18 @@ public:
     Kafka_Sink(kafka_sink_func_t _func,
          key_extractor_func_t _key_extr,
          size_t _parallelism,
-         std::string _brokers,
+         std::string _broker,
          std::vector<int> _offsets,
-         std::vector< std::string > _topics,
+         std::string _topic,
          std::string _name,
          Routing_Mode_t _input_routing_mode,
          std::function<void(KafkaRuntimeContext &)> _closing_func):
          func(_func),
          key_extr(_key_extr),
          parallelism(_parallelism),
-         brokers(_brokers),
+         broker(_broker),
          offsets(_offsets),
-         topics(_topics),
+         topic(_topic),
          name(_name),
          input_routing_mode(_input_routing_mode),
          input_batching(false)
@@ -474,7 +472,7 @@ public:
             exit(EXIT_FAILURE);
         }
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Sink
-            replicas.push_back(new Kafka_Sink_Replica<kafka_sink_func_t>(_func, name, KafkaRuntimeContext(name, parallelism, i), brokers, parallelism, offsets, topics, _closing_func));
+            replicas.push_back(new Kafka_Sink_Replica<kafka_sink_func_t>(_func, name, KafkaRuntimeContext(name, parallelism, i), broker, parallelism, offsets, topic, _closing_func));
         }
     }
 
@@ -483,9 +481,9 @@ public:
          func(_other.func),
          key_extr(_other.key_extr),
          parallelism(_other.parallelism),
-         brokers(_other.brokers),
+         broker(_other.broker),
          offsets(_other.offsets),
-         topics(_other.topics),
+         topic(_other.topic),
          name(_other.name),
          input_routing_mode(_other.input_routing_mode),
          input_batching(_other.input_batching)

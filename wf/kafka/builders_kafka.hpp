@@ -325,12 +325,11 @@ private:
     kafka_closing_func_t closing_func = [](KafkaRuntimeContext &r) -> void { return; }; // closing function logic of the Kafka_Sink
 
     /* Da qui in poi abbiamo una serie di variabili che vanno sistemate */
-    Sstring topic;
     Iint offset;
-    createString broker;
     int idleTime;
     std::vector< std::string > topics;
-    std::string brokers;
+    std::string topic;
+    std::string broker;
     std::string groupid;
     std::string strat;
     int32_t partition;
@@ -377,13 +376,9 @@ public:
      *  \param _brokers for kafka server
      *  \return a reference to the builder object
      */ 
-    template <typename H, typename... Args>
-    Kafka_Source_Builder<kafka_sink_func_t> &withBrokers(H first, Args... Ts)
+    Kafka_Sink_Builder<kafka_sink_func_t> &withBroker(std::string _broker)
     {
-        broker.add_strings(first, Ts...);
-        broker.strs.pop_back();
-        broker.strs.pop_back();
-        brokers = broker.strs;
+        broker = _broker;
         return *this;
     }
 
@@ -395,7 +390,7 @@ public:
      */ 
 
     template <typename O, typename... OSets>
-    Kafka_Source_Builder<kafka_sink_func_t> &withOffset(O first, OSets... Os)
+    Kafka_Sink_Builder<kafka_sink_func_t> &withOffset(O first, OSets... Os)
     {
         offset.add_ints(first, Os...);
         offsets = offset.offsets;
@@ -405,16 +400,14 @@ public:
     /** 
      *  \brief Set the topic
      *  
-     *  \param _topics for the producer
+     *  \param _topic for the producer
      *  \return a reference to the builder object
      */ 
 
-    template <typename G, typename... Args>
-    Kafka_Source_Builder<kafka_sink_func_t> &withTopics(G first, Args... Ts)
+
+    Kafka_Sink_Builder<kafka_sink_func_t> &withTopic(std::string _topic)
     {
-        //std::vector<std::string> topics; <- declaration 
-        topic.add_strings(first, Ts...);
-        topics = topic.strs;
+        topic = _topic;
         return *this;
     }
 
@@ -456,9 +449,9 @@ public:
         return kafka_sink_t(func,
                             key_extr,
                             parallelism,
-                            brokers,
+                            broker,
                             offsets,
-                            topics,
+                            topic,
                             name,
                             input_routing_mode,
                             closing_func);
