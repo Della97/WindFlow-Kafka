@@ -44,6 +44,7 @@
     #include<graphviz/gvc.h>
     #include<rapidjson/prettywriter.h>
 #endif
+#include<kafka/meta_kafka.hpp>
 #include<basic.hpp>
 #include<basic_emitter.hpp>
 #include<keyby_emitter.hpp>
@@ -1504,12 +1505,12 @@ public:
      *  \param _sink the Sink operator to be added
      *  \return a reference to the modified MultiPipe
      */ 
-    template<typename sink_func_t, typename key_extractor_func_t>
-    MultiPipe &add_sink(const Sink<sink_func_t, key_extractor_func_t> &_sink)
+    template<typename kafka_sink_func_t, typename key_extractor_func_t>
+    MultiPipe &add_sink(const Kafka_Sink<kafka_sink_func_t, key_extractor_func_t> &_sink)
     {
-        auto *copied_sink = new Sink(_sink); // create a copy of the operator
+        auto *copied_sink = new Kafka_Sink(_sink); // create a copy of the operator
         copied_sink->setExecutionMode(execution_mode); // set the execution mode of the operator
-        using tuple_t = decltype(get_tuple_t_Sink(copied_sink->func)); // extracting the tuple_t type and checking the admissible signatures
+        using tuple_t = decltype(get_tuple_t_KafkaSink(copied_sink->func)); // extracting the tuple_t type and checking the admissible signatures
         std::string opInType = TypeName<tuple_t>::getName(); // save the type of tuple_t as a string
         if (!outputType.empty() && outputType.compare(opInType) != 0) {
             std::cerr << RED << "WindFlow Error: output type from MultiPipe is not the input type of the Sink operator" << DEFAULT_COLOR << std::endl;
@@ -1531,12 +1532,12 @@ public:
      *  \param _sink the Sink operator to be chained
      *  \return a reference to the modified MultiPipe
      */ 
-    template<typename sink_func_t, typename key_extractor_func_t>
-    MultiPipe &chain_sink(const Sink<sink_func_t, key_extractor_func_t> &_sink)
+    template<typename kafka_sink_func_t, typename key_extractor_func_t>
+    MultiPipe &chain_sink(const Kafka_Sink<kafka_sink_func_t, key_extractor_func_t> &_sink)
     {
-        auto *copied_sink = new Sink(_sink); // create a copy of the operator
+        auto *copied_sink = new Kafka_Sink(_sink); // create a copy of the operator
         copied_sink->setExecutionMode(execution_mode); // set the execution mode of the operator
-        using tuple_t = decltype(get_tuple_t_Sink(copied_sink->func)); // extracting the tuple_t type and checking the admissible signatures
+        using tuple_t = decltype(get_tuple_t_KafkaSink(copied_sink->func)); // extracting the tuple_t type and checking the admissible signatures
         std::string opInType = TypeName<tuple_t>::getName(); // save the type of tuple_t as a string
         if (!outputType.empty() && outputType.compare(opInType) != 0) {
             std::cerr << RED << "WindFlow Error: output type from MultiPipe is not the input type of the Sink operator" << DEFAULT_COLOR << std::endl;

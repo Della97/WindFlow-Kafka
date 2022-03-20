@@ -230,6 +230,7 @@ int main()
     Kafka_Sink sink1 = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(sink1_degree)
+                        .with
                         .build();
         pipe.chain_sink(sink1);
     graph.run();

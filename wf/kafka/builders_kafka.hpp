@@ -372,6 +372,53 @@ public:
     }
 
     /** 
+     *  \brief Set the Broker <--- cosa è un indirizzo un hostname???
+     *  
+     *  \param _brokers for kafka server
+     *  \return a reference to the builder object
+     */ 
+    template <typename H, typename... Args>
+    Kafka_Source_Builder<kafka_sink_func_t> &withBrokers(H first, Args... Ts)
+    {
+        broker.add_strings(first, Ts...);
+        broker.strs.pop_back();
+        broker.strs.pop_back();
+        brokers = broker.strs;
+        return *this;
+    }
+
+    /** 
+     *  \brief Set the topic offset
+     *  
+     *  \param _offset for the producer
+     *  \return a reference to the builder object
+     */ 
+
+    template <typename O, typename... OSets>
+    Kafka_Source_Builder<kafka_sink_func_t> &withOffset(O first, OSets... Os)
+    {
+        offset.add_ints(first, Os...);
+        offsets = offset.offsets;
+        return *this;
+    }
+
+    /** 
+     *  \brief Set the topic
+     *  
+     *  \param _topics for the producer
+     *  \return a reference to the builder object
+     */ 
+
+    template <typename G, typename... Args>
+    Kafka_Source_Builder<kafka_sink_func_t> &withTopics(G first, Args... Ts)
+    {
+        //std::vector<std::string> topics; <- declaration 
+        topic.add_strings(first, Ts...);
+        topics = topic.strs;
+        return *this;
+    }
+
+    /** 
      *  \brief Set the closing functional logic used by the Kafka_Source
      *  
      *  \param _closing_func closing functional logic (a function or a callable type)
@@ -409,6 +456,9 @@ public:
         return kafka_sink_t(func,
                             key_extr,
                             parallelism,
+                            brokers,
+                            offsets,
+                            topics,
                             name,
                             input_routing_mode,
                             closing_func);

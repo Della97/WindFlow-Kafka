@@ -48,6 +48,21 @@
 #include<basic_emitter.hpp>
 #include<basic_operator.hpp>
 
+class ExampleDeliveryReportCb : public RdKafka::DeliveryReportCb {
+ public:
+  void dr_cb(RdKafka::Message &message) {
+    /* If message.err() is non-zero the message delivery failed permanently
+     * for the message. */
+    if (message.err())
+      std::cerr << "% Message delivery failed: " << message.errstr()
+                << std::endl;
+    else
+      std::cerr << "% Message delivered to topic " << message.topic_name()
+                << " [" << message.partition() << "] at offset "
+                << message.offset() << std::endl;
+  }
+};
+
 namespace wf {
 
 //@cond DOXY_IGNORE
@@ -73,6 +88,18 @@ private:
     std::function<void(KafkaRuntimeContext &)> closing_func; // closing functional logic used by the Sink replica
     bool terminated; // true if the Sink replica has finished its work
     Execution_Mode_t execution_mode; // execution mode of the Sink replica
+    size_t parallelism; // parallelism of the Sink
+
+    //KAFKA DECLARATIONS
+    std::string brokers;
+    std::vector<int> offsets;
+    std::vector< std::string > topics;
+    std::string topic;
+    RdKafka::Conf *conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
+    std::string errstr;
+    RdKafka::Producer *producer;
+    ExampleDeliveryReportCb ex_dr_cb;
+
 #if defined (WF_TRACING_ENABLED)
     Stats_Record stats_record;
     double avg_td_us = 0;
@@ -85,11 +112,19 @@ public:
     Kafka_Sink_Replica(kafka_sink_func_t _func,
                  std::string _opName,
                  KafkaRuntimeContext _context,
+                 std::string _brokers,
+                 size_t _parallelism,
+                 std::vector<int> _offsets,
+                 std::vector< std::string > _topics,
                  std::function<void(KafkaRuntimeContext &)> _closing_func):
                  func(_func),
                  opName(_opName),
                  input_batching(false),
                  context(_context),
+                 brokers(_brokers),
+                 parallelism(_parallelism),
+                 offsets(_offsets),
+                 topics(_topics),
                  closing_func(_closing_func),
                  terminated(false),
                  execution_mode(Execution_Mode_t::DEFAULT) {}
@@ -97,6 +132,26 @@ public:
     // svc_init (utilized by the FastFlow runtime)
     int svc_init() override
     {
+
+    //SET UP PRODUCER
+    if (conf->set("bootstrap.servers", brokers, errstr) !=
+        RdKafka::Conf::CONF_OK) {
+        std::cerr << errstr << std::endl;
+        exit(1);
+    }
+
+    if (conf->set("dr_cb", &ex_dr_cb, errstr) != RdKafka::Conf::CONF_OK) {
+        std::cerr << errstr << std::endl;
+        exit(1);
+    }
+
+    producer = RdKafka::Producer::create(conf, errstr);
+    if (!producer) {
+        std::cerr << "Failed to create producer: " << errstr << std::endl;
+        exit(1);
+    }
+
+
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
 #endif
@@ -138,6 +193,16 @@ public:
             stats_record.bytes_received += sizeof(tuple_t);
 #endif
             process_input(input->tuple, input->getTimestamp(), input->getWatermark(context.getReplicaIndex()));
+            /*
+            RdKafka::ErrorCode err = producer->produce(topic, //topic
+                                                RdKafka::Topic::PARTITION_UA,  //partition
+                                                RdKafka::Producer::RK_MSG_COPY // Copy payload,
+                                                const_cast<char *>((opt_tuple).value), 0, //payload
+                                                NULL, 0,  //
+                                                0,        //
+                                                NULL,     //
+                                                NULL);    //
+                                                */
             deleteSingle_t(input); // delete the input Single_t
         }
 #if defined (WF_TRACING_ENABLED)
@@ -262,6 +327,11 @@ private:
     bool input_batching; // if true, the Sink expects to receive batches instead of individual inputs
     std::vector<Kafka_Sink_Replica<kafka_sink_func_t>*> replicas; // vector of pointers to the replicas of the Sink
 
+    //KAFKA DECLARATION
+    std::string brokers;
+    std::vector<int> offsets;
+    std::vector< std::string > topics;
+
     // Configure the Sink to receive batches instead of individual inputs
     void receiveBatches(bool _input_batching) override
     {
@@ -375,12 +445,18 @@ public:
     Kafka_Sink(kafka_sink_func_t _func,
          key_extractor_func_t _key_extr,
          size_t _parallelism,
+         std::string _brokers,
+         std::vector<int> _offsets,
+         std::vector< std::string > _topics,
          std::string _name,
          Routing_Mode_t _input_routing_mode,
          std::function<void(KafkaRuntimeContext &)> _closing_func):
          func(_func),
          key_extr(_key_extr),
          parallelism(_parallelism),
+         brokers(_brokers),
+         offsets(_offsets),
+         topics(_topics),
          name(_name),
          input_routing_mode(_input_routing_mode),
          input_batching(false)
@@ -390,7 +466,7 @@ public:
             exit(EXIT_FAILURE);
         }
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Sink
-            replicas.push_back(new Kafka_Sink_Replica<kafka_sink_func_t>(_func, name, KafkaRuntimeContext(name, parallelism, i), _closing_func));
+            replicas.push_back(new Kafka_Sink_Replica<kafka_sink_func_t>(_func, name, KafkaRuntimeContext(name, parallelism, i), brokers, parallelism, offsets, topics, _closing_func));
         }
     }
 
@@ -399,6 +475,9 @@ public:
          func(_other.func),
          key_extr(_other.key_extr),
          parallelism(_other.parallelism),
+         brokers(_other.brokers),
+         offsets(_other.offsets),
+         topics(_other.topics),
          name(_other.name),
          input_routing_mode(_other.input_routing_mode),
          input_batching(_other.input_batching)
