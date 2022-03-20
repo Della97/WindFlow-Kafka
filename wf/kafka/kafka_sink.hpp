@@ -91,7 +91,7 @@ private:
     size_t parallelism; // parallelism of the Sink
 
     //KAFKA DECLARATIONS
-    std::string brokers;
+    std::string brokers = "localhost";
     std::vector<int> offsets;
     std::vector< std::string > topics;
     std::string topic;
@@ -132,6 +132,8 @@ public:
     // svc_init (utilized by the FastFlow runtime)
     int svc_init() override
     {
+        std::string brokers = "localhost"; //test
+        std::cout << "ENTERED INIT " << brokers << std::endl;
 
     //SET UP PRODUCER
     if (conf->set("bootstrap.servers", brokers, errstr) !=
@@ -161,6 +163,7 @@ public:
     // svc (utilized by the FastFlow runtime)
     void *svc(void *_in) override
     {
+        std::cout << "ENTERED SVC" << std::endl;
 #if defined (WF_TRACING_ENABLED)
         startTS = current_time_nsecs();
         if (stats_record.inputs_received == 0) {
@@ -193,16 +196,8 @@ public:
             stats_record.bytes_received += sizeof(tuple_t);
 #endif
             process_input(input->tuple, input->getTimestamp(), input->getWatermark(context.getReplicaIndex()));
-            /*
-            RdKafka::ErrorCode err = producer->produce(topic, //topic
-                                                RdKafka::Topic::PARTITION_UA,  //partition
-                                                RdKafka::Producer::RK_MSG_COPY // Copy payload,
-                                                const_cast<char *>((opt_tuple).value), 0, //payload
-                                                NULL, 0,  //
-                                                0,        //
-                                                NULL,     //
-                                                NULL);    //
-                                                */
+            
+                                                
             deleteSingle_t(input); // delete the input Single_t
         }
 #if defined (WF_TRACING_ENABLED)
@@ -224,6 +219,7 @@ public:
                        uint64_t _timestamp,
                        uint64_t _watermark)
     {
+        std::cout << "ENTERED PROCESS" << std::endl;
         
         if constexpr (isNonRichedNonWrapper) { // non-riched non-wrapper version
             std::optional<decltype(get_tuple_t_KafkaSink(func))> opt_tuple = std::make_optional(std::move(_tuple)); // move the input tuple in the optional
@@ -236,13 +232,24 @@ public:
         }
         if constexpr (isNonRichedWrapper) { // non-riched wrapper version
             std::optional<std::reference_wrapper<decltype(get_tuple_t_KafkaSink(func))>> opt_wtuple = std::make_optional(std::ref(_tuple));
-            func(opt_wtuple);
+            func(opt_wtuple);       
         }
         if constexpr (isRichedWrapper) { // riched wrapper version
             context.setContext(_timestamp, _watermark); // set the parameter of the KafkaRuntimeContext
             std::optional<std::reference_wrapper<decltype(get_tuple_t_KafkaSink(func))>> opt_wtuple = std::make_optional(std::ref(_tuple));
             func(opt_wtuple, context);
         }
+        std::cout << "ABOUT TO SEND DATA" << std::endl;
+        RdKafka::ErrorCode err = producer->produce("output", //topic
+                                                RdKafka::Topic::PARTITION_UA,  //partition
+                                                RdKafka::Producer::RK_MSG_COPY, // Copy payload,
+                                                const_cast<char *>("prova"), //payload
+                                                0,        //
+                                                NULL, 0,  //
+                                                0,        //
+                                                NULL,     //
+                                                NULL);    //
+        producer->poll(0);
     }
 
     // EOS management (utilized by the FastFlow runtime)
@@ -257,6 +264,7 @@ public:
     // svc_end (utilized by the FastFlow runtime)
     void svc_end() override
     {
+        std::cout << "ENTERED SVC SINK" << std::endl;
         
         if constexpr (isNonRichedNonWrapper) { // non-riched non-wrapper version
             std::optional<decltype(get_tuple_t_KafkaSink(func))> opt_empty; // create empty optional

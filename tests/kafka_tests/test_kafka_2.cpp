@@ -62,8 +62,8 @@ public:
     void operator()(std::optional<tuple_t> &out, KafkaRuntimeContext &rc)
     {
         if (out) {
-            //std::cout << "[SINK] -> Received: " << (*out).key << std::endl;
-            //std::cout << "[SINK] -> Received: " << (*out).value << std::endl;
+            std::cout << "[SINK] -> Received: " << (*out).key << std::endl;
+            std::cout << "[SINK] -> Received: " << (*out).value << std::endl;
         }
         else {
             std::cout << "[SINK] -> Received nothing: " << std::endl;
@@ -230,7 +230,6 @@ int main()
     Kafka_Sink sink1 = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(sink1_degree)
-                        .with
                         .build();
         pipe.chain_sink(sink1);
     graph.run();
