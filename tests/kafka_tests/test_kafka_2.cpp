@@ -59,7 +59,7 @@ public:
                  totalsum(0) {}
 
     // operator()
-    bool operator()(std::optional<tuple_t> &out, std::optional<std::reference_wrapper<RdKafka::Message>> msg, KafkaRuntimeContext &rc)
+    void operator()(std::optional<tuple_t> &out, std::optional<std::reference_wrapper<RdKafka::Message>> msg, KafkaRuntimeContext &rc)
     {
         if (out) {
             std::cout << "[SINK] -> Received: " << (*out).key << std::endl;
@@ -68,7 +68,6 @@ public:
         else {
             std::cout << "[SINK] -> Received nothing: " << std::endl;
         }
-        return true;
     }
 };
 

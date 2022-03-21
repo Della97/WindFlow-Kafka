@@ -404,6 +404,7 @@ public:
                         }
                     }
                     if constexpr (isRiched) {
+                        context.setConsumerContext(consumer); // set the parameter of the KafkaRuntimeContext
                         run = func(*msg, *shipper, context); //get payload -> deser -> push forward if valid
                         if (run == false) {
                             std::cout << "Reached End Of Stream from deser func: " << std::endl;
