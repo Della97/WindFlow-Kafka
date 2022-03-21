@@ -59,7 +59,7 @@ public:
                  totalsum(0) {}
 
     // operator()
-    void operator()(std::optional<tuple_t> &out, KafkaRuntimeContext &rc)
+    bool operator()(std::optional<tuple_t> &out, std::optional<std::reference_wrapper<RdKafka::Message>> msg, KafkaRuntimeContext &rc)
     {
         if (out) {
             std::cout << "[SINK] -> Received: " << (*out).key << std::endl;
@@ -68,6 +68,7 @@ public:
         else {
             std::cout << "[SINK] -> Received nothing: " << std::endl;
         }
+        return true;
     }
 };
 
@@ -226,7 +227,7 @@ int main()
     PipeGraph graph("test_tracing_1", Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
     MultiPipe &pipe = graph.add_source(source6);
 
-#if 0
+
 
         //SINK
     Kafka_Sink_Functor sink_functor;
@@ -238,7 +239,6 @@ int main()
                         .withTopic("output")
                         .build();
         pipe.chain_sink(sink1);
-#endif
     graph.run();
     std::cout << "Exiting..." <<  std::endl;
     return 0;

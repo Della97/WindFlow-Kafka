@@ -75,10 +75,10 @@ private:
     kafka_sink_func_t func; // functional logic used by the Sink replica
     using tuple_t = decltype(get_tuple_t_KafkaSink(func)); // extracting the tuple_t type and checking the admissible signatures
     // static predicates to check the type of the functional logic to be invoked
-    static constexpr bool isNonRichedNonWrapper = std::is_invocable<decltype(func), std::optional<tuple_t> &>::value;
-    static constexpr bool isRichedNonWrapper = std::is_invocable<decltype(func), std::optional<tuple_t> &, KafkaRuntimeContext &>::value;
-    static constexpr bool isNonRichedWrapper = std::is_invocable<decltype(func), std::optional<std::reference_wrapper<tuple_t>>>::value;
-    static constexpr bool isRichedWrapper = std::is_invocable<decltype(func), std::optional<std::reference_wrapper<tuple_t>>, KafkaRuntimeContext &>::value;
+    static constexpr bool isNonRichedNonWrapper = std::is_invocable<decltype(func), std::optional<tuple_t> &, std::optional<std::reference_wrapper<RdKafka::Message>>>::value;
+    static constexpr bool isRichedNonWrapper = std::is_invocable<decltype(func), std::optional<tuple_t> &, std::optional<std::reference_wrapper<RdKafka::Message>>, KafkaRuntimeContext &>::value;
+    static constexpr bool isNonRichedWrapper = std::is_invocable<decltype(func), std::optional<std::reference_wrapper<tuple_t>>, std::optional<std::reference_wrapper<RdKafka::Message>>>::value;
+    static constexpr bool isRichedWrapper = std::is_invocable<decltype(func), std::optional<std::reference_wrapper<tuple_t>>, std::optional<std::reference_wrapper<RdKafka::Message>>, KafkaRuntimeContext &>::value;
     // check the presence of a valid functional logic
     static_assert(isNonRichedNonWrapper || isRichedNonWrapper || isNonRichedWrapper || isRichedWrapper,
         "WindFlow Compilation Error - Sink_Replica does not have a valid functional logic:\n");
@@ -98,6 +98,8 @@ private:
     std::string errstr;
     RdKafka::Producer *producer;
     ExampleDeliveryReportCb ex_dr_cb;
+    std::string tmp;
+    RdKafka::Message *msg;
 #if defined (WF_TRACING_ENABLED)
     Stats_Record stats_record;
     double avg_td_us = 0;
@@ -214,28 +216,29 @@ public:
         std::cout << "ENTERED PROCESS" << std::endl;
         if constexpr (isNonRichedNonWrapper) { // non-riched non-wrapper version
             std::optional<decltype(get_tuple_t_KafkaSink(func))> opt_tuple = std::make_optional(std::move(_tuple)); // move the input tuple in the optional
-            func(opt_tuple);
+            func(opt_tuple, *msg);
         }
         if constexpr (isRichedNonWrapper)  { // riched non-wrapper version
             context.setContext(_timestamp, _watermark); // set the parameter of the KafkaRuntimeContext
             std::optional<decltype(get_tuple_t_KafkaSink(func))> opt_tuple = std::make_optional(std::move(_tuple)); // move the input tuple in the optional
-            func(opt_tuple, context);
+            func(opt_tuple, *msg, context);
         }
         if constexpr (isNonRichedWrapper) { // non-riched wrapper version
             std::optional<std::reference_wrapper<decltype(get_tuple_t_KafkaSink(func))>> opt_wtuple = std::make_optional(std::ref(_tuple));
-            func(opt_wtuple);       
+            func(opt_wtuple, *msg);       
         }
         if constexpr (isRichedWrapper) { // riched wrapper version
             context.setContext(_timestamp, _watermark); // set the parameter of the KafkaRuntimeContext
             std::optional<std::reference_wrapper<decltype(get_tuple_t_KafkaSink(func))>> opt_wtuple = std::make_optional(std::ref(_tuple));
-            func(opt_wtuple, context);
+            func(opt_wtuple, *msg, context);
         }
         std::cout << "ABOUT TO SEND DATA" << std::endl;
+        tmp = std::to_string(_tuple.key);
         RdKafka::ErrorCode err = producer->produce("output", //topic
                                                 RdKafka::Topic::PARTITION_UA,  //partition
                                                 RdKafka::Producer::RK_MSG_COPY, // Copy payload,
-                                                const_cast<char *>("prova"), //payload
-                                                0,        //
+                                                const_cast<char *>(tmp.c_str()), //payload
+                                                tmp.size(),        //
                                                 NULL, 0,  //
                                                 0,        //
                                                 NULL,     //
@@ -258,19 +261,19 @@ public:
         std::cout << "ENTERED SVC SINK" << std::endl;
         if constexpr (isNonRichedNonWrapper) { // non-riched non-wrapper version
             std::optional<decltype(get_tuple_t_KafkaSink(func))> opt_empty; // create empty optional
-            func(opt_empty);
+            func(opt_empty, *msg);
         }
         if constexpr (isRichedNonWrapper)  { // riched non-wrapper version
             std::optional<decltype(get_tuple_t_KafkaSink(func))> opt_empty; // create empty optional
-            func(opt_empty, context);
+            func(opt_empty, *msg, context);
         }
         if constexpr (isNonRichedWrapper) { // non-riched wrapper version
             std::optional<std::reference_wrapper<decltype(get_tuple_t_kafkaSink(func))>> wopt_empty;
-            func(wopt_empty);
+            func(wopt_empty, *msg);
         }
         if constexpr (isRichedWrapper) { // riched wrapper version
             std::optional<std::reference_wrapper<decltype(get_tuple_t_KafkaSink(func))>> wopt_empty;
-            func(wopt_empty, context);
+            func(wopt_empty, *msg, context);
         }
         closing_func(context); // call the closing function
     }

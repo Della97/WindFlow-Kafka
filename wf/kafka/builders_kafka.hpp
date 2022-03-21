@@ -298,7 +298,6 @@ public:
 
 //**************************************************SINK_BUILDER*******************************************************
 
-#if 0
 
 template<typename kafka_sink_func_t, typename key_t=empty_key_t>
 class Kafka_Sink_Builder
@@ -428,17 +427,6 @@ public:
         return *this;
     }
 
-    
-
-/**
- * kafka_sink_func_t _func,
-         key_extractor_func_t _key_extr,
-         size_t _parallelism,
-         std::string _name,
-         Routing_Mode_t _input_routing_mode,
-         std::function<void(RuntimeContext &)> _closing_func):
-*/
-
     /** 
      *  \brief Create the Source
      *  
@@ -458,7 +446,6 @@ public:
     }
 };
 
-#endif
 
 } // namespace wf
 

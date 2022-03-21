@@ -115,7 +115,7 @@ template<typename sink_func_t, typename key_extractor_func_t>
 class Sink;
 
 /// Forward declaration of the Kafka_Sink operator
-template<typename kafka_ser_func_t>
+template<typename kafka_sink_func_t, typename key_extractor_func_t>
 class Kafka_Sink;
 
 /// Forward declaration of the Keyed_Windows operator
