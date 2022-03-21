@@ -657,7 +657,7 @@ public:
         //parallelims check but we dont know the number of partitions
         //pthread barrier
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
-            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, KafkaRuntimeContext(name, parallelism, i), outputBatchSize, brokers, topics, groupid, strat, parallelism, idleTime, offset, &bar, _closing_func));
+            replicas.push_back(new Kafka_Source_Replica<kafka_deser_func_t>(_func, name, KafkaRuntimeContext(parallelism, i), outputBatchSize, brokers, topics, groupid, strat, parallelism, idleTime, offset, &bar, _closing_func));
         }
     }
 

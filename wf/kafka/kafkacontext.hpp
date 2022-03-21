@@ -63,40 +63,33 @@ class KafkaRuntimeContext: public RuntimeContext
 {
 private:
     template<typename T> friend class Kafka_Source_Replica; // friendship with Kafka_Source_Replica class
-    std::string kafkaName;
-    std::vector<RdKafka::TopicPartition *> partitions;
     RdKafka::KafkaConsumer *consumer;
+    RdKafka::Producer *producer;
     uint64_t timestamp;
     uint64_t watermark;
 
-    void setPartitions (std::vector<RdKafka::TopicPartition *> _partitions) {
-        partitions = _partitions;
-    }
-
 public:
-    KafkaRuntimeContext (std::string _kafkaName,
-                         size_t _parallelism,
+    KafkaRuntimeContext (size_t _parallelism,
                          size_t _index):
-                         RuntimeContext(_parallelism, _index),
-                         kafkaName(_kafkaName) {}
+                         RuntimeContext(_parallelism, _index) {}
 
     //NOT SURE
-    void setContext (uint64_t _timestamp, uint64_t _watermark, std::string _name) {
+    void setProducerContext (uint64_t _timestamp, uint64_t _watermark, RdKafka::Producer *_producer) {
         timestamp = _timestamp;
         watermark = _watermark;
-        kafkaName = _name;
+        producer = _producer;
     }
 
     void setConsumerContext (RdKafka::KafkaConsumer *_consumer) {
         consumer = _consumer;
     }
 
-    std::string getName () {
-        return kafkaName;
+    std::string getConsumerName () {
+        return consumer->name();
     }
 
-    std::vector<RdKafka::TopicPartition *> getPartitions () {
-        return partitions;
+    std::string getProducerName () {
+        return producer->name();
     }
 
 };

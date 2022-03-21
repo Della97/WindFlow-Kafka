@@ -219,7 +219,7 @@ public:
             func(opt_tuple, *msg);
         }
         if constexpr (isRichedNonWrapper)  { // riched non-wrapper version
-            context.setContext(_timestamp, _watermark, producer->name()); // set the parameter of the KafkaRuntimeContext
+            context.setProducerContext(_timestamp, _watermark, producer); // set the parameter of the KafkaRuntimeContext
             std::optional<decltype(get_tuple_t_KafkaSink(func))> opt_tuple = std::make_optional(std::move(_tuple)); // move the input tuple in the optional
             func(opt_tuple, *msg, context);
         }
@@ -228,7 +228,7 @@ public:
             func(opt_wtuple, *msg);   
         }
         if constexpr (isRichedWrapper) { // riched wrapper version
-            context.setContext(_timestamp, _watermark, producer->name()); // set the parameter of the KafkaRuntimeContext
+            context.setProducerContext(_timestamp, _watermark, producer); // set the parameter of the KafkaRuntimeContext
             std::optional<std::reference_wrapper<decltype(get_tuple_t_KafkaSink(func))>> opt_wtuple = std::make_optional(std::ref(_tuple));
             func(opt_wtuple, *msg, context);
         }
@@ -469,7 +469,7 @@ public:
             exit(EXIT_FAILURE);
         }
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Sink
-            replicas.push_back(new Kafka_Sink_Replica<kafka_sink_func_t>(_func, name, KafkaRuntimeContext(name, parallelism, i), broker, parallelism, offsets, topic, _closing_func));
+            replicas.push_back(new Kafka_Sink_Replica<kafka_sink_func_t>(_func, name, KafkaRuntimeContext(parallelism, i), broker, parallelism, offsets, topic, _closing_func));
         }
     }
 
