@@ -39,12 +39,14 @@
 
 /// includes
 #include<chrono>
+#include<string>
 #include<vector>
 #include<functional>
-#include<string>
 #include<basic.hpp>
 #include<kafka/meta_kafka.hpp>
 #include<kafka/kafkacontext.hpp>
+
+namespace wf {
 
 struct createString {
     std::string strs;
@@ -92,10 +94,6 @@ struct Iint {
         add_ints(others...);
     }
 };
-
-namespace wf {
-
-
 
 template<typename kafka_deser_func_t>
 class Kafka_Source_Builder
@@ -300,6 +298,8 @@ public:
 
 //**************************************************SINK_BUILDER*******************************************************
 
+#if 0
+
 template<typename kafka_sink_func_t, typename key_t=empty_key_t>
 class Kafka_Sink_Builder
 {
@@ -457,6 +457,8 @@ public:
                             closing_func);
     }
 };
+
+#endif
 
 } // namespace wf
 

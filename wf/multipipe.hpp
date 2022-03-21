@@ -44,7 +44,6 @@
     #include<graphviz/gvc.h>
     #include<rapidjson/prettywriter.h>
 #endif
-#include<kafka/meta_kafka.hpp>
 #include<basic.hpp>
 #include<basic_emitter.hpp>
 #include<keyby_emitter.hpp>
@@ -382,8 +381,7 @@ private:
         globalOpList->push_back(copied_source); // add the copied operator to global list
         outputType = TypeName<typename source_t::result_t>::getName(); // save the type of result_t as a string
 #if defined (WF_TRACING_ENABLED)
-        // update the graphviz representation
-        if (_source.getType() == "Kafka_Source") {
+        if (copied_source->getType() == "Kafka_Source") {
             gv_add_vertex("Kafka_Source (" + std::to_string((copied_source->replicas).size()) + ")", copied_source->getName(), true, false, Routing_Mode_t::NONE);
         }
         else {
@@ -880,8 +878,7 @@ public:
     }
 
     /** 
-     *  \brief Try to chain a Filter operator to the MultiPipe
-     *         (if not possible, the operator is added)
+     *  \brief Try to chain a Filter operator to the MultiPipe (if not possible, the operator is added)
      *  \param _filter the Filter operator to be chained
      *  \return a reference to the modified MultiPipe
      */ 
@@ -950,8 +947,7 @@ public:
     }
 
     /** 
-     *  \brief Try to chain a Map operator to the MultiPipe
-     *         (if not possible, the operator is added)
+     *  \brief Try to chain a Map operator to the MultiPipe (if not possible, the operator is added)
      *  \param _map the Map operator to be chained
      *  \return a reference to the modified MultiPipe
      */ 
@@ -1020,8 +1016,7 @@ public:
     }
 
     /** 
-     *  \brief Try to chain a FlatMap operator to the MultiPipe
-     *         (if not possible, the operator is added)
+     *  \brief Try to chain a FlatMap operator to the MultiPipe (if not possible, the operator is added)
      *  \param _flatmap the FlatMap operator to be chained
      *  \return a reference to the modified MultiPipe
      */ 
@@ -1303,8 +1298,7 @@ public:
     }
 
     /** 
-     *  \brief Try to chain a Map_GPU operator to the MultiPipe
-     *         (if not possible, the operator is added)
+     *  \brief Try to chain a Map_GPU operator to the MultiPipe (if not possible, the operator is added)
      *  \param _mapgpu the Map_GPU operator to be chained
      *  \return a reference to the modified MultiPipe
      */ 
@@ -1368,8 +1362,7 @@ public:
     }
 
     /** 
-     *  \brief Try to chain a Filter_GPU operator to the MultiPipe
-     *         (if not possible, the operator is added)
+     *  \brief Try to chain a Filter_GPU operator to the MultiPipe (if not possible, the operator is added)
      *  \param _filtergpu the Filter_GPU operator to be chained
      *  \return a reference to the modified MultiPipe
      */ 
@@ -1433,8 +1426,7 @@ public:
     }
 
     /** 
-     *  \brief Try to chain a Reduce_GPU operator to the MultiPipe
-     *         (if not possible, the operator is added)
+     *  \brief Try to chain a Reduce_GPU operator to the MultiPipe (if not possible, the operator is added)
      *  \param _reducegpu the Reduce_GPU operator to be chained
      *  \return a reference to the modified MultiPipe
      */ 
@@ -1505,20 +1497,24 @@ public:
      *  \param _sink the Sink operator to be added
      *  \return a reference to the modified MultiPipe
      */ 
-    template<typename kafka_sink_func_t, typename key_extractor_func_t>
-    MultiPipe &add_sink(const Kafka_Sink<kafka_sink_func_t, key_extractor_func_t> &_sink)
+    template<typename sink_t>
+    MultiPipe &add_sink(const sink_t &_sink)
     {
-        auto *copied_sink = new Kafka_Sink(_sink); // create a copy of the operator
+        auto *copied_sink = new sink_t(_sink); // create a copy of the operator
         copied_sink->setExecutionMode(execution_mode); // set the execution mode of the operator
-        using tuple_t = decltype(get_tuple_t_KafkaSink(copied_sink->func)); // extracting the tuple_t type and checking the admissible signatures
-        std::string opInType = TypeName<tuple_t>::getName(); // save the type of tuple_t as a string
+        std::string opInType = TypeName<typename sink_t::tuple_t>::getName(); // save the type of tuple_t as a string
         if (!outputType.empty() && outputType.compare(opInType) != 0) {
             std::cerr << RED << "WindFlow Error: output type from MultiPipe is not the input type of the Sink operator" << DEFAULT_COLOR << std::endl;
             exit(EXIT_FAILURE);
         }
         add_operator(*copied_sink, ordering_mode_t::TS);
 #if defined (WF_TRACING_ENABLED)
-        gv_add_vertex("Sink (" + std::to_string(copied_sink->getParallelism()) + ")", copied_sink->getName(), true, false, copied_sink->getInputRoutingMode());
+        if (copied_sink->getType() == "Kafka_Sink") {
+            gv_add_vertex("Kafka_Sink (" + std::to_string(copied_sink->getParallelism()) + ")", copied_sink->getName(), true, false, copied_sink->getInputRoutingMode());
+        }
+        else {
+            gv_add_vertex("Sink (" + std::to_string(copied_sink->getParallelism()) + ")", copied_sink->getName(), true, false, copied_sink->getInputRoutingMode());
+        }
 #endif
         localOpList.push_back(copied_sink); // add the copied operator to local list
         globalOpList->push_back(copied_sink); // add the copied operator to global list
@@ -1527,18 +1523,16 @@ public:
     }
 
     /** 
-     *  \brief Try to chain a Sink operator to the MultiPipe
-     *         (if not possible, the operator is added)
+     *  \brief Try to chain a Sink operator to the MultiPipe (if not possible, the operator is added)
      *  \param _sink the Sink operator to be chained
      *  \return a reference to the modified MultiPipe
      */ 
-    template<typename kafka_sink_func_t, typename key_extractor_func_t>
-    MultiPipe &chain_sink(const Kafka_Sink<kafka_sink_func_t, key_extractor_func_t> &_sink)
+    template<typename sink_t>
+    MultiPipe &chain_sink(const sink_t &_sink)
     {
-        auto *copied_sink = new Kafka_Sink(_sink); // create a copy of the operator
+        auto *copied_sink = new sink_t(_sink); // create a copy of the operator
         copied_sink->setExecutionMode(execution_mode); // set the execution mode of the operator
-        using tuple_t = decltype(get_tuple_t_KafkaSink(copied_sink->func)); // extracting the tuple_t type and checking the admissible signatures
-        std::string opInType = TypeName<tuple_t>::getName(); // save the type of tuple_t as a string
+        std::string opInType = TypeName<typename sink_t::tuple_t>::getName(); // save the type of tuple_t as a string
         if (!outputType.empty() && outputType.compare(opInType) != 0) {
             std::cerr << RED << "WindFlow Error: output type from MultiPipe is not the input type of the Sink operator" << DEFAULT_COLOR << std::endl;
             exit(EXIT_FAILURE);
@@ -1546,12 +1540,22 @@ public:
         bool isChained = chain_operator(*copied_sink, ordering_mode_t::TS); // try to chain the operator (otherwise, it is added)
         if (isChained) {
 #if defined (WF_TRACING_ENABLED)
-            gv_chain_vertex("Sink (" + std::to_string(copied_sink->getParallelism()) + ")", copied_sink->getName());
+            if (copied_sink->getType() == "Kafka_Sink") {
+                gv_chain_vertex("Kafka_Sink (" + std::to_string(copied_sink->getParallelism()) + ")", copied_sink->getName());
+            }
+            else {
+                gv_chain_vertex("Sink (" + std::to_string(copied_sink->getParallelism()) + ")", copied_sink->getName());
+            }
 #endif
         }
         else {
 #if defined (WF_TRACING_ENABLED)
-            gv_add_vertex("Sink (" + std::to_string(copied_sink->getParallelism()) + ")", copied_sink->getName(), true, false, copied_sink->getInputRoutingMode());
+            if (copied_sink->getType() == "Kafka_Sink") {
+                gv_add_vertex("Kafka_Sink (" + std::to_string(copied_sink->getParallelism()) + ")", copied_sink->getName(), true, false, copied_sink->getInputRoutingMode());
+            }
+            else {
+                gv_add_vertex("Sink (" + std::to_string(copied_sink->getParallelism()) + ")", copied_sink->getName(), true, false, copied_sink->getInputRoutingMode());
+            }
 #endif
         }
         localOpList.push_back(copied_sink); // add the copied operator to local list

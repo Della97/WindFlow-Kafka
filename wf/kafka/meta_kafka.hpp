@@ -37,16 +37,15 @@
 #define META_KAFKA_H
 
 // includes
+#include<optional>
+#include<functional>
 #include<basic.hpp>
 #include<context.hpp>
-#include<functional>
 #include<source_shipper.hpp>
-#include<librdkafka/rdkafkacpp.h>
-#include<optional>
 #include<kafka/kafkacontext.hpp>
+#include<librdkafka/rdkafkacpp.h>
 
 namespace wf {
-
 
 /*************************************************** KAFKA_SOURCE OPERATOR ***************************************************/
 // declaration of functions to extract the type of the result form the deserialization function
@@ -73,7 +72,8 @@ decltype(get_result_t_KafkaSource(&F_t::operator())) get_result_t_KafkaSource(F_
 
 std::false_type get_result_t_KafkaSource(...); // black hole
 /*****************************************************************************************************************************/
-/**************************************************CLOSING_FUNC KAFKA**************************************/
+
+/************************************************************CLOSING_FUNC KAFKA***********************************************/
 // declaration of functions to check the signature of the closing logic
 template<typename F_t>
 std::true_type check_kafka_closing_t(void (F_t::*)(KafkaRuntimeContext&) const);
@@ -87,8 +87,9 @@ template<typename F_t>
 decltype(check_kafka_closing_t(&F_t::operator())) check_kafka_closing_t(F_t);
 
 std::false_type check_kafka_closing_t(...); // black hole
+/*****************************************************************************************************************************/
 
-/*************************************************** KAFKA_SINK OPERATOR ***************************************************/
+/**************************************************** KAFKA_SINK OPERATOR ****************************************************/
 // declaration of functions to extract the input type of the KafkaSink operator
 template<typename F_t, typename Arg> // optional version
 Arg get_tuple_t_KafkaSink(void (F_t::*)(std::optional<Arg>&) const);
@@ -130,7 +131,7 @@ template<typename F_t>
 decltype(get_tuple_t_KafkaSink(&F_t::operator())) get_tuple_t_KafkaSink(F_t);
 
 std::false_type get_tuple_t_KafkaSink(...); // black hole
-
+/*****************************************************************************************************************************/
 
 } // namespace wf
 

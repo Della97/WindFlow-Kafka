@@ -1,5 +1,5 @@
 /**************************************************************************************
- *  Copyright (c) 2019- Gabriele Mencagli
+ *  Copyright (c) 2019- Gabriele Mencagli and Matteo Della Bartola
  *  
  *  This file is part of WindFlow.
  *  
@@ -22,14 +22,15 @@
  */
 
 /** 
- *  @file    sink.hpp
- *  @author  Gabriele Mencagli
+ *  @file    kafka_sink.hpp
+ *  @author  Gabriele Mencagli and Matteo Della Bartola
  *  
- *  @brief Sink operator
+ *  @brief Kafka_Sink operator
  *  
- *  @section Sink (Description)
+ *  @section Kafka_Sink (Description)
  *  
- *  This file implements the Sink operator able to absorb input streams.
+ *  This file implements the Kafka_Sink operator able to absorb input streams
+ *  of messages by producing them to Apache Kafka.
  */ 
 
 #ifndef KAFKA_SINK_H
@@ -39,7 +40,6 @@
 #include<string>
 #include<functional>
 #include<context.hpp>
-#include<kafka/kafkacontext.hpp>
 #include<batch_t.hpp>
 #include<single_t.hpp>
 #if defined (WF_TRACING_ENABLED)
@@ -47,25 +47,25 @@
 #endif
 #include<basic_emitter.hpp>
 #include<basic_operator.hpp>
-
-class ExampleDeliveryReportCb : public RdKafka::DeliveryReportCb {
- public:
-  void dr_cb(RdKafka::Message &message) {
-    /* If message.err() is non-zero the message delivery failed permanently
-     * for the message. */
-    if (message.err())
-      std::cerr << "% Message delivery failed: " << message.errstr()
-                << std::endl;
-    else
-      std::cerr << "% Message delivered to topic " << message.topic_name()
-                << " [" << message.partition() << "] at offset "
-                << message.offset() << std::endl;
-  }
-};
+#include<kafka/kafkacontext.hpp>
 
 namespace wf {
 
 //@cond DOXY_IGNORE
+
+class ExampleDeliveryReportCb : public RdKafka::DeliveryReportCb
+{
+public:
+    void dr_cb(RdKafka::Message &message)
+    {
+        /* If message.err() is non-zero the message delivery failed permanently
+         * for the message. */
+        if (message.err())
+            std::cerr << "% Message delivery failed: " << message.errstr() << std::endl;
+        else
+            std::cerr << "% Message delivered to topic " << message.topic_name() << " [" << message.partition() << "] at offset " << message.offset() << std::endl;
+    }
+};
 
 // class Sink_Replica
 template<typename kafka_sink_func_t>
@@ -98,7 +98,6 @@ private:
     std::string errstr;
     RdKafka::Producer *producer;
     ExampleDeliveryReportCb ex_dr_cb;
-
 #if defined (WF_TRACING_ENABLED)
     Stats_Record stats_record;
     double avg_td_us = 0;
@@ -132,26 +131,21 @@ public:
     int svc_init() override
     {
         std::cout << "ENTERED INIT " << broker << std::endl;
-
-    //SET UP PRODUCER
-    if (conf->set("bootstrap.servers", broker, errstr) !=
-        RdKafka::Conf::CONF_OK) {
-        std::cerr << errstr << std::endl;
-        exit(1);
+        //SET UP PRODUCER
+        if (conf->set("bootstrap.servers", broker, errstr) !=
+            RdKafka::Conf::CONF_OK) {
+            std::cerr << errstr << std::endl;
+            exit(1);
+        }
+        if (conf->set("dr_cb", &ex_dr_cb, errstr) != RdKafka::Conf::CONF_OK) {
+            std::cerr << errstr << std::endl;
+            exit(1);
+        }
+        producer = RdKafka::Producer::create(conf, errstr);
+        if (!producer) {
+            std::cerr << "Failed to create producer: " << errstr << std::endl;
+            exit(1);
     }
-
-    if (conf->set("dr_cb", &ex_dr_cb, errstr) != RdKafka::Conf::CONF_OK) {
-        std::cerr << errstr << std::endl;
-        exit(1);
-    }
-
-    producer = RdKafka::Producer::create(conf, errstr);
-    if (!producer) {
-        std::cerr << "Failed to create producer: " << errstr << std::endl;
-        exit(1);
-    }
-
-
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
 #endif
@@ -218,7 +212,6 @@ public:
                        uint64_t _watermark)
     {
         std::cout << "ENTERED PROCESS" << std::endl;
-        
         if constexpr (isNonRichedNonWrapper) { // non-riched non-wrapper version
             std::optional<decltype(get_tuple_t_KafkaSink(func))> opt_tuple = std::make_optional(std::move(_tuple)); // move the input tuple in the optional
             func(opt_tuple);
@@ -263,7 +256,6 @@ public:
     void svc_end() override
     {
         std::cout << "ENTERED SVC SINK" << std::endl;
-        
         if constexpr (isNonRichedNonWrapper) { // non-riched non-wrapper version
             std::optional<decltype(get_tuple_t_KafkaSink(func))> opt_empty; // create empty optional
             func(opt_empty);
@@ -313,11 +305,12 @@ public:
 //@endcond
 
 /** 
- *  \class Sink
+ *  \class Kafka_Sink
  *  
- *  \brief Sink operator
+ *  \brief Kafka_Sink operator
  *  
- *  This class implements the Sink operator able to absorb input streams
+ *  This class implements the Kafka_Sink operator able to absorb input streams and producing
+ *  them to Apache Kafka.
  */ 
 template<typename kafka_sink_func_t, typename key_extractor_func_t>
 class Kafka_Sink: public Basic_Operator
@@ -326,6 +319,7 @@ private:
     friend class MultiPipe; // friendship with the MultiPipe class
     friend class PipeGraph; // friendship with the PipeGraph class
     kafka_sink_func_t func; // functional logic used by the Sink
+    using tuple_t = decltype(get_tuple_t_KafkaSink(func)); // extracting the tuple_t type and checking the admissible signatures
     key_extractor_func_t key_extr; // logic to extract the key attribute from the tuple_t
     size_t parallelism; // parallelism of the Sink
     std::string name; // name of the Sink

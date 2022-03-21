@@ -41,88 +41,90 @@
 #include<optional>
 #include<functional>
 #include<context.hpp>
-#include<kafka/kafkacontext.hpp>
 #include<source_shipper.hpp>
 #if defined (WF_TRACING_ENABLED)
     #include<stats_record.hpp>
 #endif
 #include<basic_emitter.hpp>
 #include<basic_operator.hpp>
-
-
-class ExampleRebalanceCb : public RdKafka::RebalanceCb {
- private:
-  std::vector<int> offsets;
-  std::vector<std::string> topics;
-  int size = 0;
-  int init = 0;
-  static void part_list_print(
-      const std::vector<RdKafka::TopicPartition *> &partitions) {
-    for (unsigned int i = 0; i < partitions.size(); i++)
-      std::cerr << partitions[i]->topic() << "[" << partitions[i]->partition()
-                << "], ";
-    std::cerr << "\n";
-  }
-
- public:
-  void initOffsetTopics (std::vector<int> _offsets, std::vector<std::string> _topics) {
-      offsets = std::move(_offsets);
-      topics = std::move(_topics);
-      size = topics.size();
-      init = 0; //reload offset mid execution (at next rebalance callback) (need to test)
-  }
-  void rebalance_cb(RdKafka::KafkaConsumer *consumer,
-                    RdKafka::ErrorCode err,
-                    std::vector<RdKafka::TopicPartition *> &partitions) {
-    std::cerr << "RebalanceCb: " << RdKafka::err2str(err) << ": ";
-
-    part_list_print(partitions);
-
-    if (init == 0) {
-        if (offsets.size() != 0){
-            for (int i = 0; i<size; i++) {
-                for (auto j:partitions) {
-                    if (j->topic() == topics[i]) {
-                        if (offsets[i] > -1) {
-                            j->set_offset(offsets[i]);
-                        }
-                    }
-                }
-            }
-        }
-        init++;
-    }
-
-    RdKafka::Error *error      = NULL;
-    RdKafka::ErrorCode ret_err = RdKafka::ERR_NO_ERROR;
-
-    if (err == RdKafka::ERR__ASSIGN_PARTITIONS) {
-      if (consumer->rebalance_protocol() == "COOPERATIVE") {
-        error = consumer->incremental_assign(partitions);
-      } else {
-        ret_err = consumer->assign(partitions);
-      }
-    } else {
-      if (consumer->rebalance_protocol() == "COOPERATIVE") {
-        error = consumer->incremental_unassign(partitions);
-      } else {
-        ret_err = consumer->unassign();
-      }
-    }
-
-    if (error) {
-      std::cerr << "incremental assign failed: " << error->str() << "\n";
-      delete error;
-    } else if (ret_err) {
-      std::cerr << "assign failed: " << RdKafka::err2str(ret_err) << "\n";
-    }
-  }
-};
-
+#include<kafka/kafkacontext.hpp>
 
 namespace wf {
 
 //@cond DOXY_IGNORE
+
+class ExampleRebalanceCb : public RdKafka::RebalanceCb
+{
+private:
+    std::vector<int> offsets;
+    std::vector<std::string> topics;
+    int size = 0;
+    int init = 0;
+
+    static void part_list_print(const std::vector<RdKafka::TopicPartition *> &partitions)
+    {
+        for (unsigned int i = 0; i < partitions.size(); i++)
+            std::cerr << partitions[i]->topic() << "[" << partitions[i]->partition() << "], ";
+        std::cerr << "\n";
+    }
+
+public:
+    void initOffsetTopics (std::vector<int> _offsets,
+                           std::vector<std::string> _topics)
+    {
+        offsets = std::move(_offsets);
+        topics = std::move(_topics);
+        size = topics.size();
+        init = 0; //reload offset mid execution (at next rebalance callback) (need to test)
+    }
+
+    void rebalance_cb(RdKafka::KafkaConsumer *consumer,
+                      RdKafka::ErrorCode err,
+                      std::vector<RdKafka::TopicPartition *> &partitions)
+    {
+        std::cerr << "RebalanceCb: " << RdKafka::err2str(err) << ": ";
+        part_list_print(partitions);
+        if (init == 0) {
+            if (offsets.size() != 0){
+                for (int i = 0; i<size; i++) {
+                    for (auto j:partitions) {
+                        if (j->topic() == topics[i]) {
+                            if (offsets[i] > -1) {
+                                j->set_offset(offsets[i]);
+                            }
+                        }
+                    }
+                }
+            }
+            init++;
+        }
+        RdKafka::Error *error      = NULL;
+        RdKafka::ErrorCode ret_err = RdKafka::ERR_NO_ERROR;
+        if (err == RdKafka::ERR__ASSIGN_PARTITIONS) {
+            if (consumer->rebalance_protocol() == "COOPERATIVE") {
+                error = consumer->incremental_assign(partitions);
+            }
+            else {
+                ret_err = consumer->assign(partitions);
+            }
+        }
+        else {
+            if (consumer->rebalance_protocol() == "COOPERATIVE") {
+                error = consumer->incremental_unassign(partitions);
+            }
+            else {
+                ret_err = consumer->unassign();
+            }
+        }
+        if (error) {
+            std::cerr << "incremental assign failed: " << error->str() << "\n";
+            delete error;
+        }
+        else if (ret_err) {
+            std::cerr << "assign failed: " << RdKafka::err2str(ret_err) << "\n";
+        }
+    }
+};
 
 // class Kafka_Source_Replica
 template<typename kafka_deser_func_t>
@@ -165,10 +167,7 @@ private:
     bool run = true;
     bool stop = true;
     bool fetch = true;
-
     pthread_barrier_t *bar;
-
-
 #if defined (WF_TRACING_ENABLED)
     Stats_Record stats_record;
 #endif
@@ -204,7 +203,7 @@ public:
                          terminated(false),
                          execution_mode(Execution_Mode_t::DEFAULT),
                          time_policy(Time_Policy_t::INGRESS_TIME),
-                         shipper(nullptr) { }
+                         shipper(nullptr) {}
 
     // Copy Constructor
     Kafka_Source_Replica(const Kafka_Source_Replica &_other):
@@ -343,7 +342,6 @@ public:
         conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
         conf->set("group.id", groupid, errstr);
         conf->set("partition.assignment.strategy", strat, errstr);
-
         consumer = RdKafka::KafkaConsumer::create(conf, errstr);
         if (!consumer) {
             std::cerr << "Failed to create consumer: " << errstr << std::endl;
@@ -351,7 +349,6 @@ public:
 
         }
         /* Subscribe to topics */
-
         RdKafka::ErrorCode err = consumer->subscribe(topics);
         if (err) {
             std::cerr << "Failed to subscribe to " << topics.size()
@@ -360,7 +357,6 @@ public:
         }
         //pthread barrier
         //std::cout << "before barrier id: " << consumer->name() << std::endl;
-
         pthread_barrier_wait(bar);
         while (fetch) {
             consumer->poll(0);
@@ -382,7 +378,7 @@ public:
     void *svc(void *) override
     {
         while (run) { // main loop          
-            RdKafka::Message *msg = consumer->consume(idleTime); // qui si può fare qualcosa di carino per gestire il timeout
+            RdKafka::Message *msg = consumer->consume(idleTime);
             switch (msg->err()) {
                 case RdKafka::ERR__TIMED_OUT:
                     if constexpr (isNonRiched) {
@@ -657,7 +653,6 @@ public:
             exit(EXIT_FAILURE);
         }
         pthread_barrier_init(&bar, NULL, parallelism);
-
         //parallelims check but we dont know the number of partitions
         //pthread barrier
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Kafka_Source
@@ -684,7 +679,6 @@ public:
             delete r;
         }
         pthread_barrier_destroy(&bar);
-
         // C'è da cancellare roba di Kafka?
     }
 

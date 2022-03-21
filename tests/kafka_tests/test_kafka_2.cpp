@@ -225,6 +225,9 @@ int main()
     std::cout << "Creazione con builder tramite funtori -> OK!" <<  std::endl;
     PipeGraph graph("test_tracing_1", Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
     MultiPipe &pipe = graph.add_source(source6);
+
+#if 0
+
         //SINK
     Kafka_Sink_Functor sink_functor;
     Kafka_Sink sink1 = Kafka_Sink_Builder(sink_functor)
@@ -235,6 +238,7 @@ int main()
                         .withTopic("output")
                         .build();
         pipe.chain_sink(sink1);
+#endif
     graph.run();
     std::cout << "Exiting..." <<  std::endl;
     return 0;
