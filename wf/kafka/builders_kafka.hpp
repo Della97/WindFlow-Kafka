@@ -324,15 +324,7 @@ private:
     kafka_closing_func_t closing_func = [](KafkaRuntimeContext &r) -> void { return; }; // closing function logic of the Kafka_Sink
 
     /* Da qui in poi abbiamo una serie di variabili che vanno sistemate */
-    Iint offset;
-    int idleTime;
-    std::vector< std::string > topics;
-    std::string topic;
     std::string broker;
-    std::string groupid;
-    std::string strat;
-    int32_t partition;
-    std::vector<int> offsets;
 
 public:
     /** 
@@ -382,35 +374,6 @@ public:
     }
 
     /** 
-     *  \brief Set the topic offset
-     *  
-     *  \param _offset for the producer
-     *  \return a reference to the builder object
-     */ 
-
-    template <typename O, typename... OSets>
-    Kafka_Sink_Builder<kafka_sink_func_t> &withOffset(O first, OSets... Os)
-    {
-        offset.add_ints(first, Os...);
-        offsets = offset.offsets;
-        return *this;
-    }
-
-    /** 
-     *  \brief Set the topic
-     *  
-     *  \param _topic for the producer
-     *  \return a reference to the builder object
-     */ 
-
-
-    Kafka_Sink_Builder<kafka_sink_func_t> &withTopic(std::string _topic)
-    {
-        topic = _topic;
-        return *this;
-    }
-
-    /** 
      *  \brief Set the closing functional logic used by the Kafka_Source
      *  
      *  \param _closing_func closing functional logic (a function or a callable type)
@@ -438,8 +401,6 @@ public:
                             key_extr,
                             parallelism,
                             broker,
-                            offsets,
-                            topic,
                             name,
                             input_routing_mode,
                             closing_func);

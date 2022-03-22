@@ -89,8 +89,6 @@ private:
 
     //KAFKA DECLARATIONS
     std::string broker;
-    std::vector<int> offsets;
-    std::string topic;
     RdKafka::Conf *conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
     std::string errstr;
     RdKafka::Producer *producer;
@@ -111,8 +109,6 @@ public:
                  KafkaRuntimeContext _context,
                  std::string _broker,
                  size_t _parallelism,
-                 std::vector<int> _offsets,
-                 std::string _topic,
                  std::function<void(KafkaRuntimeContext &)> _closing_func):
                  func(_func),
                  opName(_opName),
@@ -120,8 +116,6 @@ public:
                  context(_context),
                  broker(_broker),
                  parallelism(_parallelism),
-                 offsets(_offsets),
-                 topic(_topic),
                  closing_func(_closing_func),
                  terminated(false),
                  execution_mode(Execution_Mode_t::DEFAULT) {}
@@ -145,7 +139,6 @@ public:
             std::cerr << "Failed to create producer: " << errstr << std::endl;
             exit(1);
         }
-        std::cout << "ECCO IL NOME DEL PRODUCER: " << producer->name() << std::endl;
         context.setProducer(producer); // set the parameter of the KafkaRuntimeContext
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
@@ -327,8 +320,6 @@ private:
 
     //KAFKA DECLARATION
     std::string broker;
-    std::vector<int> offsets;
-    std::string topic;
 
     // Configure the Sink to receive batches instead of individual inputs
     void receiveBatches(bool _input_batching) override
@@ -444,8 +435,6 @@ public:
          key_extractor_func_t _key_extr,
          size_t _parallelism,
          std::string _broker,
-         std::vector<int> _offsets,
-         std::string _topic,
          std::string _name,
          Routing_Mode_t _input_routing_mode,
          std::function<void(KafkaRuntimeContext &)> _closing_func):
@@ -453,8 +442,6 @@ public:
          key_extr(_key_extr),
          parallelism(_parallelism),
          broker(_broker),
-         offsets(_offsets),
-         topic(_topic),
          name(_name),
          input_routing_mode(_input_routing_mode),
          input_batching(false)
@@ -464,7 +451,7 @@ public:
             exit(EXIT_FAILURE);
         }
         for (size_t i=0; i<parallelism; i++) { // create the internal replicas of the Sink
-            replicas.push_back(new Kafka_Sink_Replica<kafka_sink_func_t>(_func, name, KafkaRuntimeContext(parallelism, i), broker, parallelism, offsets, topic, _closing_func));
+            replicas.push_back(new Kafka_Sink_Replica<kafka_sink_func_t>(_func, name, KafkaRuntimeContext(parallelism, i), broker, parallelism, _closing_func));
         }
     }
 
@@ -474,8 +461,6 @@ public:
          key_extr(_other.key_extr),
          parallelism(_other.parallelism),
          broker(_other.broker),
-         offsets(_other.offsets),
-         topic(_other.topic),
          name(_other.name),
          input_routing_mode(_other.input_routing_mode),
          input_batching(_other.input_batching)
