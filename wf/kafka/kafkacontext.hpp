@@ -63,33 +63,31 @@ class KafkaRuntimeContext: public RuntimeContext
 {
 private:
     template<typename T> friend class Kafka_Source_Replica; // friendship with Kafka_Source_Replica class
+    template<typename T> friend class Kafka_Sink_Replica; // friendship with Kafka_Sink_Replica class
     RdKafka::KafkaConsumer *consumer;
     RdKafka::Producer *producer;
-    uint64_t timestamp;
-    uint64_t watermark;
+
+    void setProducer (RdKafka::Producer *_producer) {
+        producer = _producer;
+    }
+
+    void setConsumer (RdKafka::KafkaConsumer *_consumer) {
+        consumer = _consumer;
+    }
 
 public:
     KafkaRuntimeContext (size_t _parallelism,
                          size_t _index):
                          RuntimeContext(_parallelism, _index) {}
 
-    //NOT SURE
-    void setProducerContext (uint64_t _timestamp, uint64_t _watermark, RdKafka::Producer *_producer) {
-        timestamp = _timestamp;
-        watermark = _watermark;
-        producer = _producer;
+
+
+    RdKafka::KafkaConsumer* getConsumer () {
+        return consumer;
     }
 
-    void setConsumerContext (RdKafka::KafkaConsumer *_consumer) {
-        consumer = _consumer;
-    }
-
-    std::string getConsumerName () {
-        return consumer->name();
-    }
-
-    std::string getProducerName () {
-        return producer->name();
+    RdKafka::Producer* getProducer () {
+        return producer;
     }
 
 };

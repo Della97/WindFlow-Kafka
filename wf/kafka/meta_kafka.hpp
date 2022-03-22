@@ -47,6 +47,13 @@
 
 namespace wf {
 
+struct wf_kafka_sink_msg {
+  std::string topic;
+  int32_t partition;
+  void* payload;
+  size_t len;
+};
+
 /*************************************************** KAFKA_SOURCE OPERATOR ***************************************************/
 // declaration of functions to extract the type of the result form the deserialization function
 template<typename F_t, typename Arg> // non-riched
@@ -92,40 +99,22 @@ std::false_type check_kafka_closing_t(...); // black hole
 /**************************************************** KAFKA_SINK OPERATOR ****************************************************/
 // declaration of functions to extract the input type of the KafkaSink operator
 template<typename F_t, typename Arg> // optional version
-Arg get_tuple_t_KafkaSink(void (F_t::*)(std::optional<Arg>&, std::optional<std::reference_wrapper<RdKafka::Message>>) const);
+Arg get_tuple_t_KafkaSink(wf::wf_kafka_sink_msg (F_t::*)(const Arg&) const);
 
 template<typename F_t, typename Arg> // optional version
-Arg get_tuple_t_KafkaSink(void (F_t::*)(std::optional<Arg>&, std::optional<std::reference_wrapper<RdKafka::Message>>));
+Arg get_tuple_t_KafkaSink(wf::wf_kafka_sink_msg (F_t::*)(const Arg&));
 
 template<typename Arg> // optional version
-Arg get_tuple_t_KafkaSink(void (*)(std::optional<Arg>&, std::optional<std::reference_wrapper<RdKafka::Message>>));
+Arg get_tuple_t_KafkaSink(wf::wf_kafka_sink_msg (*)(const Arg&));
 
 template<typename F_t, typename Arg> // optional riched version
-Arg get_tuple_t_KafkaSink(void (F_t::*)(std::optional<Arg>&, std::optional<std::reference_wrapper<RdKafka::Message>>, KafkaRuntimeContext&) const);
+Arg get_tuple_t_KafkaSink(wf::wf_kafka_sink_msg (F_t::*)(const Arg&, KafkaRuntimeContext&) const);
 
 template<typename F_t, typename Arg> // optional riched version
-Arg get_tuple_t_KafkaSink(void (F_t::*)(std::optional<Arg>&, std::optional<std::reference_wrapper<RdKafka::Message>>, KafkaRuntimeContext&));
+Arg get_tuple_t_KafkaSink(wf::wf_kafka_sink_msg (F_t::*)(const Arg&, KafkaRuntimeContext&));
 
 template<typename Arg> // optional riched version
-Arg get_tuple_t_KafkaSink(void (*)(std::optional<Arg>&, std::optional<std::reference_wrapper<RdKafka::Message>>, KafkaRuntimeContext&));
-
-template<typename F_t, typename Arg> // optional (reference wrapper) version
-Arg get_tuple_t_KafkaSink(void (F_t::*)(std::optional<std::reference_wrapper<Arg>>, std::optional<std::reference_wrapper<RdKafka::Message>>) const);
-
-template<typename F_t, typename Arg> // optional (reference wrapper) version
-Arg get_tuple_t_KafkaSink(void (F_t::*)(std::optional<std::reference_wrapper<Arg>>, std::optional<std::reference_wrapper<RdKafka::Message>>));
-
-template<typename Arg> // optional (reference wrapper) version
-Arg get_tuple_t_KafkaSink(void (*)(std::optional<std::reference_wrapper<Arg>>, std::optional<std::reference_wrapper<RdKafka::Message>>));
-
-template<typename F_t, typename Arg> // optional (reference wrapper) riched version
-Arg get_tuple_t_KafkaSink(void (F_t::*)(std::optional<std::reference_wrapper<Arg>>, std::optional<std::reference_wrapper<RdKafka::Message>>, KafkaRuntimeContext&) const);
-
-template<typename F_t, typename Arg> // optional (reference wrapper) riched version
-Arg get_tuple_t_KafkaSink(void (F_t::*)(std::optional<std::reference_wrapper<Arg>>, std::optional<std::reference_wrapper<RdKafka::Message>>, KafkaRuntimeContext&));
-
-template<typename Arg> // optional (reference wrapper) riched version
-Arg get_tuple_t_KafkaSink(void (*)(std::optional<std::reference_wrapper<Arg>>, std::optional<std::reference_wrapper<RdKafka::Message>>, KafkaRuntimeContext&));
+Arg get_tuple_t_KafkaSink(wf::wf_kafka_sink_msg (*)(const Arg&, KafkaRuntimeContext&));
 
 template<typename F_t>
 decltype(get_tuple_t_KafkaSink(&F_t::operator())) get_tuple_t_KafkaSink(F_t);

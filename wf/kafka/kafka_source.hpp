@@ -163,11 +163,11 @@ private:
     ExampleRebalanceCb ex_rebalance_cb; //partiotion manager
     int32_t tmp = 0;
     std::vector<std::string> topics;
-    std::vector<RdKafka::TopicPartition *> partitionss;
     bool run = true;
     bool stop = true;
     bool fetch = true;
     pthread_barrier_t *bar;
+    std::vector<RdKafka::TopicPartition *> partitions;
 #if defined (WF_TRACING_ENABLED)
     Stats_Record stats_record;
 #endif
@@ -338,10 +338,23 @@ public:
         std::cout << "BROKERS: " << brokers << std::endl;
         ex_rebalance_cb.initOffsetTopics(offset, topics);
         conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
-        conf->set("metadata.broker.list", brokers, errstr);
-        conf->set("rebalance_cb", &ex_rebalance_cb, errstr);
-        conf->set("group.id", groupid, errstr);
-        conf->set("partition.assignment.strategy", strat, errstr);
+        if (conf->set("metadata.broker.list", brokers, errstr) != RdKafka::Conf::CONF_OK) {
+            std::cerr << errstr << std::endl;
+            exit(1);
+        }
+        if (conf->set("rebalance_cb", &ex_rebalance_cb, errstr) != RdKafka::Conf::CONF_OK) {
+            std::cerr << errstr << std::endl;
+            exit(1);
+        }
+        if (conf->set("group.id", groupid, errstr) != RdKafka::Conf::CONF_OK) {
+            std::cerr << errstr << std::endl;
+            exit(1);
+        }
+        if (conf->set("partition.assignment.strategy", strat, errstr) != RdKafka::Conf::CONF_OK) {
+            std::cerr << errstr << std::endl;
+            exit(1);
+        }
+
         consumer = RdKafka::KafkaConsumer::create(conf, errstr);
         if (!consumer) {
             std::cerr << "Failed to create consumer: " << errstr << std::endl;
@@ -357,16 +370,9 @@ public:
         }
         //pthread barrier
         //std::cout << "before barrier id: " << consumer->name() << std::endl;
+        context.setConsumer(consumer);
+        consumer->poll(0);
         pthread_barrier_wait(bar);
-        while (fetch) {
-            consumer->poll(0);
-            consumer->assignment(partitionss);
-            if (!(partitionss.empty())) {
-                fetch = false;
-            }
-        }
-        //consumer->poll(0);
-        //consumer->assignment(partitions);
 #if defined (WF_TRACING_ENABLED)
         stats_record = Stats_Record(opName, std::to_string(context.getReplicaIndex()), false, false);
 #endif
@@ -377,7 +383,7 @@ public:
     // svc (utilized by the FastFlow runtime)
     void *svc(void *) override
     {
-        while (run) { // main loop          
+        while (run) { // main loop 
             RdKafka::Message *msg = consumer->consume(idleTime);
             switch (msg->err()) {
                 case RdKafka::ERR__TIMED_OUT:
@@ -404,7 +410,6 @@ public:
                         }
                     }
                     if constexpr (isRiched) {
-                        context.setConsumerContext(consumer); // set the parameter of the KafkaRuntimeContext
                         run = func(*msg, *shipper, context); //get payload -> deser -> push forward if valid
                         if (run == false) {
                             std::cout << "Reached End Of Stream from deser func: " << std::endl;

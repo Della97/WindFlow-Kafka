@@ -59,15 +59,17 @@ public:
                  totalsum(0) {}
 
     // operator()
-    void operator()(std::optional<tuple_t> &out, std::optional<std::reference_wrapper<RdKafka::Message>> msg, KafkaRuntimeContext &rc)
+    wf::wf_kafka_sink_msg operator()(const tuple_t &out, KafkaRuntimeContext &rc)
     {
-        if (out) {
-            std::cout << "[SINK] -> Received: " << (*out).key << std::endl;
-            std::cout << "[SINK] -> Received: " << (*out).value << std::endl;
-        }
-        else {
-            std::cout << "[SINK] -> Received nothing: " << std::endl;
-        }
+        wf::wf_kafka_sink_msg tmp;
+        RdKafka::Producer *producer = rc.getProducer();
+        std::string msg = std::to_string(out.key) + "-producer-" + std::to_string(rc.getReplicaIndex());
+
+        tmp.len = msg.size();
+        tmp.partition = rc.getReplicaIndex();
+        tmp.payload = const_cast<char *>(msg.c_str());
+        tmp.topic = "output";
+        return tmp;
     }
 };
 
@@ -153,14 +155,14 @@ int main()
     string brokers = "localhost";
     string groupid = "group";
     size_t outputBactchSize = 1;
-    int parallelism = 4;
+    int parallelism = 6;
     RdKafka::Message *msg;
     std::vector<std::string> topics = { "items" };
     Source_Shipper<tuple_t> *shipper;
     std::vector<int> offset;
     RdKafka::Conf *cconf;
     RdKafka::Conf *tconf;
-    std:int sink1_degree = 1;
+    int sink1_degree = 2;
     std::string topic1 = "test";
     std::string topic2 = "provatop";
     std::string topic3 = "topic";
@@ -215,7 +217,7 @@ int main()
                                 .withOutputBatchSize(outputBactchSize)
                                 .withClosingFunction(c_functor)
                                 .withBrokers("localhost:9092", "localhost:9093")
-                                .withTopics(topic1, topic2, "topic-name")
+                                .withTopics(topic1)
                                 .withGroupID(groupid)
                                 .withAssignmentPolicy(strat)
                                 .withIdleness(2000)
