@@ -217,7 +217,7 @@ int main()
                                 .withOutputBatchSize(outputBactchSize)
                                 .withClosingFunction(c_functor)
                                 .withBrokers("localhost:9092", "localhost:9093")
-                                .withTopics(topic1)
+                                .withTopics("provatop", "test", "topic-name")
                                 .withGroupID(groupid)
                                 .withAssignmentPolicy(strat)
                                 .withIdleness(2000)
@@ -235,7 +235,7 @@ int main()
     Kafka_Sink sink1 = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(sink1_degree)
-                        .withBroker("localhost:9093")
+                        .withBrokers("localhost:9093")
                         .build();
         pipe.chain_sink(sink1);
     graph.run();

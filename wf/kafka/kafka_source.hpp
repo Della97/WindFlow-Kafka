@@ -335,7 +335,6 @@ public:
     // svc_init (utilized by the FastFlow runtime)
     int svc_init() override
     {
-        std::cout << "BROKERS: " << brokers << std::endl;
         ex_rebalance_cb.initOffsetTopics(offset, topics);
         conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
         if (conf->set("metadata.broker.list", brokers, errstr) != RdKafka::Conf::CONF_OK) {

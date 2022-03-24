@@ -123,10 +123,8 @@ public:
     // svc_init (utilized by the FastFlow runtime)
     int svc_init() override
     {
-        std::cout << "ENTERED INIT " << broker << std::endl;
         //SET UP PRODUCER
-        if (conf->set("bootstrap.servers", broker, errstr) !=
-            RdKafka::Conf::CONF_OK) {
+        if (conf->set("bootstrap.servers", broker, errstr) != RdKafka::Conf::CONF_OK) {
             std::cerr << errstr << std::endl;
             exit(1);
         }

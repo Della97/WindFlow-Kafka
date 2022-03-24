@@ -40,7 +40,7 @@ class ExampleDeliveryReportCb : public RdKafka::DeliveryReportCb {
 
 int main(int argc, char **argv) {
 
-  std::string brokers = "localhost";
+  std::string brokers = "localhost:9092";
   std::string topic   = "test";
 
   /*

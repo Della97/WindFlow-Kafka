@@ -324,7 +324,8 @@ private:
     kafka_closing_func_t closing_func = [](KafkaRuntimeContext &r) -> void { return; }; // closing function logic of the Kafka_Sink
 
     /* Da qui in poi abbiamo una serie di variabili che vanno sistemate */
-    std::string broker;
+    createString broker;
+    std::string brokers;
 
 public:
     /** 
@@ -367,9 +368,13 @@ public:
      *  \param _brokers for kafka server
      *  \return a reference to the builder object
      */ 
-    Kafka_Sink_Builder<kafka_sink_func_t> &withBroker(std::string _broker)
+    template <typename H, typename... Args>
+    Kafka_Sink_Builder<kafka_sink_func_t> &withBrokers(H first, Args... Ts)
     {
-        broker = _broker;
+        broker.add_strings(first, Ts...);
+        broker.strs.pop_back();
+        broker.strs.pop_back();
+        brokers = broker.strs;
         return *this;
     }
 
@@ -400,7 +405,7 @@ public:
         return kafka_sink_t(func,
                             key_extr,
                             parallelism,
-                            broker,
+                            brokers,
                             name,
                             input_routing_mode,
                             closing_func);
