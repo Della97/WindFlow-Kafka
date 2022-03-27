@@ -215,6 +215,7 @@ int main(int argc, char* argv[]) {
     }
     /// data pre-processing
     parse_dataset(file_path);
+    //send kafka datas
     create_tuples(num_keys);
     /// application starting time
     unsigned long app_start_time = current_time_nsecs();
