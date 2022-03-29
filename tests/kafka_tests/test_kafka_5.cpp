@@ -13,7 +13,7 @@
 #include "includes/nodes/detector.hpp"
 #include "includes/util/constants.hpp"
 #include "includes/nodes/average_calculator_map.hpp"
-#include "includes/nodes/generate_kafka_datas.hpp"
+//#include "includes/nodes/generate_kafka_datas.hpp"
 
 using namespace std;
 using namespace ff;
@@ -28,32 +28,49 @@ vector<tuple_t> dataset;                    // contains all the tuples in memory
 unordered_map<size_t, uint64_t> key_occ;    // contains the number of occurrences of each key device_id
 atomic<long> sent_tuples;                   // total number of tuples sent by all the sources
 
-/** 
- *  @brief Parse the input file
- *  
- *  The file is parsed and saved in memory.
- *  
- *  @param file_path the path of the input dataset file
- */ 
-void parse_dataset(const string& file_path) {
+int main(int argc, char* argv[]) {
+    //KAFKA//
+    std::string broker = "localhost:9093";
+    RdKafka::Conf *conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
+    std::string errstr;
+    RdKafka::Producer *producer;
+
+    //SET UP PRODUCER
+    if (conf->set("bootstrap.servers", broker, errstr) != RdKafka::Conf::CONF_OK) {
+        std::cerr << errstr << std::endl;
+        exit(1);
+    }
+    producer = RdKafka::Producer::create(conf, errstr);
+    if (!producer) {
+        std::cerr << "Failed to create producer: " << errstr << std::endl;
+        exit(1);
+    }
+    std::cout << "Producer created: " << producer->name() << std::endl;
+    //kafka//
+    string file_path = "/home/della/git/WindFlow-Kafka/Datasets/SD/sensors.dat";
     ifstream file(file_path);
-    vector<string> tokens;
+    int count = 0;
     if (file.is_open()) {
-        size_t all_records = 0;         // counter of all records (dataset line) read
-        size_t incomplete_records = 0;  // counter of the incomplete records
         string line;
         while (getline(file, line)) {
-            // process file line
-            int token_count = 0;
-            regex rgx("\\s+"); // regex quantifier (matches one or many whitespaces)
-            sregex_token_iterator iter(line.begin(), line.end(), rgx, -1);
-            sregex_token_iterator end;
-            while (iter != end) {
-                tokens.push_back(*iter);
-                token_count++;
-                iter++;
-            }
+            //std::cout << "DATA: " << line << std::endl;
+            //KAFKA SEND DATA
+            /*
+            RdKafka::ErrorCode err = producer->produce("output", //topic
+                                                0,  //partition
+                                                RdKafka::Producer::RK_MSG_COPY, // Copy payload,
+                                                line, //payload
+                                                line.size(),        //
+                                                NULL, 0,  //
+                                                0,        //
+                                                NULL,     //
+                                                NULL);    //
+            producer->poll(0);
+            */
+            //KAFKA SEND DATA
+            count++;
         }
         file.close();
+        std::cout << "COUNT: " << count << std::endl;
     }
 }
