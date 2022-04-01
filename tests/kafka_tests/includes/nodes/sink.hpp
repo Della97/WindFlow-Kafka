@@ -27,7 +27,7 @@ using namespace wf;
  *
  *  @brief Defines the logic of the Sink
  */
-class Sink_Functor {
+class Kafka_Sink_Functor {
 private:
     long sampling;
     unsigned long app_start_time;
@@ -45,7 +45,7 @@ public:
      *  @param _sampling sampling rate
      *  @param _app_start_time application starting time
      */
-    Sink_Functor(const long _sampling,
+    Kafka_Sink_Functor(const long _sampling,
                  const unsigned long _app_start_time):
                  sampling(_sampling),
                  app_start_time(_app_start_time),
@@ -58,7 +58,7 @@ public:
      *
      * @param t input tuple
      */
-    void operator()(optional<tuple_t>& r, RuntimeContext& rc) {
+    void operator()(optional<tuple_t>& r, KafkaRuntimeContext& rc) {
         if (r) {
             if (processed == 0) {
                 parallelism = rc.getParallelism();

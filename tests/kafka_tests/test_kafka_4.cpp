@@ -14,7 +14,7 @@
 #include <iostream>
 #include <ff/ff.hpp>
 #include <windflow.hpp>
-#include<kafka/windflow_kafka.hpp>
+#include <kafka/windflow_kafka.hpp>
 
 #include "includes/util/tuple.hpp"
 #include "includes/nodes/sink.hpp"
@@ -23,7 +23,6 @@
 #include "includes/nodes/detector.hpp"
 #include "includes/util/constants.hpp"
 #include "includes/nodes/average_calculator_map.hpp"
-#include "includes/nodes/generate_kafka_datas.hpp"
 
 using namespace std;
 using namespace ff;
@@ -219,10 +218,6 @@ int main(int argc, char* argv[]) {
     create_tuples(num_keys);
     /// application starting time
     unsigned long app_start_time = current_time_nsecs();
-    /// send data to kafka
-    /// class for generate kafka datas
-    Send_Kafka_Data sendData = Send_Kafka_Data(dataset, rate, app_start_time);
-    sendData.sendData();
     cout << "Executing SpikeDetection with parameters:" << endl;
     if (rate != 0) {
         cout << "  * rate: " << rate << " tuples/second" << endl;
@@ -259,11 +254,12 @@ int main(int argc, char* argv[]) {
                 .withName(detector_name)
                 .withOutputBatchSize(batch_size)
                 .build();
-        Sink_Functor sink_functor(sampling, app_start_time);
-        Sink sink = Sink_Builder(sink_functor)
-                .withParallelism(sink_par_deg)
-                .withName(sink_name)
-                .build();
+        Kafka_Sink_Functor sink_functor(sampling, app_start_time);
+        Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
+                        .withName("sink1")
+                        .withParallelism(1)
+                        .withBrokers("localhost:9093")
+                        .build();
         MultiPipe &mp = topology.add_source(source);
         cout << "Chaining is disabled" << endl;
         mp.add(average_calculator);
@@ -289,11 +285,12 @@ int main(int argc, char* argv[]) {
                 .withParallelism(detector_par_deg)
                 .withName(detector_name)
                 .build();
-        Sink_Functor sink_functor(sampling, app_start_time);
-        Sink sink = Sink_Builder(sink_functor)
-                .withParallelism(sink_par_deg)
-                .withName(sink_name)
-                .build();
+        Kafka_Sink_Functor sink_functor(sampling, app_start_time);
+        Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
+                        .withName("sink1")
+                        .withParallelism(1)
+                        .withBrokers("localhost:9093")
+                        .build();
         MultiPipe &mp = topology.add_source(source);
         cout << "Chaining is enabled" << endl;
         mp.chain(average_calculator);

@@ -1,5 +1,5 @@
 #include "sampler.hpp"
-#include <windflow.hpp>
+#include<kafka/windflow_kafka.hpp>
 #include <iostream>
 
 namespace util {
