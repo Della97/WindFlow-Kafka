@@ -110,7 +110,7 @@ void closing_func(KafkaRuntimeContext &r) {}
 class deser_functor
 {
 public:
-    bool operator()(std::optional<std::reference_wrapper<RdKafka::Message>> msg, Source_Shipper<tuple_t> &shipper /* , tuple_t &output */)
+    bool operator()(std::optional<std::reference_wrapper<RdKafka::Message>> msg, Source_Shipper<tuple_t> &shipper)
     {
         if (msg) {
             tuple_t out;
