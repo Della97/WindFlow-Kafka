@@ -83,38 +83,27 @@ public:
      */ 
     void operator()(std::optional<std::reference_wrapper<RdKafka::Message>> msg, Source_Shipper<tuple_t> &shipper)
     {
-        std::string tmp;
-        current_time = current_time_nsecs(); // get the current time
-        // generation loop
-        while (current_time - app_start_time <= app_run_time)
-        {
-            if (next_tuple_idx == 0) {
-                generations++;
-            }
-            //tuple_t t(dataset.at(next_tuple_idx));
-            if ((batch_size > 0) && (generated_tuples % batch_size == 0)) {
-                current_time = current_time_nsecs(); // get the new current time
-            }
-            if (batch_size == 0) {
-                current_time = current_time_nsecs(); // get the new current time
-            }
-            //t.ts = current_time;
-            //get the payload aka string of the parsed file via kafka
-            tmp = static_cast<const char *>(msg->get().payload());
+        tuple_t t;
+        std::uniform_int_distribution<> dist(0, num_keys-1);
+        mt19937 rng;
+        rng.seed(0);
 
-            //PARSE
-
-            regex rgx("\\s+"); // regex quantifier (matches one or many whitespaces)
-            sregex_token_iterator iter(line.begin(), line.end(), rgx, -1);
+        if (msg) {
+            string tmp = static_cast<const char *>(msg->get().payload());
+            int token_count = 0;
+            vector<string> tokens;
+            regex rgx("\\s+");
+            sregex_iterator iter(tmp.begin(), tmp.end(), rgx, -1);
             sregex_token_iterator end;
-            while (iter != end) {
+            while (iter != end)
+            {
                 tokens.push_back(*iter);
                 token_count++;
                 iter++;
             }
-            // a record is valid if it contains at least 8 values (one for each field of interest)
+            
             if (token_count >= 8) {
-                // save parsed file
+                //create record_t
                 record_t r(tokens.at(DATE_FIELD),
                            tokens.at(TIME_FIELD),
                            atoi(tokens.at(EPOCH_FIELD).c_str()),
@@ -123,47 +112,36 @@ public:
                            atof(tokens.at(HUMID_FIELD).c_str()),
                            atof(tokens.at(LIGHT_FIELD).c_str()),
                            atof(tokens.at(VOLT_FIELD).c_str()));
-                // insert the key device_id in the map (if it is not present)
-                if (key_occ.find(get<DEVICE_ID_FIELD>(r)) == key_occ.end()) {
-                    key_occ.insert(make_pair(get<DEVICE_ID_FIELD>(r), 0));
+                //create tuple
+                if (_field == TEMPERATURE) {
+                    t.property_value = get<TEMP_FIELD>(r);
                 }
-            }
+                else if (_field == HUMIDITY) {
+                    t.property_value = get<HUMID_FIELD>(r);
+                }
+                else if (_field == LIGHT) {
+                    t.property_value = get<LIGHT_FIELD>(r);
+                }
+                else if (_light == VOLTAGE) {
+                    t.property_value = get<VOLT_FIELD>(r);
+                }
+                t.incremental_average = 0;
+                if (num_keys > 0) {
+                    t.key = dist(rng);
+                }
+                else {
+                    t.key = get<DEVICE_ID_FIELD>(r);
+                }
+                t.ts = 0L;
 
-            //CREATE TUPLE
-
-            tuple_t t;
-            // select the value of the field the user chose to monitor (parameter set in constants.hpp)
-            if (_field == TEMPERATURE) {
-                t.property_value = get<TEMP_FIELD>(t);
+                shipper.pushWithTimestamp(std::move(out), next_ts);
+                next_ts++;
             }
-            else if (_field == HUMIDITY) {
-                t.property_value = get<HUMID_FIELD>(t);
-            }
-            else if (_field == LIGHT) {
-                t.property_value = get<LIGHT_FIELD>(t);
-            }
-            else if (_field == VOLTAGE) {
-                t.property_value = get<VOLT_FIELD>(t);
-            }
-            t.incremental_average = 0;
-            if (num_keys > 0) {
-                t.key = dist(rng);
-            }
-            else {
-                t.key = get<DEVICE_ID_FIELD>(t);
-            }
-            t.ts = 0L;
-
-            //END PARSE SEND TUPLE
-            shipper.pushWithTimestamp(std::move(t), current_time); // send the next tuple
-            generated_tuples++;
-            next_tuple_idx = (next_tuple_idx + 1) % dataset.size();   // index of the next tuple to be sent (if any)
-            if (rate != 0) { // active waiting to respect the generation rate
-                long delay_nsec = (long) ((1.0d / rate) * 1e9);
-                active_delay(delay_nsec);
-            }
+            return true;
+        } else {
+            //std::cout << "Received MSG as NULLPTR " << std::endl;
+            return true;
         }
-        sent_tuples.fetch_add(generated_tuples); // save the number of generated tuples
     }
 
     ~Kafka_Source_Functor() {}
