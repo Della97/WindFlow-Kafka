@@ -12,6 +12,7 @@
 #define SPIKEDETECTION_LIGHT_SOURCE_HPP
 
 #include <fstream>
+#include <regex>
 #include <vector>
 #include <ff/ff.hpp>
 #include "../util/tuple.hpp"
@@ -22,13 +23,14 @@ using namespace ff;
 using namespace wf;
 
 extern atomic<long> sent_tuples;
+unordered_map<size_t, uint64_t> key_occ;    // contains the number of occurrences of each key device_id
 
 /**
- *  @class Source_Functor
+ *  @class Kafka_Source_Functor
  *
  *  @brief Define the logic of the Source
  */
-class Source_Functor {
+class Kafka_Source_Functor {
 private:
     vector<tuple_t> dataset;        // contains all the tuples
     int rate;                       // stream generation rate
@@ -58,7 +60,7 @@ private:
 
 public:
     // Constructor
-    Source_Functor(const vector<tuple_t>& _dataset,
+    Kakfa_Source_Functor(const vector<tuple_t>& _dataset,
                    const int _rate,
                    const unsigned long _app_start_time,
                    const size_t _batch_size):
@@ -79,35 +81,70 @@ public:
      *  
      *  @param shipper Source_Shipper object used for generating inputs
      */ 
-    void operator()(Source_Shipper<tuple_t> &shipper)
+    void operator()(std::optional<std::reference_wrapper<RdKafka::Message>> msg, Source_Shipper<tuple_t> &shipper)
     {
-        current_time = current_time_nsecs(); // get the current time
-        // generation loop
-        while (current_time - app_start_time <= app_run_time)
-        {
-            if (next_tuple_idx == 0) {
-                generations++;
+        tuple_t t;
+        std::uniform_int_distribution<> dist(0, num_keys-1);
+        mt19937 rng;
+        rng.seed(0);
+
+        if (msg) {
+            string tmp = static_cast<const char *>(msg->get().payload());
+            int token_count = 0;
+            vector<string> tokens;
+            regex rgx("\\s+");
+            sregex_iterator iter(tmp.begin(), tmp.end(), rgx, -1);
+            sregex_token_iterator end;
+            while (iter != end)
+            {
+                tokens.push_back(*iter);
+                token_count++;
+                iter++;
             }
-            tuple_t t(dataset.at(next_tuple_idx));
-            if ((batch_size > 0) && (generated_tuples % batch_size == 0)) {
-                current_time = current_time_nsecs(); // get the new current time
+            
+            if (token_count >= 8) {
+                //create record_t
+                record_t r(tokens.at(DATE_FIELD),
+                           tokens.at(TIME_FIELD),
+                           atoi(tokens.at(EPOCH_FIELD).c_str()),
+                           atoi(tokens.at(DEVICE_ID_FIELD).c_str()),
+                           atof(tokens.at(TEMP_FIELD).c_str()),
+                           atof(tokens.at(HUMID_FIELD).c_str()),
+                           atof(tokens.at(LIGHT_FIELD).c_str()),
+                           atof(tokens.at(VOLT_FIELD).c_str()));
+                //create tuple
+                if (_field == TEMPERATURE) {
+                    t.property_value = get<TEMP_FIELD>(r);
+                }
+                else if (_field == HUMIDITY) {
+                    t.property_value = get<HUMID_FIELD>(r);
+                }
+                else if (_field == LIGHT) {
+                    t.property_value = get<LIGHT_FIELD>(r);
+                }
+                else if (_light == VOLTAGE) {
+                    t.property_value = get<VOLT_FIELD>(r);
+                }
+                t.incremental_average = 0;
+                if (num_keys > 0) {
+                    t.key = dist(rng);
+                }
+                else {
+                    t.key = get<DEVICE_ID_FIELD>(r);
+                }
+                t.ts = 0L;
+
+                shipper.pushWithTimestamp(std::move(out), next_ts);
+                next_ts++;
             }
-            if (batch_size == 0) {
-                current_time = current_time_nsecs(); // get the new current time
-            }
-            t.ts = current_time;
-            shipper.pushWithTimestamp(std::move(t), current_time); // send the next tuple
-            generated_tuples++;
-            next_tuple_idx = (next_tuple_idx + 1) % dataset.size();   // index of the next tuple to be sent (if any)
-            if (rate != 0) { // active waiting to respect the generation rate
-                long delay_nsec = (long) ((1.0d / rate) * 1e9);
-                active_delay(delay_nsec);
-            }
+            return true;
+        } else {
+            //std::cout << "Received MSG as NULLPTR " << std::endl;
+            return true;
         }
-        sent_tuples.fetch_add(generated_tuples); // save the number of generated tuples
     }
 
-    ~Source_Functor() {}
+    ~Kafka_Source_Functor() {}
 };
 
 #endif //SPIKEDETECTION_LIGHT_SOURCE_HPP

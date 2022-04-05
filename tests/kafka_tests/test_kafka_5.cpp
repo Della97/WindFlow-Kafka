@@ -6,13 +6,13 @@
 #include <windflow.hpp>
 #include <kafka/windflow_kafka.hpp>
 
-#include "includes/util/tuple.hpp"
-#include "includes/nodes/sink.hpp"
-#include "includes/nodes/source.hpp"
-#include "includes/util/cli_util.hpp"
-#include "includes/nodes/detector.hpp"
-#include "includes/util/constants.hpp"
-#include "includes/nodes/average_calculator_map.hpp"
+#include "test/includes/util/tuple.hpp"
+#include "test/includes/nodes/sink.hpp"
+#include "test/includes/nodes/source.hpp"
+#include "test/includes/util/cli_util.hpp"
+#include "test/includes/nodes/detector.hpp"
+#include "test/includes/util/constants.hpp"
+#include "test/includes/nodes/average_calculator_map.hpp"
 //#include "includes/nodes/generate_kafka_datas.hpp"
 
 using namespace std;
