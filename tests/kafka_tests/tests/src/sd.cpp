@@ -12,6 +12,7 @@
 #include <iostream>
 #include <ff/ff.hpp>
 #include <windflow.hpp>
+#include <kafka/windflow_kafka.hpp>
 
 #include "../includes/util/tuple.hpp"
 #include "../includes/nodes/sink.hpp"
@@ -33,6 +34,13 @@ vector<record_t> parsed_file;               // contains data extracted from the 
 vector<tuple_t> dataset;                    // contains all the tuples in memory
 unordered_map<size_t, uint64_t> key_occ;    // contains the number of occurrences of each key device_id
 atomic<long> sent_tuples;                   // total number of tuples sent by all the sources
+
+// closing functor (stub)
+class closing_functor
+{
+public:
+    void operator()(KafkaRuntimeContext &r) {}
+};
 
 /** 
  *  @brief Parse the input file
@@ -142,6 +150,7 @@ int main(int argc, char* argv[]) {
     bool chaining = false;
     size_t batch_size = 0;
     int num_keys = 0;
+    closing_functor c_functor;
     if (argc == 11 || argc == 12) {
         while ((option = getopt_long(argc, argv, "r:k:s:p:b:c:", long_opts, &index)) != -1) {
             file_path = _input_file;
@@ -230,12 +239,19 @@ int main(int argc, char* argv[]) {
     PipeGraph topology(topology_name, Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
     if (!chaining) { // no chaining
         /// create the operators
-        Source_Functor source_functor(dataset, rate, app_start_time, batch_size);
-        Source source = Source_Builder(source_functor)
-                .withParallelism(source_par_deg)
-                .withName(source_name)
-                .withOutputBatchSize(batch_size)
-                .build();
+        Kafka_Source_Functor source_functor;
+        Kafka_Source source = Kafka_Source_Builder(source_functor)
+                                .withName("kafka-source")
+                                .withOutputBatchSize(1)
+                                .withClosingFunction(c_functor)
+                                .withBrokers("localhost:9092")
+                                .withTopics("test")
+                                .withGroupID("groupid")
+                                .withAssignmentPolicy("roundrobin")
+                                .withIdleness(2000)
+                                .withParallelism(1)
+                                .withOffset(-1)
+                                .build();
         Average_Calculator_Map_Functor avg_calc_functor(app_start_time);
         Map average_calculator = Map_Builder(avg_calc_functor)
                 .withParallelism(average_par_deg)
@@ -249,11 +265,12 @@ int main(int argc, char* argv[]) {
                 .withName(detector_name)
                 .withOutputBatchSize(batch_size)
                 .build();
-        Sink_Functor sink_functor(sampling, app_start_time);
-        Sink sink = Sink_Builder(sink_functor)
-                .withParallelism(sink_par_deg)
-                .withName(sink_name)
-                .build();
+        Kafka_Sink_Functor sink_functor(sampling, app_start_time);
+        Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
+                        .withName("sink1")
+                        .withParallelism(1)
+                        .withBrokers("localhost:9093")
+                        .build();
         MultiPipe &mp = topology.add_source(source);
         cout << "Chaining is disabled" << endl;
         mp.add(average_calculator);
@@ -262,12 +279,19 @@ int main(int argc, char* argv[]) {
     }
     else { // chaining
         /// create the operators
-        Source_Functor source_functor(dataset, rate, app_start_time, batch_size);
-        Source source = Source_Builder(source_functor)
-                .withParallelism(source_par_deg)
-                .withName(source_name)
-                .withOutputBatchSize(batch_size)
-                .build();
+        Kafka_Source_Functor source_functor;
+        Kafka_Source source = Kafka_Source_Builder(source_functor)
+                                .withName("kafka-source")
+                                .withOutputBatchSize(1)
+                                .withClosingFunction(c_functor)
+                                .withBrokers("localhost:9092")
+                                .withTopics("test")
+                                .withGroupID("groupid")
+                                .withAssignmentPolicy("roundrobin")
+                                .withIdleness(2000)
+                                .withParallelism(1)
+                                .withOffset(-1)
+                                .build();
         Average_Calculator_Map_Functor avg_calc_functor(app_start_time);
         Map average_calculator = Map_Builder(avg_calc_functor)
                 .withParallelism(average_par_deg)
@@ -279,11 +303,12 @@ int main(int argc, char* argv[]) {
                 .withParallelism(detector_par_deg)
                 .withName(detector_name)
                 .build();
-        Sink_Functor sink_functor(sampling, app_start_time);
-        Sink sink = Sink_Builder(sink_functor)
-                .withParallelism(sink_par_deg)
-                .withName(sink_name)
-                .build();
+        Kafka_Sink_Functor sink_functor(sampling, app_start_time);
+        Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
+                        .withName("sink1")
+                        .withParallelism(1)
+                        .withBrokers("localhost:9093")
+                        .build();
         MultiPipe &mp = topology.add_source(source);
         cout << "Chaining is enabled" << endl;
         mp.chain(average_calculator);

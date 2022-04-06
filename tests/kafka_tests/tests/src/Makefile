@@ -2,7 +2,7 @@
 # Date: 13/01/2020
 
 FF_ROOT			= $(HOME)/git/fastflow
-WF_INCLUDES		= $(HOME)/git/WindFlow-Kafka/wf
+WF_INCLUDES		= $(HOME)/git/WindFlow-Kafka
 INCLUDE_DIR		= ../includes
 OUT_DIR			= ../bin
 
@@ -11,7 +11,7 @@ CXXFLAGS		= -std=c++17
 INCLUDES		= -I $(FF_ROOT) -I $(WF_INCLUDES) -I $(INCLUDE_DIR)
 MACRO           = -DFF_BOUNDED_BUFFER -DDEFAULT_BUFFER_CAPACITY=32786 # -DNDEBUG
 OPTFLAGS		= -g -O3 -finline-functions
-LDFLAGS			= -pthread
+LDFLAGS			= -pthread -lrdkafka++
 
 all: sd
 

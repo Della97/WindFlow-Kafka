@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <ff/ff.hpp>
+#include <kafka/windflow_kafka.hpp>
 #include "../util/cli_util.hpp"
 #include "../util/tuple.hpp"
 #include "../util/sampler.hpp"
@@ -23,7 +24,7 @@ using namespace ff;
 using namespace wf;
 
 /**
- *  @class Sink_Functor
+ *  @class Kafka_Sink_Functor
  *
  *  @brief Defines the logic of the Sink
  */
@@ -54,38 +55,20 @@ public:
                  latency_sampler(_sampling) {}
 
     /**
-     * @brief Print results and evaluate latency statistics
+     * @brief Send results to kafka and evaluate latency statistics
      *
      * @param t input tuple
      */
-    void operator()(optional<tuple_t>& r, KafkaRuntimeContext& rc) {
-        if (r) {
-            if (processed == 0) {
-                parallelism = rc.getParallelism();
-                replica_id = rc.getReplicaIndex();
-            }
-            //print_result("[Sink] Received tuple: ", *t);
+    wf::wf_kafka_sink_msg operator()(const tuple_t &out, KafkaRuntimeContext &rc) {
+        wf::wf_kafka_sink_msg tmp;
+        RdKafka::Producer *producer = rc.getProducer();
+        std::string msg = std::to_string(out.key) + "-producer-" + std::to_string(rc.getReplicaIndex());
 
-            // always evaluate latency when compiling with FF_BOUNDED_BUFFER MACRO set
-            unsigned long tuple_latency = (current_time_nsecs() - (*r).ts) / 1e03;
-            processed++;        // tuples counter
-
-
-            current_time = current_time_nsecs();
-            latency_sampler.add(tuple_latency, current_time);
-#if 0
-            if (processed < 100) {
-                cout << "Ricevuto outlier entity_id: " << (*r).key << " property_value " << (*r).property_value << " incremental_average " << (*r).incremental_average << endl;
-            }
-#endif       
-        }
-        else {     // EOS
-            /*cout << "[Sink] replica " << replica_id + 1 << "/" << parallelism
-                 << ", execution time: " << (current_time - app_start_time) / 1e09
-                 << " s, processed: " << processed
-                 << endl;*/
-            util::metric_group.add("latency", latency_sampler);
-        }
+        tmp.len = msg.size();
+        tmp.partition = rc.getReplicaIndex();
+        tmp.payload = const_cast<char *>(msg.c_str());
+        tmp.topic = "output";
+        return tmp;
     }
 };
 
