@@ -36,6 +36,8 @@ using namespace wf;
  */
 class Kafka_Source_Functor
 {
+private:
+    int count = 0;
 public:
     /** 
      *  @brief Generation function of the input stream
@@ -51,6 +53,9 @@ public:
         uint64_t next_ts = 0;
 
         if (msg) {
+            if (count == 50000) {
+                return false;
+            }
             string tmp = static_cast<const char *>(msg->get().payload());
             int token_count = 0;
             vector<string> tokens;
@@ -92,6 +97,7 @@ public:
                 t.ts = 0L;
 
                 shipper.pushWithTimestamp(std::move(t), next_ts);
+                count++;
                 next_ts++;
             }
             return true;

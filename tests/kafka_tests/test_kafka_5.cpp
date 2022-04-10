@@ -6,6 +6,11 @@
 #include <windflow.hpp>
 #include <kafka/windflow_kafka.hpp>
 
+
+#include <chrono>
+#include <thread>
+
+
 using namespace std;
 using namespace ff;
 using namespace wf;
@@ -74,6 +79,7 @@ int main(int argc, char* argv[]) {
                                                 NULL);    //
 
             producer->poll(0);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
             //KAFKA SEND DATA
             count++;
         }
