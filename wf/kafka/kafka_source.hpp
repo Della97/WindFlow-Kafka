@@ -401,12 +401,14 @@ public:
                         exit(1);
                     }
                     if constexpr (isNonRiched) {
+                        std::cout << "received" << std::endl;
                         run = func(*msg, *shipper); //get payload -> deser -> push forward if valid
                         if (run == false) {
                             std::cout << "Reached End Of Stream from deser func: " << std::endl;
                         }
                     }
                     if constexpr (isRiched) {
+                        std::cout << "received" << std::endl;
                         run = func(*msg, *shipper, context); //get payload -> deser -> push forward if valid
                         if (run == false) {
                             std::cout << "Reached End Of Stream from deser func: " << std::endl;

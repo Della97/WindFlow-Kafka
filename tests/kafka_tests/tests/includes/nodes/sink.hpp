@@ -62,11 +62,10 @@ public:
     wf::wf_kafka_sink_msg operator()(const tuple_t &out, KafkaRuntimeContext &rc) {
         wf::wf_kafka_sink_msg tmp;
         RdKafka::Producer *producer = rc.getProducer();
-        std::string msg = std::to_string(out.key) + "-producer-" + std::to_string(rc.getReplicaIndex());
+        std::string msg = std::to_string(out.key);
 
-        tmp.len = msg.size();
         tmp.partition = rc.getReplicaIndex();
-        tmp.payload = const_cast<char *>(msg.c_str());
+        tmp.payload = msg;
         tmp.topic = "output";
         return tmp;
     }

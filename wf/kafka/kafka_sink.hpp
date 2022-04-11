@@ -128,10 +128,12 @@ public:
             std::cerr << errstr << std::endl;
             exit(1);
         }
+        /*
         if (conf->set("dr_cb", &ex_dr_cb, errstr) != RdKafka::Conf::CONF_OK) {
             std::cerr << errstr << std::endl;
             exit(1);
         }
+        */
         producer = RdKafka::Producer::create(conf, errstr);
         if (!producer) {
             std::cerr << "Failed to create producer: " << errstr << std::endl;
@@ -147,7 +149,6 @@ public:
     // svc (utilized by the FastFlow runtime)
     void *svc(void *_in) override
     {
-        std::cout << "ENTERED SVC" << std::endl;
 #if defined (WF_TRACING_ENABLED)
         startTS = current_time_nsecs();
         if (stats_record.inputs_received == 0) {
@@ -203,15 +204,14 @@ public:
                        uint64_t _timestamp,
                        uint64_t _watermark)
     {
-        std::cout << "ENTERED PROCESS" << std::endl;
         if constexpr (isNonRiched) { // non-riched non-wrapper version
             wf::wf_kafka_sink_msg ret = func(_tuple);
-            std::cout << "SEND DATA FROM: " << producer->name() << std::endl;
+            //std::cout << "SEND DATA FROM: " << producer->name() << std::endl;
             RdKafka::ErrorCode err = producer->produce(ret.topic, //topic
                                                 ret.partition,  //partition
                                                 RdKafka::Producer::RK_MSG_COPY, // Copy payload,
-                                                ret.payload, //payload
-                                                ret.len,        //
+                                                const_cast<char *>(ret.payload.c_str()), //payload
+                                                ret.payload.size(),        //
                                                 NULL, 0,  //
                                                 0,        //
                                                 NULL,     //
@@ -220,32 +220,20 @@ public:
         }
         if constexpr (isRiched)  { // riched non-wrapper version
             wf::wf_kafka_sink_msg ret = func(_tuple, context);
-            std::cout << "SEND DATA FROM: " << producer->name() << std::endl;
+            //std::cout << "SEND DATA FROM: " << producer->name() << std::endl;
             RdKafka::ErrorCode err = producer->produce(ret.topic, //topic
                                                 ret.partition,  //partition
                                                 RdKafka::Producer::RK_MSG_COPY, // Copy payload,
-                                                ret.payload, //payload
-                                                ret.len,        //
+                                                const_cast<char *>(ret.payload.c_str()), //payload
+                                                ret.payload.size(),        //
                                                 NULL, 0,  //
                                                 0,        //
                                                 NULL,     //
                                                 NULL);    //
             producer->poll(0);
         }
-        /*
-        std::cout << "ABOUT TO SEND DATA" << std::endl;
-        tmp = std::to_string(_tuple.key);
-        RdKafka::ErrorCode err = producer->produce("output", //topic
-                                                RdKafka::Topic::PARTITION_UA,  //partition
-                                                RdKafka::Producer::RK_MSG_COPY, // Copy payload,
-                                                const_cast<char *>(tmp.c_str()), //payload
-                                                tmp.size(),        //
-                                                NULL, 0,  //
-                                                0,        //
-                                                NULL,     //
-                                                NULL);    //
-        producer->poll(0);
-        */
+        //clean payload
+
     }
 
     // EOS management (utilized by the FastFlow runtime)

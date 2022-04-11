@@ -11,7 +11,6 @@
 #include <vector>
 #include <iostream>
 #include <ff/ff.hpp>
-#include <windflow.hpp>
 #include <kafka/windflow_kafka.hpp>
 
 #include "../includes/util/tuple.hpp"

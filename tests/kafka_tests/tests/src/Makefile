@@ -2,7 +2,7 @@
 # Date: 13/01/2020
 
 FF_ROOT			= $(HOME)/git/fastflow
-WF_INCLUDES		= $(HOME)/git/WindFlow-Kafka
+WF_INCLUDES		= $(HOME)/git/WindFlow-Kafka/wf
 INCLUDE_DIR		= ../includes
 OUT_DIR			= ../bin
 

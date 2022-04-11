@@ -53,7 +53,8 @@ public:
         uint64_t next_ts = 0;
 
         if (msg) {
-            if (count == 50000) {
+            if (count == 60000) {
+                std::cout << "ARRIVATI 60000 messaggi" << std::endl;
                 return false;
             }
             string tmp = static_cast<const char *>(msg->get().payload());
@@ -96,6 +97,7 @@ public:
                 t.key = get<DEVICE_ID_FIELD>(r);
                 t.ts = 0L;
 
+                //std::cout << "count: " << count << " MSG: " << t.key << std::endl;
                 shipper.pushWithTimestamp(std::move(t), next_ts);
                 count++;
                 next_ts++;

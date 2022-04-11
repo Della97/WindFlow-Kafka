@@ -50,8 +50,7 @@ namespace wf {
 struct wf_kafka_sink_msg {
   std::string topic;
   int32_t partition;
-  void* payload;
-  size_t len;
+  std::string payload;
 };
 
 /*************************************************** KAFKA_SOURCE OPERATOR ***************************************************/
