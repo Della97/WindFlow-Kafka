@@ -387,6 +387,7 @@ public:
             RdKafka::Message *msg = consumer->consume(idleTime);
             switch (msg->err()) {
                 case RdKafka::ERR__TIMED_OUT:
+                    std::cout << "TIME OUT SOURCE" << std::endl;
                     if constexpr (isNonRiched) {
                         run = func(std::nullopt, *shipper); //get payload -> deser -> push forward if valid
                     }
@@ -395,11 +396,7 @@ public:
                     }
                     break;
                 case RdKafka::ERR_NO_ERROR:
-                    error = consumer->commitAsync(msg);
-                    if (error) {
-                        std::cerr << "Failed to commit" << std::endl;
-                        exit(1);
-                    }
+                    std::cout << "NO ERROR SOURCE" << std::endl;
                     if constexpr (isNonRiched) {
                         std::cout << "received" << std::endl;
                         run = func(*msg, *shipper); //get payload -> deser -> push forward if valid

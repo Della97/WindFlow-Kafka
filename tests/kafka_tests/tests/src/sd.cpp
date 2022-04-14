@@ -244,10 +244,10 @@ int main(int argc, char* argv[]) {
                                 .withOutputBatchSize(1)
                                 .withClosingFunction(c_functor)
                                 .withBrokers("localhost:9092")
-                                .withTopics("test")
-                                .withGroupID("groupid")
+                                .withTopics("provatop")
+                                .withGroupID("gruppo")
                                 .withAssignmentPolicy("roundrobin")
-                                .withIdleness(2000)
+                                .withIdleness(500)
                                 .withParallelism(1)
                                 .withOffset(-1)
                                 .build();
@@ -284,10 +284,10 @@ int main(int argc, char* argv[]) {
                                 .withOutputBatchSize(1)
                                 .withClosingFunction(c_functor)
                                 .withBrokers("localhost:9092")
-                                .withTopics("test")
-                                .withGroupID("groupid")
+                                .withTopics("provatop")
+                                .withGroupID("gruppo")
                                 .withAssignmentPolicy("roundrobin")
-                                .withIdleness(2000)
+                                .withIdleness(500)
                                 .withParallelism(1)
                                 .withOffset(-1)
                                 .build();
@@ -323,7 +323,8 @@ int main(int argc, char* argv[]) {
     double elapsed_time_seconds = (end_time_main_usecs - start_time_main_usecs) / (1000000.0);
     double throughput = sent_tuples / elapsed_time_seconds;
     cout << "Measured throughput: " << (int) throughput << " tuples/second" << endl;
-    cout << "Dumping metrics" << endl;
-    util::metric_group.dump_all();
+    cout << "Elapsed time: " << elapsed_time_seconds << endl;
+    //cout << "Dumping metrics" << endl;
+    //util::metric_group.dump_all();
     return 0;
 }

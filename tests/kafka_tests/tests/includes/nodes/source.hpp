@@ -28,6 +28,8 @@ using namespace std;
 using namespace ff;
 using namespace wf;
 
+extern atomic<long> sent_tuples;
+
 
 /**
  *  @class Kafka_Source_Functor
@@ -37,7 +39,7 @@ using namespace wf;
 class Kafka_Source_Functor
 {
 private:
-    int count = 0;
+    long count = 0;
 public:
     /** 
      *  @brief Generation function of the input stream
@@ -53,10 +55,6 @@ public:
         uint64_t next_ts = 0;
 
         if (msg) {
-            if (count == 60000) {
-                std::cout << "ARRIVATI 60000 messaggi" << std::endl;
-                return false;
-            }
             string tmp = static_cast<const char *>(msg->get().payload());
             int token_count = 0;
             vector<string> tokens;
@@ -104,6 +102,11 @@ public:
             }
             return true;
         } else {
+            if (count != 0) {
+                cout << "COUNT: " << count << endl;
+                sent_tuples.fetch_add(count); // save the number of generated tuples
+                return false;
+            }
             //std::cout << "Received MSG as NULLPTR " << std::endl;
             return true;
         }
