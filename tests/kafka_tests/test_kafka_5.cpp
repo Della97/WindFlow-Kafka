@@ -100,6 +100,9 @@ int main(int argc, char* argv[]) {
     index = 0;
     volatile unsigned long start_time_main_usecs = current_time_usecs();
     while (current_time - start_time <= (app_run_time  + app_run_time)) {
+        if (index == 80000) {
+            return 0;
+        }
         RdKafka::ErrorCode err = producer->produce("provatop", //topic
                                                 RdKafka::Topic::PARTITION_UA,  //partition
                                                 RdKafka::Producer::RK_MSG_COPY, // Copy payload,
@@ -130,7 +133,7 @@ int main(int argc, char* argv[]) {
                                             */
 
             producer->poll(0);
-            //std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            std::this_thread::sleep_for(std::chrono::milliseconds(2));
             //KAFKA SEND DATA
     std::cout << "COUNT (AFTER == TIMEOUT): " << count << std::endl;
     std::cout << "CALLBACK COUNT DONE (AFTER == TIMEOUT): " << succes << std::endl;

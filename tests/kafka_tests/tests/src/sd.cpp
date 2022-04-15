@@ -233,20 +233,20 @@ int main(int argc, char* argv[]) {
     create_tuples(num_keys);
     /// application starting time
     unsigned long app_start_time = current_time_nsecs();
-    cout << "Executing SpikeDetection with parameters:" << endl;
+    //cout << "Executing SpikeDetection with parameters:" << endl;
     if (rate != 0) {
-        cout << "  * rate: " << rate << " tuples/second" << endl;
+        //cout << "  * rate: " << rate << " tuples/second" << endl;
     }
     else {
-        cout << "  * rate: full_speed tuples/second" << endl;
+        //cout << "  * rate: full_speed tuples/second" << endl;
     }
-    cout << "  * batch size: " << batch_size << endl;
-    cout << "  * sampling: " << sampling << endl;
-    cout << "  * source: " << source_par_deg << endl;
-    cout << "  * moving-average: " << average_par_deg << endl;
-    cout << "  * spike-detector: " << detector_par_deg << endl;
-    cout << "  * sink: " << sink_par_deg << endl;
-    cout << "  * topology: source -> moving-average -> spike-detector -> sink" << endl;
+    //cout << "  * batch size: " << batch_size << endl;
+    //cout << "  * sampling: " << sampling << endl;
+    //cout << "  * source: " << source_par_deg << endl;
+    //cout << "  * moving-average: " << average_par_deg << endl;
+    //cout << "  * spike-detector: " << detector_par_deg << endl;
+    //cout << "  * sink: " << sink_par_deg << endl;
+    //cout << "  * topology: source -> moving-average -> spike-detector -> sink" << endl;
     PipeGraph topology(topology_name, Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
     if (!chaining) { // no chaining
         /// create the operators
@@ -283,7 +283,7 @@ int main(int argc, char* argv[]) {
                         .withBrokers("localhost:9093")
                         .build();
         MultiPipe &mp = topology.add_source(source);
-        cout << "Chaining is disabled" << endl;
+        //cout << "Chaining is disabled" << endl;
         mp.add(average_calculator);
         mp.add(detector);
         mp.add_sink(sink);
@@ -321,16 +321,17 @@ int main(int argc, char* argv[]) {
                         .withBrokers("localhost:9093")
                         .build();
         MultiPipe &mp = topology.add_source(source);
-        cout << "Chaining is enabled" << endl;
+        //cout << "Chaining is enabled" << endl;
         mp.chain(average_calculator);
         mp.chain(detector);
         mp.chain_sink(sink);
     }
-    cout << "Executing topology" << endl;
+    //cout << "Executing topology" << endl;
     /// evaluate topology execution time
     volatile unsigned long start_time_main_usecs = current_time_usecs();
     topology.run();
     volatile unsigned long end_time_main_usecs = current_time_usecs();
+
     cout << "Exiting" << endl;
     cout << "******************STATS***************" << endl;
     double elapsed_time_seconds = (end_time_main_usecs - start_time_main_usecs) / (1000000.0);
@@ -359,6 +360,7 @@ int main(int argc, char* argv[]) {
     cout << "****************SINK***************" << endl;
     cout << "Sink_Arrived_tuple (FROM DETECTOR): " << sink_arrived_tuple << endl;
     cout << "*****************************" << endl;
+
     //cout << "Dumping metrics" << endl;
     //util::metric_group.dump_all();
     return 0;

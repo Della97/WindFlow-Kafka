@@ -98,7 +98,7 @@ public:
             source_arrived_tuple++;
             current_time = current_time_nsecs(); // get the current time
             if (current_time - app_start_time > app_run_time) {
-                cout << "COUNT: " << count << endl;
+                //cout << "COUNT: " << count << endl;
                 return false;
             }
             string tmp = static_cast<const char *>(msg->get().payload());
@@ -155,7 +155,7 @@ public:
         } else {
             current_time = current_time_nsecs(); // get the current time
             if (current_time - app_start_time > app_run_time) {
-                cout << "COUNT: " << count << endl;
+                //cout << "COUNT: " << count << endl;
                 return false;
             }
             //std::cout << "Received MSG as NULLPTR " << std::endl;

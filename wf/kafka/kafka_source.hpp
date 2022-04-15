@@ -82,8 +82,8 @@ public:
                       RdKafka::ErrorCode err,
                       std::vector<RdKafka::TopicPartition *> &partitions)
     {
-        std::cerr << "RebalanceCb: " << RdKafka::err2str(err) << ": ";
-        part_list_print(partitions);
+        //std::cerr << "RebalanceCb: " << RdKafka::err2str(err) << ": ";
+        //part_list_print(partitions);
         if (init == 0) {
             if (offsets.size() != 0){
                 for (int i = 0; i<size; i++) {
@@ -382,7 +382,7 @@ public:
     // svc (utilized by the FastFlow runtime)
     void *svc(void *) override
     {
-        std::cout << "Consuming datas..." << std::endl;
+        //std::cout << "Consuming datas..." << std::endl;
         while (run) { // main loop 
             RdKafka::Message *msg = consumer->consume(idleTime);
             switch (msg->err()) {
@@ -396,24 +396,24 @@ public:
                     break;
                 case RdKafka::ERR_NO_ERROR:
                     if constexpr (isNonRiched) {
-                        std::cout << "received" << std::endl;
+                        //std::cout << "received" << std::endl;
                         run = func(*msg, *shipper); //get payload -> deser -> push forward if valid
                         if (run == false) {
-                            std::cout << "Reached End Of Stream from deser func: " << std::endl;
+                            //std::cout << "Reached End Of Stream from deser func: " << std::endl;
                         }
                     }
                     if constexpr (isRiched) {
-                        std::cout << "received" << std::endl;
+                        //std::cout << "received" << std::endl;
                         run = func(*msg, *shipper, context); //get payload -> deser -> push forward if valid
                         if (run == false) {
-                            std::cout << "Reached End Of Stream from deser func: " << std::endl;
+                            //std::cout << "Reached End Of Stream from deser func: " << std::endl;
                         }
                     }
                     break;
             }
             delete msg;
         }
-        std::cout << "Exiting from replica " << consumer->name() << std::endl;
+        //std::cout << "Exiting from replica " << consumer->name() << std::endl;
 #if defined (WF_TRACING_ENABLED)
         stats_record.setTerminated();
 #endif

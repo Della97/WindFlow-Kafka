@@ -1,0 +1,8 @@
+[32mWindFlow Status Message: PipeGraph [SpikeDetection] is running with 4 threads[0m
+--> DEFAULT (out-of-order) mode [32menabled[0m
+--> EVENT_TIME policy [32menabled[0m
+--> Backpressure [32menabled[0m
+--> Non-blocking queues [32menabled[0m
+--> Pinning of threads [32menabled[0m
+ENTERED SVC SINK END
+[32mWindFlow Status Message: PipeGraph [SpikeDetection] executed successfully[0m
