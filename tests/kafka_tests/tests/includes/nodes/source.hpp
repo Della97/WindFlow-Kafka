@@ -28,7 +28,8 @@ using namespace std;
 using namespace ff;
 using namespace wf;
 
-extern atomic<long> sent_tuples;
+extern atomic<long> source_arrived_tuple;                   // total number of tuples sent by all the sources
+extern atomic<long> source_sent_tuple;                   // total number of tuples sent by all the sources
 
 
 /**
@@ -40,7 +41,44 @@ class Kafka_Source_Functor
 {
 private:
     long count = 0;
+    long arrived = 0;
+    vector<tuple_t> dataset;        // contains all the tuples
+    int rate;                       // stream generation rate
+    size_t next_tuple_idx;          // index of the next tuple to be sent
+    int generations;                // counts the times the file is generated
+    long generated_tuples;          // tuples counter
+
+    // time variables
+    unsigned long app_start_time;   // application start time
+    unsigned long current_time;
+    unsigned long interval;
+    size_t batch_size;
+
+    /**
+     *  @brief Add some active delay (busy-waiting function)
+     *
+     *  @param waste_time wait time in nanoseconds
+     */
+    void active_delay(unsigned long waste_time) {
+        auto start_time = current_time_nsecs();
+        bool end = false;
+        while (!end) {
+            auto end_time = current_time_nsecs();
+            end = (end_time - start_time) >= waste_time;
+        }
+    }
 public:
+// Constructor
+    Kafka_Source_Functor(const unsigned long _app_start_time,
+                        const int _rate):
+            app_start_time(_app_start_time),
+            rate(_rate),
+            next_tuple_idx(0),
+            generations(0),
+            generated_tuples(0)
+    {
+        interval = 1000000L; // 1 second (microseconds)
+    }
     /** 
      *  @brief Generation function of the input stream
      *  
@@ -53,8 +91,16 @@ public:
         mt19937 rng;
         rng.seed(0);
         uint64_t next_ts = 0;
+        current_time = current_time_nsecs(); // get the current time
 
         if (msg) {
+            arrived++;
+            source_arrived_tuple++;
+            current_time = current_time_nsecs(); // get the current time
+            if (current_time - app_start_time > app_run_time) {
+                cout << "COUNT: " << count << endl;
+                return false;
+            }
             string tmp = static_cast<const char *>(msg->get().payload());
             int token_count = 0;
             vector<string> tokens;
@@ -98,13 +144,18 @@ public:
                 //std::cout << "count: " << count << " MSG: " << t.key << std::endl;
                 shipper.pushWithTimestamp(std::move(t), next_ts);
                 count++;
+                source_sent_tuple++;
+                if (rate != 0) { // active waiting to respect the generation rate
+                    long delay_nsec = (long) ((1.0d / rate) * 1e9);
+                    active_delay(delay_nsec);
+                }
                 next_ts++;
             }
             return true;
         } else {
-            if (count != 0) {
+            current_time = current_time_nsecs(); // get the current time
+            if (current_time - app_start_time > app_run_time) {
                 cout << "COUNT: " << count << endl;
-                sent_tuples.fetch_add(count); // save the number of generated tuples
                 return false;
             }
             //std::cout << "Received MSG as NULLPTR " << std::endl;

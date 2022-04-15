@@ -18,6 +18,8 @@ using namespace std;
 using namespace ff;
 using namespace wf;
 
+extern atomic<long> avg_calc_arrived_tuple;                   // total number of tuples sent by all the sources
+
 /**
  *  @class Incremental_Average_Calculator
  *
@@ -81,6 +83,7 @@ public:
 class Average_Calculator_Map_Functor {
 private:
     size_t processed;       // tuples counter
+    long count = 0;
     Incremental_Average_Calculator mean_calculator;
     unordered_map<size_t, uint64_t> keys;
 
@@ -113,11 +116,14 @@ public:
             parallelism = rc.getParallelism();
             replica_id = rc.getReplicaIndex();
         }
+        count++;
         //print_tuple("[AverageCalculator] received tuple: ", t);
 
         // set the incremental average field and send the tuple toward the next node
         t.incremental_average = mean_calculator.compute(t.key, t.property_value);
         processed++;
+        count++;
+        
 
         //print_tuple("[AverageCalculator] sent tuple: ", t);
 
@@ -126,6 +132,8 @@ public:
         //     keys.insert(make_pair(t.key, t.id));
         // else
         //     (keys.find(t.key))->second = t.id;
+
+        avg_calc_arrived_tuple++;
 
         current_time = current_time_nsecs();
     }

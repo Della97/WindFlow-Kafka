@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
     current_time = current_time_nsecs();
     index = 0;
     volatile unsigned long start_time_main_usecs = current_time_usecs();
-    while (current_time - start_time <= app_run_time) {
+    while (current_time - start_time <= (app_run_time  + app_run_time)) {
         RdKafka::ErrorCode err = producer->produce("provatop", //topic
                                                 RdKafka::Topic::PARTITION_UA,  //partition
                                                 RdKafka::Producer::RK_MSG_COPY, // Copy payload,
@@ -110,7 +110,7 @@ int main(int argc, char* argv[]) {
                                                 NULL);    //
         producer->poll(0);
         cout << count << endl;
-        std::this_thread::sleep_for(std::chrono::microseconds(10));
+        //std::this_thread::sleep_for(std::chrono::microseconds(10));
         count++;
         index++;
         current_time = current_time_nsecs();        

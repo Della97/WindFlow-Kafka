@@ -23,6 +23,8 @@ using namespace std;
 using namespace ff;
 using namespace wf;
 
+extern atomic<long> sink_arrived_tuple;                   // total number of tuples sent by all the sources
+
 /**
  *  @class Kafka_Sink_Functor
  *
@@ -31,6 +33,7 @@ using namespace wf;
 class Kafka_Sink_Functor {
 private:
     long sampling;
+    long arrived = 0;
     unsigned long app_start_time;
     unsigned long current_time;
     size_t processed;                       // tuples counter
@@ -60,6 +63,8 @@ public:
      * @param t input tuple
      */
     wf::wf_kafka_sink_msg operator()(const tuple_t &out, KafkaRuntimeContext &rc) {
+        arrived++;
+        sink_arrived_tuple++;
         wf::wf_kafka_sink_msg tmp;
         RdKafka::Producer *producer = rc.getProducer();
         std::string msg = std::to_string(out.key);

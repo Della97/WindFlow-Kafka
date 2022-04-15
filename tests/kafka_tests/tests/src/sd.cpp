@@ -32,7 +32,19 @@ using record_t = tuple<string, string, int, int, double, double, double, double>
 vector<record_t> parsed_file;               // contains data extracted from the input file
 vector<tuple_t> dataset;                    // contains all the tuples in memory
 unordered_map<size_t, uint64_t> key_occ;    // contains the number of occurrences of each key device_id
-atomic<long> sent_tuples;                   // total number of tuples sent by all the sources
+
+//***********************SOURCE*************************
+atomic<long> source_arrived_tuple;                   // total number of tuples sent by all the sources
+atomic<long> source_sent_tuple;                   // total number of tuples sent by all the sources
+
+//***********************AVG CALC*************************
+atomic<long> avg_calc_arrived_tuple;                   // total number of tuples sent by all the sources
+
+//***********************DETECTOR*************************
+atomic<long> detector_arrived_tuple;                   // total number of tuples sent by all the sources
+
+//***********************SINK*************************
+atomic<long> sink_arrived_tuple;                   // total number of tuples sent by all the sources
 
 // closing functor (stub)
 class closing_functor
@@ -144,7 +156,7 @@ int main(int argc, char* argv[]) {
     size_t detector_par_deg = 0;
     size_t sink_par_deg = 0;
     int rate = 0;
-    sent_tuples = 0;
+    source_sent_tuple = 0;
     long sampling = 0;
     bool chaining = false;
     size_t batch_size = 0;
@@ -238,7 +250,7 @@ int main(int argc, char* argv[]) {
     PipeGraph topology(topology_name, Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
     if (!chaining) { // no chaining
         /// create the operators
-        Kafka_Source_Functor source_functor;
+        Kafka_Source_Functor source_functor(app_start_time, rate);
         Kafka_Source source = Kafka_Source_Builder(source_functor)
                                 .withName("kafka-source")
                                 .withOutputBatchSize(1)
@@ -278,7 +290,7 @@ int main(int argc, char* argv[]) {
     }
     else { // chaining
         /// create the operators
-        Kafka_Source_Functor source_functor;
+        Kafka_Source_Functor source_functor(app_start_time, rate);
         Kafka_Source source = Kafka_Source_Builder(source_functor)
                                 .withName("kafka-source")
                                 .withOutputBatchSize(1)
@@ -320,10 +332,33 @@ int main(int argc, char* argv[]) {
     topology.run();
     volatile unsigned long end_time_main_usecs = current_time_usecs();
     cout << "Exiting" << endl;
+    cout << "******************STATS***************" << endl;
     double elapsed_time_seconds = (end_time_main_usecs - start_time_main_usecs) / (1000000.0);
-    double throughput = sent_tuples / elapsed_time_seconds;
+    double throughput = source_sent_tuple / elapsed_time_seconds;
     cout << "Measured throughput: " << (int) throughput << " tuples/second" << endl;
     cout << "Elapsed time: " << elapsed_time_seconds << endl;
+    cout << "*****************************" << endl;
+    cout << endl;
+
+    cout << "****************SOURCE***************" << endl;
+    cout << "Source_arrived_tuple (FROM KAFKA) : " << source_arrived_tuple << endl;
+    cout << "Source_sent_tuple (TO AVG) : " << source_sent_tuple << endl;
+    cout << "*****************************" << endl;
+    long loss1 = source_sent_tuple/avg_calc_arrived_tuple; 
+    cout << "LOSS (source -> avg): " << loss1 << endl;
+    cout << "****************AVG***************" << endl;
+    cout << "Avg_arrived_tuple (FROM SOURCE) : " << avg_calc_arrived_tuple << endl;
+    cout << "*****************************" << endl;
+    long loss2 = avg_calc_arrived_tuple/detector_arrived_tuple; 
+    cout << "LOSS (avg -> detector): " << loss2 << endl;
+    cout << "****************DETECTOR***************" << endl;
+    cout << "Detector_arrived_tuple (FROM AVG) : " << detector_arrived_tuple << endl;
+    cout << "*****************************" << endl;
+    long loss3 = detector_arrived_tuple/sink_arrived_tuple;
+    cout << "LOSS (detector -> sink): " << loss3 << endl;
+    cout << "****************SINK***************" << endl;
+    cout << "Sink_Arrived_tuple (FROM DETECTOR): " << sink_arrived_tuple << endl;
+    cout << "*****************************" << endl;
     //cout << "Dumping metrics" << endl;
     //util::metric_group.dump_all();
     return 0;

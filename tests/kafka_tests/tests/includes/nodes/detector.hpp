@@ -17,6 +17,8 @@ using namespace std;
 using namespace ff;
 using namespace wf;
 
+extern atomic<long> detector_arrived_tuple;                   // total number of tuples sent by all the sources
+
 /**
  *  @class Detector_Functor
  *
@@ -59,13 +61,16 @@ public:
         }
         //print_tuple("[Detector] Received tuple: ", t);
         processed++;
+        detector_arrived_tuple++;
+
         current_time = current_time_nsecs();
 
         if (abs(t.property_value - t.incremental_average) > (_threshold * t.incremental_average)) {
             outliers++;
             return true;
-        } else
+        } else{
             return false;
+        }
     }
 
     ~Detector_Functor() {
