@@ -22,7 +22,8 @@ using namespace std;
 using namespace ff;
 using namespace wf;
 
-extern atomic<long> sent_tuples;
+extern atomic<long> source_arrived_tuple;                   // total number of tuples sent by all the sources
+extern atomic<long> source_sent_tuple;                   // total number of tuples sent by all the sources
 
 /**
  *  @class Source_Functor
@@ -105,7 +106,7 @@ public:
                 active_delay(delay_nsec);
             }
         }
-        sent_tuples.fetch_add(generated_tuples); // save the number of generated tuples
+        //sent_tuples.fetch_add(generated_tuples); // save the number of generated tuples
     }
 
     ~Source_Functor() {}
