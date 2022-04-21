@@ -89,7 +89,7 @@ public:
 
         tmp.partition = rc.getReplicaIndex();
         tmp.payload = msg;
-        tmp.topic = "output";
+        tmp.topic = "test";
         return tmp;
     }
 };

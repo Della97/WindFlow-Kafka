@@ -289,7 +289,7 @@ int main(int argc, char* argv[]) {
         Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
-                        .withBrokers("localhost:9093")
+                        .withBrokers("localhost:9092")
                         .build();
                         */
         Sink_Functor sink_functor(sampling, app_start_time);
@@ -342,7 +342,7 @@ int main(int argc, char* argv[]) {
         Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
-                        .withBrokers("localhost:9093")
+                        .withBrokers("localhost:9092")
                         .build();
                         */
         Sink_Functor sink_functor(sampling, app_start_time);
