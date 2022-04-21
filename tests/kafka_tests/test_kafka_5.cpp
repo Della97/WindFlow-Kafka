@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
         if (index == 80000) {
             return 0;
         }
-        RdKafka::ErrorCode err = producer->produce("test", //topic
+        RdKafka::ErrorCode err = producer->produce("provatop", //topic
                                                 RdKafka::Topic::PARTITION_UA,  //partition
                                                 RdKafka::Producer::RK_MSG_COPY, // Copy payload,
                                                 const_cast<char *>(tokens.at(index % tokens.size()).c_str()), //payload
@@ -113,7 +113,7 @@ int main(int argc, char* argv[]) {
                                                 NULL);    //
         producer->poll(0);
         cout << count << endl;
-        std::this_thread::sleep_for(std::chrono::microseconds(10));
+        //std::this_thread::sleep_for(std::chrono::microseconds(10));
         count++;
         index++;
         current_time = current_time_nsecs();        

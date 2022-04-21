@@ -250,7 +250,6 @@ int main(int argc, char* argv[]) {
     PipeGraph topology(topology_name, Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
     if (!chaining) { // no chaining
         /// create the operators
-        /*
         Kafka_Source_Functor source_functor(app_start_time, rate);
         Kafka_Source source = Kafka_Source_Builder(source_functor)
                                 .withName("kafka-source")
@@ -264,13 +263,6 @@ int main(int argc, char* argv[]) {
                                 .withParallelism(1)
                                 .withOffset(-1)
                                 .build();
-                                */
-        Source_Functor source_functor(dataset, rate, app_start_time, batch_size);
-        Source source = Source_Builder(source_functor)
-                .withParallelism(source_par_deg)
-                .withName(source_name)
-                .withOutputBatchSize(batch_size)
-                .build();
         Average_Calculator_Map_Functor avg_calc_functor(app_start_time);
         Map average_calculator = Map_Builder(avg_calc_functor)
                 .withParallelism(average_par_deg)
@@ -284,19 +276,12 @@ int main(int argc, char* argv[]) {
                 .withName(detector_name)
                 .withOutputBatchSize(batch_size)
                 .build();
-        /*
         Kafka_Sink_Functor sink_functor(sampling, app_start_time);
         Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
                         .withBrokers("localhost:9092")
                         .build();
-                        */
-        Sink_Functor sink_functor(sampling, app_start_time);
-        Sink sink = Sink_Builder(sink_functor)
-                .withParallelism(sink_par_deg)
-                .withName(sink_name)
-                .build();
         MultiPipe &mp = topology.add_source(source);
         //cout << "Chaining is disabled" << endl;
         mp.add(average_calculator);
@@ -305,7 +290,6 @@ int main(int argc, char* argv[]) {
     }
     else { // chaining
         /// create the operators
-        /*
         Kafka_Source_Functor source_functor(app_start_time, rate);
         Kafka_Source source = Kafka_Source_Builder(source_functor)
                                 .withName("kafka-source")
@@ -319,13 +303,7 @@ int main(int argc, char* argv[]) {
                                 .withParallelism(1)
                                 .withOffset(-1)
                                 .build();
-                                */
-        Source_Functor source_functor(dataset, rate, app_start_time, batch_size);
-        Source source = Source_Builder(source_functor)
-                .withParallelism(source_par_deg)
-                .withName(source_name)
-                .withOutputBatchSize(batch_size)
-                .build();
+                                
         Average_Calculator_Map_Functor avg_calc_functor(app_start_time);
         Map average_calculator = Map_Builder(avg_calc_functor)
                 .withParallelism(average_par_deg)
@@ -337,19 +315,14 @@ int main(int argc, char* argv[]) {
                 .withParallelism(detector_par_deg)
                 .withName(detector_name)
                 .build();
-        /*
+        
         Kafka_Sink_Functor sink_functor(sampling, app_start_time);
         Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
                         .withBrokers("localhost:9092")
                         .build();
-                        */
-        Sink_Functor sink_functor(sampling, app_start_time);
-        Sink sink = Sink_Builder(sink_functor)
-                .withParallelism(sink_par_deg)
-                .withName(sink_name)
-                .build();
+                        
         MultiPipe &mp = topology.add_source(source);
         //cout << "Chaining is enabled" << endl;
         mp.chain(average_calculator);
