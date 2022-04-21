@@ -254,6 +254,7 @@ private:
     friend class MultiPipe; // friendship with the MultiPipe class
     friend class PipeGraph; // friendship with the PipeGraph class
     sink_func_t func; // functional logic used by the Sink
+    using tuple_t = decltype(get_tuple_t_Sink(func)); // extracting the tuple_t type and checking the admissible signatures
     key_extractor_func_t key_extr; // logic to extract the key attribute from the tuple_t
     size_t parallelism; // parallelism of the Sink
     std::string name; // name of the Sink
