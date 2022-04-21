@@ -113,7 +113,7 @@ int main(int argc, char* argv[]) {
                                                 NULL);    //
         producer->poll(0);
         cout << count << endl;
-        //std::this_thread::sleep_for(std::chrono::microseconds(10));
+        std::this_thread::sleep_for(std::chrono::microseconds(1));
         count++;
         index++;
         current_time = current_time_nsecs();        
