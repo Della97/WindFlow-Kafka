@@ -6,3 +6,21 @@
 --> Pinning of threads [32menabled[0m
 ENTERED SVC SINK END
 [32mWindFlow Status Message: PipeGraph [SpikeDetection] executed successfully[0m
+Exiting
+******************STATS***************
+Measured throughput: 298 tuples/second
+Elapsed time: 65.3253
+*****************************
+
+****************SOURCE***************
+Source_arrived_tuple (FROM KAFKA) : 20000
+Source_sent_tuple (TO AVG) : 19473
+*****************************
+LOSS (source -> avg): 1
+****************AVG***************
+Avg_arrived_tuple (FROM SOURCE) : 19473
+*****************************
+LOSS (avg -> detector): 1
+****************DETECTOR***************
+Detector_arrived_tuple (FROM AVG) : 19473
+*****************************
