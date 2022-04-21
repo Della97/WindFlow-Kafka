@@ -14,8 +14,8 @@
 #include <kafka/windflow_kafka.hpp>
 
 #include "../includes/util/tuple.hpp"
-#include "../includes/nodes/local_sink.hpp"
-#include "../includes/nodes/local_source.hpp"
+#include "../includes/nodes/sink.hpp"
+#include "../includes/nodes/source.hpp"
 #include "../includes/util/cli_util.hpp"
 #include "../includes/nodes/detector.hpp"
 #include "../includes/util/constants.hpp"
