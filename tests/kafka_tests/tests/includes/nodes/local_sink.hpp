@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <ff/ff.hpp>
+#include <kafka/windflow_kafka.hpp>
 #include "../util/cli_util.hpp"
 #include "../util/tuple.hpp"
 #include "../util/sampler.hpp"
