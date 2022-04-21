@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
         if (index == 80000) {
             return 0;
         }
-        RdKafka::ErrorCode err = producer->produce("provatop", //topic
+        RdKafka::ErrorCode err = producer->produce("test", //topic
                                                 RdKafka::Topic::PARTITION_UA,  //partition
                                                 RdKafka::Producer::RK_MSG_COPY, // Copy payload,
                                                 const_cast<char *>(tokens.at(index % tokens.size()).c_str()), //payload
