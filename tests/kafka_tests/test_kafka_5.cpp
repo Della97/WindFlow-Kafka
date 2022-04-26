@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
         }
     std::cout << "Producer created: " << producer->name() << std::endl;
     //kafka//
-    string file_path = "/home/dbmatteo/git/WindFlow-Kafka/Datasets/SD/sensors.dat";
+    string file_path = "/home/della/git/WindFlow-Kafka/Datasets/SD/sensors.dat";
     ifstream file(file_path);
     int count = 0;
     parse_dataset(file_path);
@@ -100,9 +100,6 @@ int main(int argc, char* argv[]) {
     index = 0;
     volatile unsigned long start_time_main_usecs = current_time_usecs();
     while (current_time - start_time <= (app_run_time  + app_run_time)) {
-        if (index == 80000) {
-            return 0;
-        }
         RdKafka::ErrorCode err = producer->produce("provatop", //topic
                                                 RdKafka::Topic::PARTITION_UA,  //partition
                                                 RdKafka::Producer::RK_MSG_COPY, // Copy payload,
@@ -112,8 +109,7 @@ int main(int argc, char* argv[]) {
                                                 0,        //
                                                 NULL);    //
         producer->poll(0);
-        cout << count << endl;
-        std::this_thread::sleep_for(std::chrono::microseconds(1));
+        //std::this_thread::sleep_for(std::chrono::microseconds(1));
         count++;
         index++;
         current_time = current_time_nsecs();        
@@ -139,6 +135,7 @@ int main(int argc, char* argv[]) {
     std::cout << "CALLBACK COUNT DONE (AFTER == TIMEOUT): " << succes << std::endl;
     std::cout << "CALLBACK COUNT FAILED (AFTER == TIMEOUT): " << failed << std::endl;
     double elapsed_time_seconds = (end_time_main_usecs - start_time_main_usecs) / (1000000.0);
+    std::cout << "ELAPSED TIME: " << elapsed_time_seconds << std::endl;
     double throughput = count / elapsed_time_seconds;
     cout << "Measured throughput: " << (int) throughput << " tuples/second" << endl;
 }

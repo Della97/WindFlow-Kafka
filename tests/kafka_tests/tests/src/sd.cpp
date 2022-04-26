@@ -280,7 +280,7 @@ int main(int argc, char* argv[]) {
         Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
-                        .withBrokers("localhost:9092")
+                        .withBrokers("localhost:9093")
                         .build();
         MultiPipe &mp = topology.add_source(source);
         //cout << "Chaining is disabled" << endl;
@@ -348,21 +348,23 @@ int main(int argc, char* argv[]) {
     cout << "Source_arrived_tuple (FROM KAFKA) : " << source_arrived_tuple << endl;
     cout << "Source_sent_tuple (TO AVG) : " << source_sent_tuple << endl;
     cout << "*****************************" << endl;
-    long loss1 = source_sent_tuple/avg_calc_arrived_tuple; 
-    cout << "LOSS (source -> avg): " << loss1 << endl;
-    cout << "****************AVG***************" << endl;
-    cout << "Avg_arrived_tuple (FROM SOURCE) : " << avg_calc_arrived_tuple << endl;
-    cout << "*****************************" << endl;
-    long loss2 = avg_calc_arrived_tuple/detector_arrived_tuple; 
-    cout << "LOSS (avg -> detector): " << loss2 << endl;
-    cout << "****************DETECTOR***************" << endl;
-    cout << "Detector_arrived_tuple (FROM AVG) : " << detector_arrived_tuple << endl;
-    cout << "*****************************" << endl;
-    long loss3 = detector_arrived_tuple/sink_arrived_tuple;
-    cout << "LOSS (detector -> sink): " << loss3 << endl;
-    cout << "****************SINK***************" << endl;
-    cout << "Sink_Arrived_tuple (FROM DETECTOR): " << sink_arrived_tuple << endl;
-    cout << "*****************************" << endl;
+    if (source_sent_tuple != 0) {
+        long loss1 = source_sent_tuple/avg_calc_arrived_tuple; 
+        cout << "LOSS (source -> avg): " << loss1 << endl;
+        cout << "****************AVG***************" << endl;
+        cout << "Avg_arrived_tuple (FROM SOURCE) : " << avg_calc_arrived_tuple << endl;
+        cout << "*****************************" << endl;
+        long loss2 = avg_calc_arrived_tuple/detector_arrived_tuple; 
+        cout << "LOSS (avg -> detector): " << loss2 << endl;
+        cout << "****************DETECTOR***************" << endl;
+        cout << "Detector_arrived_tuple (FROM AVG) : " << detector_arrived_tuple << endl;
+        cout << "*****************************" << endl;
+        long loss3 = detector_arrived_tuple/sink_arrived_tuple;
+        cout << "LOSS (detector -> sink): " << loss3 << endl;
+        cout << "****************SINK***************" << endl;
+        cout << "Sink_Arrived_tuple (FROM DETECTOR): " << sink_arrived_tuple << endl;
+        cout << "*****************************" << endl;
+    }
 
     //cout << "Dumping metrics" << endl;
     //util::metric_group.dump_all();
