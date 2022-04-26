@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
         }
     std::cout << "Producer created: " << producer->name() << std::endl;
     //kafka//
-    string file_path = "/home/della/git/WindFlow-Kafka/Datasets/SD/sensors.dat";
+    string file_path = "/home/dbmatteo/git/WindFlow-Kafka/Datasets/SD/sensors.dat";
     ifstream file(file_path);
     int count = 0;
     parse_dataset(file_path);
