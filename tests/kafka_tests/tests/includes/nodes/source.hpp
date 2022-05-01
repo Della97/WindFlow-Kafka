@@ -14,6 +14,8 @@
 #include <fstream>
 #include <regex>
 #include <vector>
+#include <iostream>
+#include <sstream>
 #include <ff/ff.hpp>
 #include <kafka/windflow_kafka.hpp>
 #include "../includes/util/tuple.hpp"
@@ -86,6 +88,7 @@ public:
      */ 
     bool operator()(std::optional<std::reference_wrapper<RdKafka::Message>> msg, Source_Shipper<tuple_t> &shipper)
     {
+        std::cout << static_cast<const char *>(msg->get().payload()) << std::endl;
         tuple_t t;
         std::uniform_int_distribution<> dist(0, 1);
         mt19937 rng;
@@ -93,6 +96,7 @@ public:
         uint64_t next_ts = 0;
         current_time = current_time_nsecs(); // get the current time
 
+        /*
         if (msg) {
             arrived++;
             source_arrived_tuple++;
@@ -102,55 +106,21 @@ public:
                 return false;
             }
             string tmp = static_cast<const char *>(msg->get().payload());
-            int token_count = 0;
-            vector<string> tokens;
-            regex rgx("\\s+");
-            sregex_token_iterator iter(tmp.begin(), tmp.end(), rgx, -1);
-            sregex_token_iterator end;
-            while (iter != end)
-            {
-                tokens.push_back(*iter);
-                token_count++;
-                iter++;
-            }
             
-            if (token_count >= 8) {
-                //create record_t
-                record_t r(tokens.at(DATE_FIELD),
-                           tokens.at(TIME_FIELD),
-                           atoi(tokens.at(EPOCH_FIELD).c_str()),
-                           atoi(tokens.at(DEVICE_ID_FIELD).c_str()),
-                           atof(tokens.at(TEMP_FIELD).c_str()),
-                           atof(tokens.at(HUMID_FIELD).c_str()),
-                           atof(tokens.at(LIGHT_FIELD).c_str()),
-                           atof(tokens.at(VOLT_FIELD).c_str()));
-                //create tuple
-                if (_field == TEMPERATURE) {
-                    t.property_value = get<TEMP_FIELD>(r);
-                }
-                else if (_field == HUMIDITY) {
-                    t.property_value = get<HUMID_FIELD>(r);
-                }
-                else if (_field == LIGHT) {
-                    t.property_value = get<LIGHT_FIELD>(r);
-                }
-                else if (_field == VOLTAGE) {
-                    t.property_value = get<VOLT_FIELD>(r);
-                }
-                t.incremental_average = 0;
-                t.key = get<DEVICE_ID_FIELD>(r);
-                t.ts = 0L;
+            //GET THE TUPLE IN STRING FORM AND CREATE A REAL TUPLE
 
-                //std::cout << "count: " << count << " MSG: " << t.key << std::endl;
-                shipper.pushWithTimestamp(std::move(t), next_ts);
-                count++;
-                source_sent_tuple++;
-                if (rate != 0) { // active waiting to respect the generation rate
-                    long delay_nsec = (long) ((1.0d / rate) * 1e9);
-                    active_delay(delay_nsec);
-                }
-                next_ts++;
+            //tuple_t t(dataset.at(next_tuple_idx));
+            //tuple_t t();
+            
+            //std::cout << "count: " << count << " MSG: " << t.key << std::endl;
+            shipper.pushWithTimestamp(std::move(t), next_ts);
+            count++;
+            source_sent_tuple++;
+            if (rate != 0) { // active waiting to respect the generation rate
+                long delay_nsec = (long) ((1.0d / rate) * 1e9);
+                active_delay(delay_nsec);
             }
+            next_ts++;
             return true;
         } else {
             current_time = current_time_nsecs(); // get the current time
@@ -161,6 +131,54 @@ public:
             //std::cout << "Received MSG as NULLPTR " << std::endl;
             return true;
         }
+        */
+
+       if (msg) {
+            string tmp = static_cast<const char *>(msg->get().payload());
+            tuple_t t;
+            stringstream ss (tmp);
+            string item;
+            char delim = '+';
+
+            arrived++;
+            source_arrived_tuple++;
+            current_time = current_time_nsecs(); // get the current time
+            if (current_time - app_start_time > app_run_time) {
+                //cout << "COUNT: " << count << endl;
+                return false;
+            }
+            int pos = 0;
+            while (getline (ss, item, delim)) {
+                if (pos == 0) t.property_value = std::stod(item);  //cast to double
+                else if (pos == 1) t.incremental_average = std::stod(item);  //cast to double
+                else if (pos == 2) {
+                    std::stringstream sstream(item);
+                    sstream >> t.key;
+                } else if (pos == 3) {
+                    std::istringstream iss(item);
+                    iss >> t.ts;
+                }
+                pos++;
+            }
+            std::cout << "[TUPLE] -> " << t.property_value << " - " << t.incremental_average << " - " << t.key << " - " << t.ts << std::endl;
+            //shipper.pushWithTimestamp(std::move(t), next_ts);
+            count++;
+            source_sent_tuple++;
+            if (rate != 0) { // active waiting to respect the generation rate
+                long delay_nsec = (long) ((1.0d / rate) * 1e9);
+                active_delay(delay_nsec);
+            }
+            next_ts++;
+            return true;
+       } else {
+           current_time = current_time_nsecs(); // get the current time
+            if (current_time - app_start_time > app_run_time) {
+                //cout << "COUNT: " << count << endl;
+                return false;
+            }
+            //std::cout << "Received MSG as NULLPTR " << std::endl;
+            return true;
+       }
     }
 
     ~Kafka_Source_Functor() {}

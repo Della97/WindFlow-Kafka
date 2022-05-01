@@ -46,6 +46,8 @@ atomic<long> detector_arrived_tuple;                   // total number of tuples
 //***********************SINK*************************
 atomic<long> sink_arrived_tuple;                   // total number of tuples sent by all the sources
 
+int tmp = 0;
+
 // closing functor (stub)
 class closing_functor
 {
@@ -53,97 +55,7 @@ public:
     void operator()(KafkaRuntimeContext &r) {}
 };
 
-/** 
- *  @brief Parse the input file
- *  
- *  The file is parsed and saved in memory.
- *  
- *  @param file_path the path of the input dataset file
- */ 
-void parse_dataset(const string& file_path) {
-    ifstream file(file_path);
-    if (file.is_open()) {
-        size_t all_records = 0;         // counter of all records (dataset line) read
-        size_t incomplete_records = 0;  // counter of the incomplete records
-        string line;
-        while (getline(file, line)) {
-            // process file line
-            int token_count = 0;
-            vector<string> tokens;
-            regex rgx("\\s+"); // regex quantifier (matches one or many whitespaces)
-            sregex_token_iterator iter(line.begin(), line.end(), rgx, -1);
-            sregex_token_iterator end;
-            while (iter != end) {
-                tokens.push_back(*iter);
-                token_count++;
-                iter++;
-            }
-            // a record is valid if it contains at least 8 values (one for each field of interest)
-            if (token_count >= 8) {
-                // save parsed file
-                record_t r(tokens.at(DATE_FIELD),
-                           tokens.at(TIME_FIELD),
-                           atoi(tokens.at(EPOCH_FIELD).c_str()),
-                           atoi(tokens.at(DEVICE_ID_FIELD).c_str()),
-                           atof(tokens.at(TEMP_FIELD).c_str()),
-                           atof(tokens.at(HUMID_FIELD).c_str()),
-                           atof(tokens.at(LIGHT_FIELD).c_str()),
-                           atof(tokens.at(VOLT_FIELD).c_str()));
-                parsed_file.push_back(r);
-                // insert the key device_id in the map (if it is not present)
-                if (key_occ.find(get<DEVICE_ID_FIELD>(r)) == key_occ.end()) {
-                    key_occ.insert(make_pair(get<DEVICE_ID_FIELD>(r), 0));
-                }
-            }
-            else
-                incomplete_records++;
 
-            all_records++;
-        }
-        file.close();
-        //print_parsing_info(parsed_file, all_records, incomplete_records);
-    }
-}
-
-/** 
- *  @brief Process parsed data and create all the tuples
- *  
- *  The created tuples are maintained in memory. The source node will generate the stream by
- *  reading all the tuples from main memory.
- */ 
-void create_tuples(int num_keys)
-{
-    std::uniform_int_distribution<std::mt19937::result_type> dist(0, num_keys-1);
-    mt19937 rng;
-    rng.seed(0);
-    for (int next_tuple_idx = 0; next_tuple_idx < parsed_file.size(); next_tuple_idx++) {
-        // create tuple
-        auto record = parsed_file.at(next_tuple_idx);
-        tuple_t t;
-        // select the value of the field the user chose to monitor (parameter set in constants.hpp)
-        if (_field == TEMPERATURE) {
-            t.property_value = get<TEMP_FIELD>(record);
-        }
-        else if (_field == HUMIDITY) {
-            t.property_value = get<HUMID_FIELD>(record);
-        }
-        else if (_field == LIGHT) {
-            t.property_value = get<LIGHT_FIELD>(record);
-        }
-        else if (_field == VOLTAGE) {
-            t.property_value = get<VOLT_FIELD>(record);
-        }
-        t.incremental_average = 0;
-        if (num_keys > 0) {
-            t.key = dist(rng);
-        }
-        else {
-            t.key = get<DEVICE_ID_FIELD>(record);
-        }
-        t.ts = 0L;
-        dataset.insert(dataset.end(), t);
-    }
-}
 
 // Main
 int main(int argc, char* argv[]) {
@@ -228,9 +140,6 @@ int main(int argc, char* argv[]) {
         printf("Error in parsing the input arguments\n");
         exit(EXIT_FAILURE);
     }
-    /// data pre-processing
-    parse_dataset(file_path);
-    create_tuples(num_keys);
     /// application starting time
     unsigned long app_start_time = current_time_nsecs();
     //cout << "Executing SpikeDetection with parameters:" << endl;
@@ -256,7 +165,7 @@ int main(int argc, char* argv[]) {
                                 .withOutputBatchSize(1)
                                 .withClosingFunction(c_functor)
                                 .withBrokers("localhost:9092")
-                                .withTopics("provatop")
+                                .withTopics("input")
                                 .withGroupID("gruppo")
                                 .withAssignmentPolicy("roundrobin")
                                 .withIdleness(500)
@@ -280,7 +189,7 @@ int main(int argc, char* argv[]) {
         Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
-                        .withBrokers("localhost:9092")
+                        .withBrokers("localhost:9093")
                         .build();
         MultiPipe &mp = topology.add_source(source);
         //cout << "Chaining is disabled" << endl;
@@ -296,7 +205,7 @@ int main(int argc, char* argv[]) {
                                 .withOutputBatchSize(1)
                                 .withClosingFunction(c_functor)
                                 .withBrokers("localhost:9092")
-                                .withTopics("provatop")
+                                .withTopics("input")
                                 .withGroupID("gruppo")
                                 .withAssignmentPolicy("roundrobin")
                                 .withIdleness(500)
@@ -320,7 +229,7 @@ int main(int argc, char* argv[]) {
         Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
-                        .withBrokers("localhost:9092")
+                        .withBrokers("localhost:9093")
                         .build();
                         
         MultiPipe &mp = topology.add_source(source);

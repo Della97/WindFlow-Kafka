@@ -425,6 +425,7 @@ public:
     {
         // <---------------------- qui ci possono essere memory leak!!!
         // stop consumer
+        std::cout << "ENTERED SVC SOURCE END" << std::endl;
         consumer->close();
         delete consumer;
         delete conf;
