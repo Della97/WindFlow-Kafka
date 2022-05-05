@@ -16,6 +16,7 @@
 #include "../includes/util/tuple.hpp"
 #include "../includes/nodes/sink.hpp"
 #include "../includes/nodes/source.hpp"
+#include "../includes/nodes/source1.hpp"
 #include "../includes/util/cli_util.hpp"
 #include "../includes/nodes/detector.hpp"
 #include "../includes/util/constants.hpp"
@@ -36,6 +37,9 @@ unordered_map<size_t, uint64_t> key_occ;    // contains the number of occurrence
 //***********************SOURCE*************************
 atomic<long> source_arrived_tuple;                   // total number of tuples sent by all the sources
 atomic<long> source_sent_tuple;                   // total number of tuples sent by all the sources
+//***********************SOURCE1*************************
+atomic<long> source1_arrived_tuple;                   // total number of tuples sent by all the sources
+atomic<long> source1_sent_tuple;                  // total number of tuples sent by all the sources
 
 //***********************AVG CALC*************************
 atomic<long> avg_calc_arrived_tuple;                   // total number of tuples sent by all the sources
@@ -170,7 +174,7 @@ int main(int argc, char* argv[]) {
                                 .withAssignmentPolicy("roundrobin")
                                 .withIdleness(500)
                                 .withParallelism(1)
-                                .withOffset(-1)
+                                .withOffset(0)
                                 .build();
         Average_Calculator_Map_Functor avg_calc_functor(app_start_time);
         Map average_calculator = Map_Builder(avg_calc_functor)
@@ -210,7 +214,7 @@ int main(int argc, char* argv[]) {
                                 .withAssignmentPolicy("roundrobin")
                                 .withIdleness(500)
                                 .withParallelism(1)
-                                .withOffset(-1)
+                                .withOffset(0)
                                 .build();
                                 
         Average_Calculator_Map_Functor avg_calc_functor(app_start_time);
@@ -245,6 +249,7 @@ int main(int argc, char* argv[]) {
     volatile unsigned long end_time_main_usecs = current_time_usecs();
 
     cout << "Exiting" << endl;
+
     cout << "******************STATS***************" << endl;
     double elapsed_time_seconds = (end_time_main_usecs - start_time_main_usecs) / (1000000.0);
     double throughput = source_sent_tuple / elapsed_time_seconds;

@@ -382,7 +382,6 @@ public:
     // svc (utilized by the FastFlow runtime)
     void *svc(void *) override
     {
-        //std::cout << "Consuming datas..." << std::endl;
         while (run) { // main loop 
             RdKafka::Message *msg = consumer->consume(idleTime);
             switch (msg->err()) {

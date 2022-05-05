@@ -1,30 +1,29 @@
-/** 
- *  @file    sd.cpp
- *  @author  Gabriele Mencagli
- *  @date    13/01/2020
- *  
- *  @brief Main of the SpikeDetection application
- */ 
-
 #include <regex>
 #include <string>
 #include <vector>
 #include <iostream>
 #include <ff/ff.hpp>
 #include <windflow.hpp>
+#include <kafka/windflow_kafka.hpp>
 
-#include "../includes/util/tuple.hpp"
-#include "../includes/nodes/sink.hpp"
-#include "../includes/nodes/source.hpp"
-#include "../includes/util/cli_util.hpp"
-#include "../includes/nodes/detector.hpp"
-#include "../includes/util/constants.hpp"
-#include "../includes/nodes/average_calculator_map.hpp"
+#include "./tests/includes/util/tuple.hpp"
+#include "./tests/includes/util/cli_util.hpp"
+#include "./tests/includes/nodes/detector.hpp"
+#include "./tests/includes/util/constants.hpp"
+#include "./tests/includes/nodes/average_calculator_map.hpp"
+
+
+#include <chrono>
+#include <thread>
+
 
 using namespace std;
 using namespace ff;
 using namespace wf;
 
+bool first = true;
+int  succes = 0;
+int  failed = 0;
 // type of the input records: < date_value, time_value, epoch_value, device_id_value, temp_value, humid_value, light_value, voltage_value>
 using record_t = tuple<string, string, int, int, double, double, double, double>;
 
@@ -33,6 +32,10 @@ vector<record_t> parsed_file;               // contains data extracted from the 
 vector<tuple_t> dataset;                    // contains all the tuples in memory
 unordered_map<size_t, uint64_t> key_occ;    // contains the number of occurrences of each key device_id
 atomic<long> sent_tuples;                   // total number of tuples sent by all the sources
+vector<string> tokens;
+vector<string> tokens1;
+vector<string> tuples_str;
+int tmp = 0;
 
 /** 
  *  @brief Parse the input file
@@ -50,12 +53,13 @@ void parse_dataset(const string& file_path) {
         while (getline(file, line)) {
             // process file line
             int token_count = 0;
-            vector<string> tokens;
+            //vector<string> tokens;
             regex rgx("\\s+"); // regex quantifier (matches one or many whitespaces)
             sregex_token_iterator iter(line.begin(), line.end(), rgx, -1);
             sregex_token_iterator end;
             while (iter != end) {
                 tokens.push_back(*iter);
+                tmp++;
                 token_count++;
                 iter++;
             }
@@ -79,6 +83,22 @@ void parse_dataset(const string& file_path) {
             else
                 incomplete_records++;
 
+            all_records++;
+        }
+        //cout << "parsed file size: " << parsed_file.size() << endl;
+        file.close();
+        //print_parsing_info(parsed_file, all_records, incomplete_records);
+    }
+}
+
+void parse_dataset1(const string& file_path) {
+    ifstream file(file_path);
+    if (file.is_open()) {
+        size_t all_records = 0;         // counter of all records (dataset line) read
+        size_t incomplete_records = 0;  // counter of the incomplete records
+        string line;
+        while (getline(file, line)) {
+            tokens1.push_back(line);
             all_records++;
         }
         file.close();
@@ -126,184 +146,131 @@ void create_tuples(int num_keys)
     }
 }
 
-// Main
-int main(int argc, char* argv[]) {
-    /// parse arguments from command line
-    int option = 0;
-    int index = 0;
-    string file_path = "/home/della/git/WindFlow-Kafka/Datasets/SD/sensors.dat";
-    size_t source_par_deg = 0;
-    size_t average_par_deg = 0;
-    size_t detector_par_deg = 0;
-    size_t sink_par_deg = 0;
-    int rate = 0;
-    sent_tuples = 0;
-    long sampling = 0;
-    bool chaining = false;
-    size_t batch_size = 0;
-    int num_keys = 0;
-    if (argc == 11 || argc == 12) {
-        while ((option = getopt_long(argc, argv, "r:k:s:p:b:c:", long_opts, &index)) != -1) {
-            switch (option) {
-                case 'r': {
-                    rate = atoi(optarg);
-                    break;
-                }
-                case 'k': {
-                    num_keys = atoi(optarg);
-                    break;
-                }
-                case 's': {
-                    sampling = atoi(optarg);
-                    break;
-                }
-                case 'b': {
-                    batch_size = atoi(optarg);
-                    break;
-                }
-                case 'p': {
-                    vector<size_t> par_degs;
-                    string pars(optarg);
-                    stringstream ss(pars);
-                    for (size_t i; ss >> i;) {
-                        par_degs.push_back(i);
-                        if (ss.peek() == ',')
-                            ss.ignore();
-                    }
-                    if (par_degs.size() != 4) {
-                        printf("Error in parsing the input arguments\n");
-                        exit(EXIT_FAILURE);
-                    }
-                    else {
-                        source_par_deg = par_degs[0];
-                        average_par_deg = par_degs[1];
-                        detector_par_deg = par_degs[2];
-                        sink_par_deg = par_degs[3];
-                    }
-                    break;
-                }
-                case 'c': {
-                    chaining = true;
-                    break;
-                }
-                default: {
-                    printf("Error in parsing the input arguments\n");
-                    exit(EXIT_FAILURE);
-                }
-            }
-        }
-    }
-    else if (argc == 2) {
-        while ((option = getopt_long(argc, argv, "h", long_opts, &index)) != -1) {
-            switch (option) {
-                case 'h': {
-                    printf("Parameters: --rate <value> --keys <value> --sampling <value> --batch <size> --parallelism <nSource,nMoving-Average,nSpike-Detector,nSink> [--chaining]\n");
-                    exit(EXIT_SUCCESS);
-                }
-            }
-        }
-    }
-    else {
-        printf("Error in parsing the input arguments\n");
-        exit(EXIT_FAILURE);
-    }
-    /// data pre-processing
-    parse_dataset(file_path);
-    create_tuples(num_keys);
-    /// application starting time
-    unsigned long app_start_time = current_time_nsecs();
-    /*
-    cout << "Executing SpikeDetection with parameters:" << endl;
-    if (rate != 0) {
-        cout << "  * rate: " << rate << " tuples/second" << endl;
-    }
-    else {
-        cout << "  * rate: full_speed tuples/second" << endl;
-    }
-    cout << "  * batch size: " << batch_size << endl;
-    cout << "  * sampling: " << sampling << endl;
-    cout << "  * source: " << source_par_deg << endl;
-    cout << "  * moving-average: " << average_par_deg << endl;
-    cout << "  * spike-detector: " << detector_par_deg << endl;
-    cout << "  * sink: " << sink_par_deg << endl;
-    cout << "  * topology: source -> moving-average -> spike-detector -> sink" << endl;
-    */
-    PipeGraph topology(topology_name, Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
-    if (!chaining) { // no chaining
-        /// create the operators
-        Source_Functor source_functor(dataset, rate, app_start_time, batch_size);
-        Source source = Source_Builder(source_functor)
-                .withParallelism(source_par_deg)
-                .withName(source_name)
-                .withOutputBatchSize(batch_size)
-                .build();
-        Average_Calculator_Map_Functor avg_calc_functor(app_start_time);
-        Map average_calculator = Map_Builder(avg_calc_functor)
-                .withParallelism(average_par_deg)
-                .withName(avg_calc_name)
-                .withKeyBy([](const tuple_t &t) -> size_t { return t.key; })
-                .withOutputBatchSize(batch_size)
-                .build();
-        Detector_Functor detector_functor(app_start_time);
-        Filter detector = Filter_Builder(detector_functor)
-                .withParallelism(detector_par_deg)
-                .withName(detector_name)
-                .withOutputBatchSize(batch_size)
-                .build();
-        Sink_Functor sink_functor(sampling, app_start_time);
-        Sink sink = Sink_Builder(sink_functor)
-                .withParallelism(sink_par_deg)
-                .withName(sink_name)
-                .build();
-        MultiPipe &mp = topology.add_source(source);
-        //cout << "Chaining is disabled" << endl;
-        mp.add(average_calculator);
-        mp.add(detector);
-        mp.add_sink(sink);
-    }
-    else { // chaining
-        /// create the operators
-        Source_Functor source_functor(dataset, rate, app_start_time, batch_size);
-        Source source = Source_Builder(source_functor)
-                .withParallelism(source_par_deg)
-                .withName(source_name)
-                .withOutputBatchSize(batch_size)
-                .build();
-        Average_Calculator_Map_Functor avg_calc_functor(app_start_time);
-        Map average_calculator = Map_Builder(avg_calc_functor)
-                .withParallelism(average_par_deg)
-                .withName(avg_calc_name)
-                .withKeyBy([](const tuple_t &t) -> size_t { return t.key; })
-                .build();
-        Detector_Functor detector_functor(app_start_time);
-        Filter detector = Filter_Builder(detector_functor)
-                .withParallelism(detector_par_deg)
-                .withName(detector_name)
-                .build();
-        Sink_Functor sink_functor(sampling, app_start_time);
-        Sink sink = Sink_Builder(sink_functor)
-                .withParallelism(sink_par_deg)
-                .withName(sink_name)
-                .build();
-        MultiPipe &mp = topology.add_source(source);
-        //cout << "Chaining is enabled" << endl;
-        mp.chain(average_calculator);
-        mp.chain(detector);
-        mp.chain_sink(sink);
-    }
-    //cout << "Executing topology" << endl;
-    /// evaluate topology execution time
-    volatile unsigned long start_time_main_usecs = current_time_usecs();
-    topology.run();
-    volatile unsigned long end_time_main_usecs = current_time_usecs();
-    //cout << "Exiting" << endl;
-    double elapsed_time_seconds = (end_time_main_usecs - start_time_main_usecs) / (1000000.0);
-    double throughput = sent_tuples / elapsed_time_seconds;
+//TEMP
 
-    cout << "Sent tuples: " << sent_tuples << endl;
-    cout << "Elapsed time: " << elapsed_time_seconds << endl;
+
+std::string serialize_t(tuple_t in) {
+    std::string one = std::to_string(in.property_value);
+    std::string two= std::to_string(in.incremental_average);
+    std::string three = std::to_string(in.key);
+    std::string four = std::to_string(in.ts);
+    std::string tmp = one + "+" + two + "+" + three + "+" + four;
+    return tmp;
+}
+
+void create_string() {
+
+    for (int next_tuple_idx = 0; next_tuple_idx < parsed_file.size(); next_tuple_idx++) {
+        auto record = dataset.at(next_tuple_idx);
+        tuples_str.push_back(serialize_t(record));
+    }
+}
+
+class ExDeliveryReportCb : public RdKafka::DeliveryReportCb
+{
+public:
+    void dr_cb(RdKafka::Message &message)
+    {
+        /* If message.err() is non-zero the message delivery failed permanently
+         * for the message. */
+        if (message.err())
+            failed++;
+            //std::cerr << "% Message delivery failed: " << message.errstr() << std::endl;
+        else
+            succes++;
+            //std::cerr << "% Message delivered to topic " << message.topic_name() << " [" << message.partition() << "] at offset " << message.offset() << std::endl;
+    }
+};
+
+int main(int argc, char* argv[]) {
+    //KAFKA//
+    std::string broker = "localhost:9092";
+    RdKafka::Conf *conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
+    std::string errstr;
+    RdKafka::Producer *producer;
+    ExDeliveryReportCb ex_dr_cb;
+    int index = 0;
+    int num_keys = 0;
+
+    unsigned long current_time;
+    unsigned long start_time;
+    unsigned long app_run_time = 60 * 1000000000L; // 60 seconds
+
+    string file_path = "/home/della/git/WindFlow-Kafka/Datasets/SD/sensors.dat";
+    ifstream file(file_path);
+    int count = 0;
+    parse_dataset1(file_path);
+    cout << "dataset size: " << tokens1.size() << endl;
+    //create_tuples(num_keys);
+    //create_string();
+    int range = tokens1.size();
+    int next_tuple_idx = 0;
+
+    //SET UP PRODUCER
+    //SET UP PRODUCER
+        if (conf->set("bootstrap.servers", broker, errstr) != RdKafka::Conf::CONF_OK) {
+            std::cerr << errstr << std::endl;
+            exit(1);
+        }
+        /*
+        if (conf->set("dr_cb", &ex_dr_cb, errstr) != RdKafka::Conf::CONF_OK) {
+            std::cerr << errstr << std::endl;
+            exit(1);
+        }
+        */
+        
+        producer = RdKafka::Producer::create(conf, errstr);
+        if (!producer) {
+            std::cerr << "Failed to create producer: " << errstr << std::endl;
+            exit(1);
+        }
+    std::cout << "Producer created: " << producer->name() << std::endl;
+
+    //kafka//
+
+    start_time = current_time_nsecs();
+    current_time = current_time_nsecs();
+    index = 0;
+    next_tuple_idx = 0;
+    volatile unsigned long start_time_main_usecs = current_time_usecs();
+    while (current_time - start_time <= (app_run_time  + app_run_time)) {
+        RdKafka::ErrorCode err = producer->produce("input", //topic
+                                                RdKafka::Topic::PARTITION_UA,  //partition
+                                                RdKafka::Producer::RK_MSG_COPY, // Copy payload,
+                                                const_cast<char *>(tokens1.at(next_tuple_idx).c_str()), //payload
+                                                tokens1.at(next_tuple_idx).size(),        //
+                                                NULL, 0,  //
+                                                0,        //
+                                                NULL);    //
+        producer->poll(0);
+        next_tuple_idx = (next_tuple_idx + 1) % tokens1.size();   // index of the next tuple to be sent (if any)
+        //std::this_thread::sleep_for(std::chrono::microseconds(1));
+        count++;
+        index++;
+        current_time = current_time_nsecs();        
+    }
+    volatile unsigned long end_time_main_usecs = current_time_usecs();
+            //KAFKA SEND DATA
+            /*
+            RdKafka::ErrorCode err = producer->produce("test", //topic
+                                                0,  //partition
+                                                RdKafka::Producer::RK_MSG_COPY, // Copy payload,
+                                                const_cast<char *>(line.c_str()), //payload
+                                                line.size(),        //
+                                                NULL, 0,  //
+                                                0,        //
+                                                NULL,     //
+                                                NULL);    //
+                                            */
+
+            producer->poll(0);
+            std::this_thread::sleep_for(std::chrono::milliseconds(2));
+            //KAFKA SEND DATA
+    std::cout << "COUNT (AFTER == TIMEOUT): " << count << std::endl;
+    std::cout << "CALLBACK COUNT DONE (AFTER == TIMEOUT): " << succes << std::endl;
+    std::cout << "CALLBACK COUNT FAILED (AFTER == TIMEOUT): " << failed << std::endl;
+    double elapsed_time_seconds = (end_time_main_usecs - start_time_main_usecs) / (1000000.0);
+    std::cout << "ELAPSED TIME: " << elapsed_time_seconds << std::endl;
+    double throughput = count / elapsed_time_seconds;
     cout << "Measured throughput: " << (int) throughput << " tuples/second" << endl;
-    cout << "Dumping metrics" << endl;
-    util::metric_group.dump_all();
-    return 0;
 }

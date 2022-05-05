@@ -88,7 +88,7 @@ public:
      */ 
     bool operator()(std::optional<std::reference_wrapper<RdKafka::Message>> msg, Source_Shipper<tuple_t> &shipper)
     {
-        std::cout << static_cast<const char *>(msg->get().payload()) << std::endl;
+        //std::cout << static_cast<const char *>(msg->get().payload()) << std::endl;
         tuple_t t;
         std::uniform_int_distribution<> dist(0, 1);
         mt19937 rng;
@@ -160,13 +160,12 @@ public:
                 }
                 pos++;
             }
-            std::cout << "[TUPLE] -> " << t.property_value << " - " << t.incremental_average << " - " << t.key << " - " << t.ts << std::endl;
-            //shipper.pushWithTimestamp(std::move(t), next_ts);
+            shipper.pushWithTimestamp(std::move(t), next_ts);
             count++;
             source_sent_tuple++;
             if (rate != 0) { // active waiting to respect the generation rate
                 long delay_nsec = (long) ((1.0d / rate) * 1e9);
-                active_delay(delay_nsec);
+                //active_delay(delay_nsec);
             }
             next_ts++;
             return true;

@@ -33,6 +33,7 @@ vector<tuple_t> dataset;                    // contains all the tuples in memory
 unordered_map<size_t, uint64_t> key_occ;    // contains the number of occurrences of each key device_id
 atomic<long> sent_tuples;                   // total number of tuples sent by all the sources
 vector<string> tokens;
+vector<string> tuples_str;
 int tmp = 0;
 
 /** 
@@ -137,10 +138,16 @@ std::string serialize_t(tuple_t in) {
     std::string two= std::to_string(in.incremental_average);
     std::string three = std::to_string(in.key);
     std::string four = std::to_string(in.ts);
-    //std::string tmp = in.incremental_average + "+" + in.key + "+" + in.property_value + "+" +in.ts;
     std::string tmp = one + "+" + two + "+" + three + "+" + four;
-    //std::cout << tmp << std::endl;
     return tmp;
+}
+
+void create_string() {
+
+    for (int next_tuple_idx = 0; next_tuple_idx < parsed_file.size(); next_tuple_idx++) {
+        auto record = dataset.at(next_tuple_idx);
+        tuples_str.push_back(serialize_t(record));
+    }
 }
 
 class ExDeliveryReportCb : public RdKafka::DeliveryReportCb
@@ -178,6 +185,7 @@ int main(int argc, char* argv[]) {
     int count = 0;
     parse_dataset(file_path);
     create_tuples(num_keys);
+    create_string();
     int range = dataset.size();
     int next_tuple_idx = 0;
 
@@ -187,11 +195,12 @@ int main(int argc, char* argv[]) {
             std::cerr << errstr << std::endl;
             exit(1);
         }
-        
+        /*
         if (conf->set("dr_cb", &ex_dr_cb, errstr) != RdKafka::Conf::CONF_OK) {
             std::cerr << errstr << std::endl;
             exit(1);
         }
+        */
         
         producer = RdKafka::Producer::create(conf, errstr);
         if (!producer) {
@@ -205,24 +214,23 @@ int main(int argc, char* argv[]) {
     start_time = current_time_nsecs();
     current_time = current_time_nsecs();
     index = 0;
+    next_tuple_idx = 0;
     volatile unsigned long start_time_main_usecs = current_time_usecs();
     while (current_time - start_time <= (app_run_time)) {
         //serialize tuple
-        tuple_t t(dataset.at(next_tuple_idx));
-        string payload = serialize_t(dataset.at(next_tuple_idx));
-        next_tuple_idx = (next_tuple_idx + 1) % dataset.size();   // index of the next tuple to be sent (if any)
         //send tuple
         
         RdKafka::ErrorCode err = producer->produce("input", //topic
                                                 RdKafka::Topic::PARTITION_UA,  //partition
                                                 RdKafka::Producer::RK_MSG_COPY, // Copy payload,
-                                                const_cast<char *>(payload.c_str()), //payload
-                                                payload.size(),        //
+                                                const_cast<char *>(tuples_str.at(next_tuple_idx).c_str()), //payload
+                                                tuples_str.at(next_tuple_idx).size(),        //
                                                 NULL, 0,  //
                                                 0,        //
                                                 NULL);    //
         
         producer->poll(0);
+        next_tuple_idx = (next_tuple_idx + 1) % dataset.size();   // index of the next tuple to be sent (if any)
         //std::this_thread::sleep_for(std::chrono::microseconds(1));
         count++;
         index++;
