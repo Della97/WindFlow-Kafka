@@ -65,7 +65,6 @@ public:
         RdKafka::Producer *producer = rc.getProducer();
         std::string msg = std::to_string(out.key) + "-producer-" + std::to_string(rc.getReplicaIndex());
 
-        tmp.len = msg.size();
         tmp.partition = rc.getReplicaIndex();
         tmp.payload = const_cast<char *>(msg.c_str());
         tmp.topic = "output";
