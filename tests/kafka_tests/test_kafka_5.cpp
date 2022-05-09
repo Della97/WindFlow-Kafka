@@ -6,11 +6,11 @@
 #include <windflow.hpp>
 #include <kafka/windflow_kafka.hpp>
 
-#include "./tests/includes/util/tuple.hpp"
-#include "./tests/includes/util/cli_util.hpp"
-#include "./tests/includes/nodes/detector.hpp"
-#include "./tests/includes/util/constants.hpp"
-#include "./tests/includes/nodes/average_calculator_map.hpp"
+#include "./tests/SD/includes/util/tuple.hpp"
+#include "./tests/SD/includes/util/cli_util.hpp"
+#include "./tests/SD/includes/nodes/detector.hpp"
+#include "./tests/SD/includes/util/constants.hpp"
+#include "./tests/SD/includes/nodes/average_calculator_map.hpp"
 
 
 #include <chrono>
