@@ -78,7 +78,6 @@ public:
      */
     wf::wf_kafka_sink_msg operator()(const tuple_t &out, KafkaRuntimeContext &rc) {
 
-        std::cout << "OHHHHHHHHHHHHHHH" << std::endl;
         if (processed == 0) {
             parallelism = rc.getParallelism();
             replica_id = rc.getReplicaIndex();
