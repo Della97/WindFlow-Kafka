@@ -143,7 +143,7 @@ int main(int argc, char* argv[]) {
     unsigned long start_time;
     unsigned long app_run_time = 120 * 1000000000L; // 60 seconds
 
-    string file_path = "/home/della/git/WindFlow-Kafka/Datasets/FD/credit-card.dat";
+    string file_path = "/home/dbmatteo/git/WindFlow-Kafka/Datasets/FD/credit-card.dat";
     ifstream file(file_path);
     int count = 0;
     map_and_parse_dataset(file_path, ",");
