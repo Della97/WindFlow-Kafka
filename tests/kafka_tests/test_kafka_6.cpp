@@ -141,7 +141,7 @@ int main(int argc, char* argv[]) {
 
     unsigned long current_time;
     unsigned long start_time;
-    unsigned long app_run_time = 120 * 1000000000L; // 60 seconds
+    unsigned long app_run_time = 30 * 1000000000L; // 60 seconds
 
     string file_path = "/home/dbmatteo/git/WindFlow-Kafka/Datasets/FD/credit-card.dat";
     ifstream file(file_path);
@@ -198,7 +198,7 @@ int main(int argc, char* argv[]) {
 
             producer->poll(0);
         next_tuple_idx = (next_tuple_idx + 1) % dataset.size();   // index of the next tuple to be sent (if any)
-        std::this_thread::sleep_for(std::chrono::microseconds(1));
+        //std::this_thread::sleep_for(std::chrono::microseconds(1));
         count++;
         index++;
         current_time = current_time_nsecs(); 
