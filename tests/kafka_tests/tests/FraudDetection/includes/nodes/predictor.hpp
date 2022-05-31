@@ -61,19 +61,23 @@ public:
      *  @param shipper shipper object used for the delivery of results
      *  @param rc runtime context used to access to the parallelism degree and replica index
      */
-    void operator()(const tuple_t& t, Shipper<tuple_t>& shipper, RuntimeContext& rc) {
+    void operator()(const tuple_t& t, Shipper<result_t>& shipper, RuntimeContext& rc) {
         if (processed == 0) {
             parallelism = rc.getParallelism();
             replica_id = rc.getReplicaIndex();
         }
+        if (processed > 0 && processed < 200) {
+            //std::cout << t.entity_id << " " << t.key << " " << t.record << std::endl;
+        }
         Prediction prediction_object = predictor.execute(t.entity_id, t.record, ",");
         if (prediction_object.is_outlier()) {
-        	tuple_t r;
+        	result_t r;
         	r.entity_id = t.entity_id;
         	r.score = prediction_object.get_score();
         	//r.states = prediction_object.get_states();
         	r.key = t.key;
         	r.ts = t.ts;
+            //std::cout << r.entity_id << " " << r.score << " " << r.key << std::endl;
             shipper.push(std::move(r));
             outliers++;
         }

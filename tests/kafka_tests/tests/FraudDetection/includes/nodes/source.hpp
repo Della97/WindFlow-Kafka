@@ -8,8 +8,8 @@
  *  The source node generates the stream by reading the tuples from memory.
  */
 
-#ifndef SPIKEDETECTION_LIGHT_SOURCE_HPP
-#define SPIKEDETECTION_LIGHT_SOURCE_HPP
+#ifndef FRAUDDETECTION_SOURCE_HPP
+#define FRAUDDETECTION_SOURCE_HPP
 
 #include <fstream>
 #include <regex>
@@ -108,58 +108,21 @@ public:
         uint64_t next_ts = 0;
         current_time = current_time_nsecs(); // get the current time
 
-        /*
-        if (msg) {
-            arrived++;
-            source_arrived_tuple++;
-            current_time = current_time_nsecs(); // get the current time
-            if (current_time - app_start_time > app_run_time) {
-                //cout << "COUNT: " << count << endl;
-                return false;
-            }
-            string tmp = static_cast<const char *>(msg->get().payload());
-            
-            //GET THE TUPLE IN STRING FORM AND CREATE A REAL TUPLE
-
-            //tuple_t t(dataset.at(next_tuple_idx));
-            //tuple_t t();
-            
-            //std::cout << "count: " << count << " MSG: " << t.key << std::endl;
-            shipper.pushWithTimestamp(std::move(t), next_ts);
-            count++;
-            source_sent_tuple++;
-            if (rate != 0) { // active waiting to respect the generation rate
-                long delay_nsec = (long) ((1.0d / rate) * 1e9);
-                active_delay(delay_nsec);
-            }
-            next_ts++;
-            return true;
-        } else {
-            current_time = current_time_nsecs(); // get the current time
-            if (current_time - app_start_time > app_run_time) {
-                //cout << "COUNT: " << count << endl;
-                return false;
-            }
-            //std::cout << "Received MSG as NULLPTR " << std::endl;
-            return true;
-        }
-        */
-
        if (msg) {
-            
             string tmp = static_cast<const char *>(msg->get().payload());
             tuple_t t;
             stringstream ss (tmp);
             string item;
             char delim = '+';
 
-            arrived++;
+
             source_arrived_tuple++;
             current_time = current_time_nsecs(); // get the current time
             if (current_time - app_start_time > app_run_time) {
                 //cout << "COUNT: " << count << endl;
                 return false;
             }
+            
             int pos = 0;
             while (getline (ss, item, delim)) {
                 if (pos == 0) t.entity_id = item;  //cast to double
@@ -173,12 +136,16 @@ public:
                 }
                 pos++;
             }
+
+            t.ts = current_time_nsecs();
+            //std::cout << t.entity_id << " " << t.key << " " << t.record << std::endl;
+            arrived++;
             shipper.push(std::move(t));
             count++;
             source_sent_tuple++;
             if (rate != 0) { // active waiting to respect the generation rate
                 long delay_nsec = (long) ((1.0d / rate) * 1e9);
-                //active_delay(delay_nsec);
+                active_delay(delay_nsec);
             }
             next_ts++;
             return true;

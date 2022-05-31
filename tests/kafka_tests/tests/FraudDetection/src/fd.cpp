@@ -5,7 +5,7 @@
  *  
  *  @brief Main of the FraudDetection application
  */ 
-
+#include <cmath>
 #include <string>
 #include <vector>
 #include <sstream>
@@ -14,9 +14,10 @@
 #include <kafka/windflow_kafka.hpp>
 
 #include "../includes/nodes/sink.hpp"
-#include "../includes/nodes/sink_kafka.hpp"
+//#include "../includes/nodes/sink_kafka.hpp"
 #include "../includes/nodes/source.hpp"
 #include "../includes/util/tuple.hpp"
+#include "../includes/util/result.hpp"
 #include "../includes/util/cli_util.hpp"
 #include "../includes/nodes/predictor.hpp"
 
@@ -198,6 +199,9 @@ int main(int argc, char* argv[]) {
         printf("Error in parsing the input arguments\n");
         exit(EXIT_FAILURE);
     }
+    /// data pre-processing
+    map_and_parse_dataset(file_path, ",");
+    create_tuples(num_keys);
     /// application starting time
     unsigned long app_start_time = current_time_nsecs();
     cout << "Executing FraudDetection with parameters:" << endl;
@@ -219,7 +223,7 @@ int main(int argc, char* argv[]) {
         Kafka_Source_Functor source_functor(app_start_time, rate);
         Kafka_Source source = Kafka_Source_Builder(source_functor)
                                 .withName("kafka-source")
-                                .withOutputBatchSize(1)
+                                .withOutputBatchSize(batch_size)
                                 .withClosingFunction(c_functor)
                                 .withBrokers("localhost:9092")
                                 .withTopics("input")
@@ -229,6 +233,14 @@ int main(int argc, char* argv[]) {
                                 .withParallelism(1)
                                 .withOffset(0)
                                 .build();
+            /*
+        Source_Functor source_functor(dataset, rate, app_start_time);
+        Source source = Source_Builder(source_functor)
+                            .withParallelism(source_par_deg)
+                            .withName(light_source_name)
+                            .withOutputBatchSize(batch_size)
+                            .build();
+                            */
         Predictor_Functor predictor_functor(app_start_time);
         FlatMap predictor = FlatMap_Builder(predictor_functor)
                                 .withParallelism(predictor_par_deg)
@@ -236,12 +248,20 @@ int main(int argc, char* argv[]) {
                                 .withKeyBy([](const tuple_t &t) -> size_t { return t.key; })
                                 .withOutputBatchSize(batch_size)
                                 .build();
+                                /*
+        Sink_Functor sink_functor(sampling, app_start_time);
+        Sink sink = Sink_Builder(sink_functor)
+                        .withParallelism(sink_par_deg)
+                        .withName(sink_name)
+                        .build();
+        */
         Kafka_Sink_Functor sink_functor(sampling, app_start_time);
         Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
                         .withBrokers("localhost:9093")
                         .build();
+                        
         /// create the application
         MultiPipe &mp = topology.add_source(source);
         cout << "Chaining is disabled" << endl;
@@ -253,7 +273,7 @@ int main(int argc, char* argv[]) {
         Kafka_Source_Functor source_functor(app_start_time, rate);
         Kafka_Source source = Kafka_Source_Builder(source_functor)
                                 .withName("kafka-source")
-                                .withOutputBatchSize(1)
+                                .withOutputBatchSize(0)
                                 .withClosingFunction(c_functor)
                                 .withBrokers("localhost:9092")
                                 .withTopics("input")
@@ -263,18 +283,33 @@ int main(int argc, char* argv[]) {
                                 .withParallelism(1)
                                 .withOffset(0)
                                 .build();
+        /*
+        Source_Functor source_functor(dataset, rate, app_start_time);
+        Source source = Source_Builder(source_functor)
+                            .withParallelism(source_par_deg)
+                            .withName(light_source_name)
+                            .withOutputBatchSize(batch_size)
+                            .build();
+                            */
         Predictor_Functor predictor_functor(app_start_time);
         FlatMap predictor = FlatMap_Builder(predictor_functor)
                                 .withParallelism(predictor_par_deg)
                                 .withName(predictor_name)
                                 .withKeyBy([](const tuple_t &t) -> size_t { return t.key; })
                                 .build();
+        Sink_Functor sink_functor(sampling, app_start_time);
+        Sink sink = Sink_Builder(sink_functor)
+                        .withParallelism(sink_par_deg)
+                        .withName(sink_name)
+                        .build();
+        /*
         Kafka_Sink_Functor sink_functor(sampling, app_start_time);
         Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
                         .withBrokers("localhost:9093")
                         .build();
+                        */
         /// create the application
         MultiPipe &mp = topology.add_source(source);
         cout << "Chaining is enabled" << endl;

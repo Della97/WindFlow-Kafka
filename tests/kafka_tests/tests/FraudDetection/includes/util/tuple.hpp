@@ -19,24 +19,18 @@ using namespace std;
 struct tuple_t
 {
     string entity_id; // identifies the customer
-    double_t score; // indicates the chances of fraudolent activity associated with the transaction sequence
-    vector<string> states; // representation of the transaction sequence
     string record; // contains the transaction id and the transaction type
     size_t key; // key attribute
     uint64_t ts;
 
     // Constructor I
-    tuple_t() : entity_id(""), record(""), score(0.0), key(0) {}
+    tuple_t() : entity_id(""), record(""), key(0) {}
 
     // Constructor II
     tuple_t(const string &_entity_id,
-            double_t _score,
-    	    const vector<string> &_states,
     	    const string &_record,
     	    size_t _key):
             entity_id(_entity_id),
-            score(_score),
-            states(_states),
             record(_record),
             key(_key) {}
 };

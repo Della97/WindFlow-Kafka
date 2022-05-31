@@ -117,52 +117,38 @@ std::string serialize_t(tuple_t in) {
     std::string three = std::to_string(in.key);
     std::string four = std::to_string(in.ts);
     std::string tmp = one + "+" + two + "+" + three + "+" + four;
+    //std::cout << one << " " << two << " " << three << " " << four << std::endl;
     return tmp;
 }
 
 void create_string() {
 
-    for (int next_tuple_idx = 0; next_tuple_idx < parsed_file.size(); next_tuple_idx++) {
+    for (int next_tuple_idx = 0; next_tuple_idx < dataset.size(); next_tuple_idx++) {
         auto record = dataset.at(next_tuple_idx);
         tuples_str.push_back(serialize_t(record));
     }
 }
 
-class ExDeliveryReportCb : public RdKafka::DeliveryReportCb
-{
-public:
-    void dr_cb(RdKafka::Message &message)
-    {
-        /* If message.err() is non-zero the message delivery failed permanently
-         * for the message. */
-        if (message.err())
-            failed++;
-            //std::cerr << "% Message delivery failed: " << message.errstr() << std::endl;
-        else
-            succes++;
-            //std::cerr << "% Message delivered to topic " << message.topic_name() << " [" << message.partition() << "] at offset " << message.offset() << std::endl;
-    }
-};
 
 int main(int argc, char* argv[]) {
-    //KAFKA//
+        //KAFKA//
     std::string broker = "localhost:9092";
     RdKafka::Conf *conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
     std::string errstr;
     RdKafka::Producer *producer;
-    ExDeliveryReportCb ex_dr_cb;
     int index = 0;
     int num_keys = 0;
 
     unsigned long current_time;
     unsigned long start_time;
-    unsigned long app_run_time = 60 * 1000000000L; // 60 seconds
+    unsigned long app_run_time = 120 * 1000000000L; // 60 seconds
 
     string file_path = "/home/della/git/WindFlow-Kafka/Datasets/FD/credit-card.dat";
     ifstream file(file_path);
     int count = 0;
     map_and_parse_dataset(file_path, ",");
     create_tuples(num_keys);
+    std::cout << dataset.size() << std::endl;
     create_string();
     int range = dataset.size();
     int next_tuple_idx = 0;
@@ -173,12 +159,6 @@ int main(int argc, char* argv[]) {
             std::cerr << errstr << std::endl;
             exit(1);
         }
-        /*
-        if (conf->set("dr_cb", &ex_dr_cb, errstr) != RdKafka::Conf::CONF_OK) {
-            std::cerr << errstr << std::endl;
-            exit(1);
-        }
-        */
         
         producer = RdKafka::Producer::create(conf, errstr);
         if (!producer) {
@@ -187,20 +167,27 @@ int main(int argc, char* argv[]) {
         }
     std::cout << "Producer created: " << producer->name() << std::endl;
 
-    std::cout << "COUNT: " << parsed_file.size() << std::endl;
-
     //kafka//
 
     start_time = current_time_nsecs();
     current_time = current_time_nsecs();
     index = 0;
     next_tuple_idx = 0;
+    std::string msg;
     volatile unsigned long start_time_main_usecs = current_time_usecs();
-    while (current_time - start_time <= (app_run_time)) {
-        //serialize tuple
-        //send tuple
-        
-        RdKafka::ErrorCode err = producer->produce("input", //topic
+    while (current_time - start_time <= app_run_time)
+    	{
+    		tuple_t t(dataset.at(next_tuple_idx));
+    		t.ts = current_time_nsecs();
+
+            msg = serialize_t(t);
+            /*
+            std::cout << t.entity_id << " " << t.key << " " << t.record << std::endl;
+            if (count == 358235) {
+                return 0;
+            }
+            */
+    		RdKafka::ErrorCode err = producer->produce("input", //topic
                                                 RdKafka::Topic::PARTITION_UA,  //partition
                                                 RdKafka::Producer::RK_MSG_COPY, // Copy payload,
                                                 const_cast<char *>(tuples_str.at(next_tuple_idx).c_str()), //payload
@@ -208,30 +195,17 @@ int main(int argc, char* argv[]) {
                                                 NULL, 0,  //
                                                 0,        //
                                                 NULL);    //
-        
-        producer->poll(0);
-        next_tuple_idx = (next_tuple_idx + 1) % dataset.size();   // index of the next tuple to be sent (if any)
-        //std::this_thread::sleep_for(std::chrono::microseconds(1));
-        count++;
-        index++;
-        current_time = current_time_nsecs();        
-    }
-    volatile unsigned long end_time_main_usecs = current_time_usecs();
-            //KAFKA SEND DATA
-            /*
-            RdKafka::ErrorCode err = producer->produce("test", //topic
-                                                0,  //partition
-                                                RdKafka::Producer::RK_MSG_COPY, // Copy payload,
-                                                const_cast<char *>(line.c_str()), //payload
-                                                line.size(),        //
-                                                NULL, 0,  //
-                                                0,        //
-                                                NULL,     //
-                                                NULL);    //
-                                            */
 
             producer->poll(0);
-            std::this_thread::sleep_for(std::chrono::milliseconds(2));
+        next_tuple_idx = (next_tuple_idx + 1) % dataset.size();   // index of the next tuple to be sent (if any)
+        std::this_thread::sleep_for(std::chrono::microseconds(1));
+        count++;
+        index++;
+        current_time = current_time_nsecs(); 
+    	}
+    volatile unsigned long end_time_main_usecs = current_time_usecs();
+
+            producer->poll(0);
             //KAFKA SEND DATA
     std::cout << "COUNT (AFTER == TIMEOUT): " << count << std::endl;
     std::cout << "CALLBACK COUNT DONE (AFTER == TIMEOUT): " << succes << std::endl;

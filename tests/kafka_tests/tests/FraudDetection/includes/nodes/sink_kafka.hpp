@@ -6,8 +6,8 @@
  *  @brief Sink node that receives and prints the results
  */
 
-#ifndef SPIKEDETECTION_SINK_HPP
-#define SPIKEDETECTION_SINK_HPP
+#ifndef FRAUDDETECTION_SINK_KAFKA_HPP
+#define FRAUDDETECTION_SINK_KAFKA_HPP
 
 #include <algorithm>
 #include <iomanip>
@@ -76,37 +76,34 @@ public:
      *
      * @param t input tuple
      */
-    wf::wf_kafka_sink_msg operator()(const tuple_t &out, KafkaRuntimeContext &rc) {
+    wf::wf_kafka_sink_msg operator()(const result_t &out, KafkaRuntimeContext &rc) {
+            if (processed == 0) {
+                parallelism = rc.getParallelism();
+                replica_id = rc.getReplicaIndex();
+            }
 
-        if (processed == 0) {
-            parallelism = rc.getParallelism();
-            replica_id = rc.getReplicaIndex();
-        }
-
-        // always evaluate latency when compiling with FF_BOUNDED_BUFFER MACRO set
-        unsigned long tuple_latency = (current_time_nsecs() - (out).ts) / 1e03;
-        processed++;        // tuples counter
+            // always evaluate latency when compiling with FF_BOUNDED_BUFFER MACRO set
+            unsigned long tuple_latency = (current_time_nsecs() - (out).ts) / 1e03;
+            processed++;        // tuples counter
 
 
-        current_time = current_time_nsecs();
-        latency_sampler.add(tuple_latency, current_time);
+            current_time = current_time_nsecs();
+            latency_sampler.add(tuple_latency, current_time);
 
-            
-        if (processed < 100) {
-            cout << "Ricevuto fraud entity_id: " << out.entity_id << endl;
-        }
-            
+            cout << "Ricevuto fraud entity_id: " << (out).entity_id << " score " << (out).score << endl;
+            if (processed > 1000)
+                abort();
 
-        arrived++;
-        sink_arrived_tuple++;
-        wf::wf_kafka_sink_msg tmp;
-        RdKafka::Producer *producer = rc.getProducer();
-        std::string msg = std::to_string(out.key);
+            arrived++;
+            sink_arrived_tuple++;
+            wf::wf_kafka_sink_msg tmp;
+            RdKafka::Producer *producer = rc.getProducer();
+            std::string msg = "Ricevuto fraud entity_id: " + ((out).entity_id) + " score ";
 
-        tmp.partition = rc.getReplicaIndex();
-        tmp.payload = msg;
-        tmp.topic = "output";
-        return tmp;
+            tmp.partition = rc.getReplicaIndex();
+            tmp.payload = msg;
+            tmp.topic = "output";
+            return tmp;
     }
 };
 
