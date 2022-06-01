@@ -13,7 +13,7 @@ MACRO           = -DFF_BOUNDED_BUFFER -DDEFAULT_BUFFER_CAPACITY=32786 # -DNDEBUG
 OPTFLAGS		= -g -O3 -finline-functions
 LDFLAGS			= -pthread -lrdkafka++
 
-all: sd
+all: sd generator
 
 metric.o: ../includes/util/metric.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
@@ -24,6 +24,12 @@ metric_group.o: ../includes/util/metric_group.cpp
 sampler.o: ../includes/util/sampler.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
 
+generator.o: generator.cpp
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
+
+generator: generator.o
+	$(CXX) generator.o -o ../bin/generator $(LDFLAGS)
+
 sd.o: sd.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
 
@@ -32,6 +38,7 @@ sd: metric.o metric_group.o sampler.o sd.o
 
 clean:
 	rm -f $(OUT_DIR)/sd
+	rm -f $(OUT_DIR)/generator
 	rm -f *.o
 
 .DEFAULT_GOAL := all

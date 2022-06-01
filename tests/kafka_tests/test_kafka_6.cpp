@@ -117,7 +117,6 @@ std::string serialize_t(tuple_t in) {
     std::string three = std::to_string(in.key);
     std::string four = std::to_string(in.ts);
     std::string tmp = one + "+" + two + "+" + three + "+" + four;
-    //std::cout << one << " " << two << " " << three << " " << four << std::endl;
     return tmp;
 }
 
@@ -173,20 +172,12 @@ int main(int argc, char* argv[]) {
     current_time = current_time_nsecs();
     index = 0;
     next_tuple_idx = 0;
-    std::string msg;
     volatile unsigned long start_time_main_usecs = current_time_usecs();
     while (current_time - start_time <= app_run_time)
     	{
     		tuple_t t(dataset.at(next_tuple_idx));
     		t.ts = current_time_nsecs();
 
-            msg = serialize_t(t);
-            /*
-            std::cout << t.entity_id << " " << t.key << " " << t.record << std::endl;
-            if (count == 358235) {
-                return 0;
-            }
-            */
     		RdKafka::ErrorCode err = producer->produce("input", //topic
                                                 RdKafka::Topic::PARTITION_UA,  //partition
                                                 RdKafka::Producer::RK_MSG_COPY, // Copy payload,
@@ -198,7 +189,6 @@ int main(int argc, char* argv[]) {
 
             producer->poll(0);
         next_tuple_idx = (next_tuple_idx + 1) % dataset.size();   // index of the next tuple to be sent (if any)
-        //std::this_thread::sleep_for(std::chrono::microseconds(1));
         count++;
         index++;
         current_time = current_time_nsecs(); 

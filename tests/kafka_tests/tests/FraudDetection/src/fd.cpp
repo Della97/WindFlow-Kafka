@@ -225,22 +225,14 @@ int main(int argc, char* argv[]) {
                                 .withName("kafka-source")
                                 .withOutputBatchSize(batch_size)
                                 .withClosingFunction(c_functor)
-                                .withBrokers("localhost:9092")
-                                .withTopics("input")
+                                .withBrokers("localhost:9093")
+                                .withTopics("fd")
                                 .withGroupID("gruppo")
                                 .withAssignmentPolicy("roundrobin")
                                 .withIdleness(500)
                                 .withParallelism(1)
                                 .withOffset(0)
                                 .build();
-            /*
-        Source_Functor source_functor(dataset, rate, app_start_time);
-        Source source = Source_Builder(source_functor)
-                            .withParallelism(source_par_deg)
-                            .withName(light_source_name)
-                            .withOutputBatchSize(batch_size)
-                            .build();
-                            */
         Predictor_Functor predictor_functor(app_start_time);
         FlatMap predictor = FlatMap_Builder(predictor_functor)
                                 .withParallelism(predictor_par_deg)
@@ -248,13 +240,6 @@ int main(int argc, char* argv[]) {
                                 .withKeyBy([](const tuple_t &t) -> size_t { return t.key; })
                                 .withOutputBatchSize(batch_size)
                                 .build();
-                                /*
-        Sink_Functor sink_functor(sampling, app_start_time);
-        Sink sink = Sink_Builder(sink_functor)
-                        .withParallelism(sink_par_deg)
-                        .withName(sink_name)
-                        .build();
-        */
         Kafka_Sink_Functor sink_functor(sampling, app_start_time);
         Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
@@ -275,41 +260,27 @@ int main(int argc, char* argv[]) {
                                 .withName("kafka-source")
                                 .withOutputBatchSize(0)
                                 .withClosingFunction(c_functor)
-                                .withBrokers("localhost:9092")
-                                .withTopics("input")
+                                .withBrokers("localhost:9093")
+                                .withTopics("fd")
                                 .withGroupID("gruppo")
                                 .withAssignmentPolicy("roundrobin")
                                 .withIdleness(500)
                                 .withParallelism(1)
                                 .withOffset(0)
                                 .build();
-        /*
-        Source_Functor source_functor(dataset, rate, app_start_time);
-        Source source = Source_Builder(source_functor)
-                            .withParallelism(source_par_deg)
-                            .withName(light_source_name)
-                            .withOutputBatchSize(batch_size)
-                            .build();
-                            */
         Predictor_Functor predictor_functor(app_start_time);
         FlatMap predictor = FlatMap_Builder(predictor_functor)
                                 .withParallelism(predictor_par_deg)
                                 .withName(predictor_name)
                                 .withKeyBy([](const tuple_t &t) -> size_t { return t.key; })
                                 .build();
-        Sink_Functor sink_functor(sampling, app_start_time);
-        Sink sink = Sink_Builder(sink_functor)
-                        .withParallelism(sink_par_deg)
-                        .withName(sink_name)
-                        .build();
-        /*
         Kafka_Sink_Functor sink_functor(sampling, app_start_time);
         Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
                         .withBrokers("localhost:9093")
                         .build();
-                        */
+                        
         /// create the application
         MultiPipe &mp = topology.add_source(source);
         cout << "Chaining is enabled" << endl;

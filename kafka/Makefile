@@ -1,5 +1,5 @@
 zookeeper:
-	bin/zookeeper-server-start.sh config/zookeeper.properties
+	bin/zookeeper-server-start.sh config/zookeeper1.properties
 server:
 	bin/kafka-server-start.sh config/server1.properties
 server1:
