@@ -200,8 +200,6 @@ int main(int argc, char* argv[]) {
         exit(EXIT_FAILURE);
     }
     /// data pre-processing
-    map_and_parse_dataset(file_path, ",");
-    create_tuples(num_keys);
     /// application starting time
     unsigned long app_start_time = current_time_nsecs();
     cout << "Executing FraudDetection with parameters:" << endl;
