@@ -131,7 +131,7 @@ void create_string() {
 
 int main(int argc, char* argv[]) {
         //KAFKA//
-    std::string broker = "localhost:9093";
+    std::string broker = "localhost:9092";
     RdKafka::Conf *conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
     std::string errstr;
     RdKafka::Producer *producer;
