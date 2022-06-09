@@ -90,9 +90,7 @@ public:
             current_time = current_time_nsecs();
             latency_sampler.add(tuple_latency, current_time);
 
-            cout << "Ricevuto fraud entity_id: " << (out).entity_id << " score " << (out).score << endl;
-            if (processed > 1000)
-                abort();
+            //cout << "Ricevuto fraud entity_id: " << (out).entity_id << " score " << (out).score << endl;
 
             arrived++;
             sink_arrived_tuple++;
