@@ -280,7 +280,7 @@ int main(int argc, char* argv[]) {
         cout << "*****************************" << endl;
     }
 
-    //cout << "Dumping metrics" << endl;
-    //util::metric_group.dump_all();
+    cout << "Dumping metrics" << endl;
+    util::metric_group.dump_all();
     return 0;
 }
