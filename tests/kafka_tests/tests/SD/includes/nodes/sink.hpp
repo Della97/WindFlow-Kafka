@@ -89,7 +89,7 @@ public:
         RdKafka::Producer *producer = rc.getProducer();
         std::string msg = std::to_string(out.key);
 
-        if (processed == 360535) {
+        if (processed == 360534) {
             util::metric_group.add("latency", latency_sampler);
         }
 
