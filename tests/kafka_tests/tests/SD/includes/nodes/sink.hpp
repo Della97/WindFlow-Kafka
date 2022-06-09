@@ -89,7 +89,9 @@ public:
         RdKafka::Producer *producer = rc.getProducer();
         std::string msg = std::to_string(out.key);
 
-        util::metric_group.add("latency", latency_sampler);
+        if (processed == 360535) {
+            util::metric_group.add("latency", latency_sampler);
+        }
 
         tmp.partition = rc.getReplicaIndex();
         tmp.payload = msg;
