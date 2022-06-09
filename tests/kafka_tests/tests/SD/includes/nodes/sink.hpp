@@ -89,6 +89,10 @@ public:
         RdKafka::Producer *producer = rc.getProducer();
         std::string msg = std::to_string(out.key);
 
+        if (msg == "") {
+            util::metric_group.add("latency", latency_sampler);
+        }
+
         tmp.partition = rc.getReplicaIndex();
         tmp.payload = msg;
         tmp.topic = "output";
