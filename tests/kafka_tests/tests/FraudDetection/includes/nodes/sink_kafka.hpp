@@ -98,6 +98,9 @@ public:
             RdKafka::Producer *producer = rc.getProducer();
             std::string msg = "Ricevuto fraud entity_id: " + ((out).entity_id) + " score ";
 
+            if (processed == 1194632) {
+                util::metric_group.add("latency", latency_sampler);
+            }   
             tmp.partition = rc.getReplicaIndex();
             tmp.payload = msg;
             tmp.topic = "output";
