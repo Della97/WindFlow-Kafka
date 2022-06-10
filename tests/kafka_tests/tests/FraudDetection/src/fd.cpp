@@ -38,15 +38,7 @@ atomic<long> sent_tuples;                   // total number of tuples sent by al
 //***********************SOURCE*************************
 atomic<long> source_arrived_tuple;                   // total number of tuples sent by all the sources
 atomic<long> source_sent_tuple;                   // total number of tuples sent by all the sources
-//***********************SOURCE1*************************
-atomic<long> source1_arrived_tuple;                   // total number of tuples sent by all the sources
-atomic<long> source1_sent_tuple;                  // total number of tuples sent by all the sources
 
-//***********************AVG CALC*************************
-atomic<long> avg_calc_arrived_tuple;                   // total number of tuples sent by all the sources
-
-//***********************DETECTOR*************************
-atomic<long> detector_arrived_tuple;                   // total number of tuples sent by all the sources
 
 //***********************SINK*************************
 atomic<long> sink_arrived_tuple;                   // total number of tuples sent by all the sources
@@ -292,8 +284,21 @@ int main(int argc, char* argv[]) {
     volatile unsigned long end_time_main_usecs = current_time_usecs();
     cout << "Exiting" << endl;
     double elapsed_time_seconds = (end_time_main_usecs - start_time_main_usecs) / (1000000.0);
-    double throughput = sent_tuples / elapsed_time_seconds;
+    double throughput = source_arrived_tuple / elapsed_time_seconds;
     cout << "Measured throughput: " << (int) throughput << " tuples/second" << endl;
+    cout << "Elapsed time: " << elapsed_time_seconds << endl;
+    cout << "*****************************" << endl;
+
+    cout << "****************SOURCE***************" << endl;
+    cout << "Source_arrived_tuple (FROM KAFKA) : " << source_arrived_tuple << endl;
+    cout << "Source_sent_tuple (TO AVG) : " << source_sent_tuple << endl;
+    cout << "*****************************" << endl;
+    if (source_sent_tuple != 0) {
+        cout << "****************SINK***************" << endl;
+        cout << "Sink_Arrived_tuple (FROM PREV NODE): " << sink_arrived_tuple << endl;
+        cout << "*****************************" << endl;
+    }
+
     cout << "Dumping metrics" << endl;
     util::metric_group.dump_all();
     return 0;
