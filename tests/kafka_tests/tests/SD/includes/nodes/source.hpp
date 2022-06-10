@@ -160,6 +160,7 @@ public:
                 }
                 pos++;
             }
+            t.ts = current_time_nsecs();
             shipper.pushWithTimestamp(std::move(t), next_ts);
             count++;
             source_sent_tuple++;
