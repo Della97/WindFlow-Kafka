@@ -2,9 +2,9 @@
  *  @file    sd.cpp
  *  @author  Gabriele Mencagli
  *  @date    13/01/2020
- *  
+ *
  *  @brief Main of the SpikeDetection application
- */ 
+ */
 
 #include <regex>
 #include <string>
@@ -216,7 +216,7 @@ int main(int argc, char* argv[]) {
                                 .withParallelism(1)
                                 .withOffset(0)
                                 .build();
-                                
+
         Average_Calculator_Map_Functor avg_calc_functor(app_start_time);
         Map average_calculator = Map_Builder(avg_calc_functor)
                 .withParallelism(average_par_deg)
@@ -228,14 +228,14 @@ int main(int argc, char* argv[]) {
                 .withParallelism(detector_par_deg)
                 .withName(detector_name)
                 .build();
-        
+
         Kafka_Sink_Functor sink_functor(sampling, app_start_time);
         Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
                         .withBrokers("localhost:9092")
                         .build();
-                        
+
         MultiPipe &mp = topology.add_source(source);
         //cout << "Chaining is enabled" << endl;
         mp.chain(average_calculator);
@@ -263,12 +263,12 @@ int main(int argc, char* argv[]) {
     cout << "Source_sent_tuple (TO AVG) : " << source_sent_tuple << endl;
     cout << "*****************************" << endl;
     if (source_sent_tuple != 0) {
-        long loss1 = source_sent_tuple/avg_calc_arrived_tuple; 
+        long loss1 = source_sent_tuple/avg_calc_arrived_tuple;
         cout << "LOSS (source -> avg): " << loss1 << endl;
         cout << "****************AVG***************" << endl;
         cout << "Avg_arrived_tuple (FROM SOURCE) : " << avg_calc_arrived_tuple << endl;
         cout << "*****************************" << endl;
-        long loss2 = avg_calc_arrived_tuple/detector_arrived_tuple; 
+        long loss2 = avg_calc_arrived_tuple/detector_arrived_tuple;
         cout << "LOSS (avg -> detector): " << loss2 << endl;
         cout << "****************DETECTOR***************" << endl;
         cout << "Detector_arrived_tuple (FROM AVG) : " << detector_arrived_tuple << endl;
