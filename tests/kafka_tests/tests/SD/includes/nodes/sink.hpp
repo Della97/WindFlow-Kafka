@@ -1,4 +1,4 @@
-/** 
+/**
  *  @file    sink.hpp
  *  @author  Alessandra Fais
  *  @date    18/07/2019
@@ -64,30 +64,25 @@ public:
      */
     wf::wf_kafka_sink_msg operator()(const tuple_t &out, KafkaRuntimeContext &rc) {
 
-            if (processed == 0) {
-                parallelism = rc.getParallelism();
-                replica_id = rc.getReplicaIndex();
-            }
+        if (processed == 0) {
+            parallelism = rc.getParallelism();
+            replica_id = rc.getReplicaIndex();
+        }
 
-            // always evaluate latency when compiling with FF_BOUNDED_BUFFER MACRO set
-            unsigned long tuple_latency = (current_time_nsecs() - (out).ts) / 1e03;
-            processed++;        // tuples counter
+        // always evaluate latency when compiling with FF_BOUNDED_BUFFER MACRO set
+        unsigned long tuple_latency = (current_time_nsecs() - (out).ts) / 1e03;
+        processed++;        // tuples counter
 
 
-            current_time = current_time_nsecs();
-            latency_sampler.add(tuple_latency, current_time);
+        current_time = current_time_nsecs();
+        latency_sampler.add(tuple_latency, current_time);
 
-            
-            if (processed < 100) {
-                cout << "Ricevuto outlier entity_id: " << (out).key << " property_value " << (out).property_value << " incremental_average " << (out).incremental_average << endl;
-            }
-            
 
         arrived++;
         sink_arrived_tuple++;
         wf::wf_kafka_sink_msg tmp;
         RdKafka::Producer *producer = rc.getProducer();
-        std::string msg = std::to_string(out.key);
+        std::string msg = "Ricevuto outlier entity_id: " + ((out).key);
 
         if (processed == 360534) {
             util::metric_group.add("latency", latency_sampler);

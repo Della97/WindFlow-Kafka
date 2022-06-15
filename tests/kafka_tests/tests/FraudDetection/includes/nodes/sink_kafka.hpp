@@ -1,4 +1,4 @@
-/** 
+/**
  *  @file    sink.hpp
  *  @author  Alessandra Fais
  *  @date    18/07/2019
@@ -96,11 +96,11 @@ public:
             sink_arrived_tuple++;
             wf::wf_kafka_sink_msg tmp;
             RdKafka::Producer *producer = rc.getProducer();
-            std::string msg = "Ricevuto fraud entity_id: " + ((out).entity_id) + " score ";
+            std::string msg = "Ricevuto fraud entity_id: " + ((out).entity_id);
 
             if (processed == 1194632) {
                 util::metric_group.add("latency", latency_sampler);
-            }   
+            }
             tmp.partition = rc.getReplicaIndex();
             tmp.payload = msg;
             tmp.topic = "output";
