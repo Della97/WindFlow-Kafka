@@ -1,10 +1,10 @@
-/** 
+/**
  *  @file    fd.cpp
  *  @author  Alessandra Fais
  *  @date    11/01/2020
- *  
+ *
  *  @brief Main of the FraudDetection application
- */ 
+ */
 #include <cmath>
 #include <string>
 #include <vector>
@@ -53,16 +53,16 @@ public:
 };
 
 
-/** 
+/**
  *  @brief Map keys and parse the input file
- *  
+ *
  *  This method assigns to each string key entity_id a unique integer key (required by the current
  *  implementation of WindFlow). Moreover, the file is parsed and saved in memory.
- *  
+ *
  *  @param file_path the path of the input dataset file
  *  @param split_regex the regular expression used to split the lines of the file
  *         (e.g. for a file input.csv the regular expression to be used is ",")
- */ 
+ */
 void map_and_parse_dataset(const string& file_path, const string& split_regex) {
     ifstream file(file_path);
     if (file.is_open()) {
@@ -82,12 +82,12 @@ void map_and_parse_dataset(const string& file_path, const string& split_regex) {
     }
 }
 
-/** 
+/**
  *  @brief Process parsed data and create all the tuples
- *  
+ *
  *  The created tuples are maintained in memory. The source node will generate the stream by
  *  reading all the tuples from main memory.
- */ 
+ */
 void create_tuples(int num_keys)
 {
     std::uniform_int_distribution<std::mt19937::result_type> dist(0, num_keys-1);
@@ -236,7 +236,7 @@ int main(int argc, char* argv[]) {
                         .withParallelism(1)
                         .withBrokers("localhost:9092")
                         .build();
-                        
+
         /// create the application
         MultiPipe &mp = topology.add_source(source);
         cout << "Chaining is disabled" << endl;
@@ -270,7 +270,7 @@ int main(int argc, char* argv[]) {
                         .withParallelism(1)
                         .withBrokers("localhost:9092")
                         .build();
-                        
+
         /// create the application
         MultiPipe &mp = topology.add_source(source);
         cout << "Chaining is enabled" << endl;
@@ -284,7 +284,7 @@ int main(int argc, char* argv[]) {
     volatile unsigned long end_time_main_usecs = current_time_usecs();
     cout << "Exiting" << endl;
     double elapsed_time_seconds = (end_time_main_usecs - start_time_main_usecs) / (1000000.0);
-    double throughput = source_arrived_tuple / elapsed_time_seconds;
+    double throughput = source_arrived_tuple / (60 * 1000000000L);
     cout << "Measured throughput: " << (int) throughput << " tuples/second" << endl;
     cout << "Elapsed time: " << elapsed_time_seconds << endl;
     cout << "*****************************" << endl;
