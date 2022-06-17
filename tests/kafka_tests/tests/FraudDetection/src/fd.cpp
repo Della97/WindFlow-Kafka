@@ -284,7 +284,7 @@ int main(int argc, char* argv[]) {
     volatile unsigned long end_time_main_usecs = current_time_usecs();
     cout << "Exiting" << endl;
     double elapsed_time_seconds = (end_time_main_usecs - start_time_main_usecs) / (1000000.0);
-    double throughput = source_arrived_tuple / (60 * 1000000000L);
+    double throughput = source_arrived_tuple / 60;
     cout << "Measured throughput: " << (int) throughput << " tuples/second" << endl;
     cout << "Elapsed time: " << elapsed_time_seconds << endl;
     cout << "*****************************" << endl;
