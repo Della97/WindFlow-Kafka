@@ -36,13 +36,13 @@ vector<string> tokens;
 vector<string> tuples_str;
 int tmp = 0;
 
-/** 
+/**
  *  @brief Parse the input file
- *  
+ *
  *  The file is parsed and saved in memory.
- *  
+ *
  *  @param file_path the path of the input dataset file
- */ 
+ */
 void parse_dataset(const string& file_path) {
     ifstream file(file_path);
     if (file.is_open()) {
@@ -88,12 +88,12 @@ void parse_dataset(const string& file_path) {
     }
 }
 
-/** 
+/**
  *  @brief Process parsed data and create all the tuples
- *  
+ *
  *  The created tuples are maintained in memory. The source node will generate the stream by
  *  reading all the tuples from main memory.
- */ 
+ */
 void create_tuples(int num_keys)
 {
     std::uniform_int_distribution<std::mt19937::result_type> dist(0, num_keys-1);
@@ -162,7 +162,7 @@ int main(int argc, char* argv[]) {
     unsigned long start_time;
     unsigned long app_run_time = 60 * 1000000000L; // 60 seconds
 
-    string file_path = "/home/dbmatteo/git/WindFlow-Kafka/Datasets/SD/sensors.dat";
+    string file_path = "/home/della/git/WindFlow-Kafka/Datasets/SD/sensors.dat";
     ifstream file(file_path);
     int count = 0;
     parse_dataset(file_path);
@@ -177,12 +177,13 @@ int main(int argc, char* argv[]) {
             std::cerr << errstr << std::endl;
             exit(1);
         }
-        
+
         producer = RdKafka::Producer::create(conf, errstr);
         if (!producer) {
             std::cerr << "Failed to create producer: " << errstr << std::endl;
             exit(1);
         }
+    std::cout << range << std::endl;
     std::cout << "Producer created: " << producer->name() << std::endl;
 
     //kafka//
@@ -195,21 +196,26 @@ int main(int argc, char* argv[]) {
     while (current_time - start_time <= (app_run_time)) {
         //serialize tuple
         //send tuple
-        
+        //std::cout << tuples_str.at(next_tuple_idx).c_str() << std::endl;
+        auto record = dataset.at(next_tuple_idx);
+        record.ts = current_time_nsecs();
+        auto messagge = serialize_t(record);
+        std::cout << messagge << std::endl;
         RdKafka::ErrorCode err = producer->produce("sd", //topic
                                                 RdKafka::Topic::PARTITION_UA,  //partition
                                                 RdKafka::Producer::RK_MSG_COPY, // Copy payload,
-                                                const_cast<char *>(tuples_str.at(next_tuple_idx).c_str()), //payload
-                                                tuples_str.at(next_tuple_idx).size(),        //
+                                                const_cast<char *>(messagge.c_str()), //payload
+                                                messagge.size(),        //
                                                 NULL, 0,  //
                                                 0,        //
                                                 NULL);    //
-        
+
         producer->poll(0);
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
         next_tuple_idx = (next_tuple_idx + 1) % dataset.size();   // index of the next tuple to be sent (if any)
         count++;
         index++;
-        current_time = current_time_nsecs();        
+        current_time = current_time_nsecs();
     }
     volatile unsigned long end_time_main_usecs = current_time_usecs();
 

@@ -168,13 +168,13 @@ int main(int argc, char* argv[]) {
                                 .withName("kafka-source")
                                 .withOutputBatchSize(1)
                                 .withClosingFunction(c_functor)
-                                .withBrokers("localhost:9092")
+                                .withBrokers("131.114.3.249:9092")
                                 .withTopics("sd")
                                 .withGroupID("gruppo")
                                 .withAssignmentPolicy("roundrobin")
-                                .withIdleness(500)
+                                .withIdleness(1500)
                                 .withParallelism(1)
-                                .withOffset(0)
+                                .withOffset(-1)
                                 .build();
         Average_Calculator_Map_Functor avg_calc_functor(app_start_time);
         Map average_calculator = Map_Builder(avg_calc_functor)
@@ -193,7 +193,7 @@ int main(int argc, char* argv[]) {
         Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
-                        .withBrokers("localhost:9092")
+                        .withBrokers("131.114.3.249:9092")
                         .build();
         MultiPipe &mp = topology.add_source(source);
         //cout << "Chaining is disabled" << endl;
@@ -208,13 +208,13 @@ int main(int argc, char* argv[]) {
                                 .withName("kafka-source")
                                 .withOutputBatchSize(1)
                                 .withClosingFunction(c_functor)
-                                .withBrokers("localhost:9092")
+                                .withBrokers("131.114.3.249:9092")
                                 .withTopics("sd")
                                 .withGroupID("gruppo")
                                 .withAssignmentPolicy("roundrobin")
                                 .withIdleness(500)
                                 .withParallelism(1)
-                                .withOffset(0)
+                                .withOffset(-1)
                                 .build();
 
         Average_Calculator_Map_Functor avg_calc_functor(app_start_time);
@@ -233,7 +233,7 @@ int main(int argc, char* argv[]) {
         Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
-                        .withBrokers("localhost:9092")
+                        .withBrokers("131.114.3.249:9092")
                         .build();
 
         MultiPipe &mp = topology.add_source(source);

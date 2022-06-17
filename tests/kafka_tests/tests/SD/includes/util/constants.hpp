@@ -1,4 +1,4 @@
-/** 
+/**
  *  @file    constants.hpp
  *  @author  Alessandra Fais
  *  @date    16/05/2019
@@ -34,6 +34,6 @@ size_t _moving_avg_win_size = 1000;
 monitored_field _field = TEMPERATURE;
 double _threshold = 0.25; // <-- original value is 0.025
 
-const string _input_file = "/home/della/git/WindFlow-Kafka/Datasets/SD/sensors.dat";
+const string _input_file = "/home/dbmatteo/git/WindFlow-Kafka/Datasets/SD/sensors.dat";
 
 #endif //SPIKEDETECTION_CONSTANTS_HPP

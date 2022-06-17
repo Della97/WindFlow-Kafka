@@ -75,7 +75,7 @@ public:
 
 
         current_time = current_time_nsecs();
-        latency_sampler.add(tuple_latency, current_time);
+        //latency_sampler.add(tuple_latency, current_time);
 
 
         arrived++;
@@ -84,8 +84,8 @@ public:
         RdKafka::Producer *producer = rc.getProducer();
         std::string msg = "Ricevuto outlier entity_id: " + ((out).key);
 
-        if (processed == 360534) {
-            util::metric_group.add("latency", latency_sampler);
+        if (processed == 600000) {
+            //util::metric_group.add("latency", latency_sampler);
         }
 
         tmp.partition = rc.getReplicaIndex();

@@ -1,4 +1,4 @@
-/** 
+/**
  *  @file    source.hpp
  *  @author  Alessandra Fais
  *  @date    18/06/2019
@@ -49,12 +49,15 @@ private:
     size_t next_tuple_idx;          // index of the next tuple to be sent
     int generations;                // counts the times the file is generated
     long generated_tuples;          // tuples counter
+    int tmpp = 0;
+    int ct = 0;
 
     // time variables
     unsigned long app_start_time;   // application start time
     unsigned long current_time;
     unsigned long interval;
     size_t batch_size;
+    util::Sampler latency_sampler;
 
     /**
      *  @brief Add some active delay (busy-waiting function)
@@ -77,15 +80,16 @@ public:
             rate(_rate),
             next_tuple_idx(0),
             generations(0),
-            generated_tuples(0)
+            generated_tuples(0),
+            latency_sampler(100)
     {
         interval = 1000000L; // 1 second (microseconds)
     }
-    /** 
+    /**
      *  @brief Generation function of the input stream
-     *  
+     *
      *  @param shipper Source_Shipper object used for generating inputs
-     */ 
+     */
     bool operator()(std::optional<std::reference_wrapper<RdKafka::Message>> msg, Source_Shipper<tuple_t> &shipper)
     {
         //std::cout << static_cast<const char *>(msg->get().payload()) << std::endl;
@@ -95,43 +99,6 @@ public:
         rng.seed(0);
         uint64_t next_ts = 0;
         current_time = current_time_nsecs(); // get the current time
-
-        /*
-        if (msg) {
-            arrived++;
-            source_arrived_tuple++;
-            current_time = current_time_nsecs(); // get the current time
-            if (current_time - app_start_time > app_run_time) {
-                //cout << "COUNT: " << count << endl;
-                return false;
-            }
-            string tmp = static_cast<const char *>(msg->get().payload());
-            
-            //GET THE TUPLE IN STRING FORM AND CREATE A REAL TUPLE
-
-            //tuple_t t(dataset.at(next_tuple_idx));
-            //tuple_t t();
-            
-            //std::cout << "count: " << count << " MSG: " << t.key << std::endl;
-            shipper.pushWithTimestamp(std::move(t), next_ts);
-            count++;
-            source_sent_tuple++;
-            if (rate != 0) { // active waiting to respect the generation rate
-                long delay_nsec = (long) ((1.0d / rate) * 1e9);
-                active_delay(delay_nsec);
-            }
-            next_ts++;
-            return true;
-        } else {
-            current_time = current_time_nsecs(); // get the current time
-            if (current_time - app_start_time > app_run_time) {
-                //cout << "COUNT: " << count << endl;
-                return false;
-            }
-            //std::cout << "Received MSG as NULLPTR " << std::endl;
-            return true;
-        }
-        */
 
        if (msg) {
             string tmp = static_cast<const char *>(msg->get().payload());
@@ -143,10 +110,6 @@ public:
             arrived++;
             source_arrived_tuple++;
             current_time = current_time_nsecs(); // get the current time
-            if (current_time - app_start_time > app_run_time) {
-                //cout << "COUNT: " << count << endl;
-                return false;
-            }
             int pos = 0;
             while (getline (ss, item, delim)) {
                 if (pos == 0) t.property_value = std::stod(item);  //cast to double
@@ -160,7 +123,18 @@ public:
                 }
                 pos++;
             }
-            t.ts = current_time_nsecs();
+            //t.ts = current_time_nsecs();
+            unsigned long tuple_latency = (current_time_nsecs() - t.ts) / 1e03;
+            std::cout << tuple_latency << std::endl;
+            ct++;
+            tmpp = tmpp + tuple_latency;
+            latency_sampler.add(tuple_latency, current_time);
+            if (current_time - app_start_time > app_run_time) {
+                util::metric_group.add("latency", latency_sampler);
+                auto media = tmpp / ct;
+                std::cout << "MEDIA: " << media << std::endl;
+                return false;
+            }
             shipper.pushWithTimestamp(std::move(t), next_ts);
             count++;
             source_sent_tuple++;
@@ -174,6 +148,7 @@ public:
            current_time = current_time_nsecs(); // get the current time
             if (current_time - app_start_time > app_run_time) {
                 //cout << "COUNT: " << count << endl;
+                util::metric_group.add("latency", latency_sampler);
                 return false;
             }
             //std::cout << "Received MSG as NULLPTR " << std::endl;
