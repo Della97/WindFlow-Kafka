@@ -138,7 +138,7 @@ public:
             }
 
             //t.ts = current_time_nsecs();
-            //std::cout << t.entity_id << " " << t.key << " " << t.record << std::endl;
+            std::cout << t.ts << std::endl;
             arrived++;
             shipper.push(std::move(t));
             count++;
