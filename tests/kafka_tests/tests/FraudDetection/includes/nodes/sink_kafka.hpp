@@ -102,8 +102,9 @@ public:
             std::string msg = "Ricevuto fraud entity_id: " + ((out).entity_id);
             std::cout << "MEDIA SINK: " << tmpp / processed << std::endl;
 
-            if (processed == 1194632) {
+            if (processed == 400000) {
                 //util::metric_group.add("latency", latency_sampler);
+                std::cout << tmpp / processed << std::endl;
             }
             tmp.partition = rc.getReplicaIndex();
             tmp.payload = msg;
