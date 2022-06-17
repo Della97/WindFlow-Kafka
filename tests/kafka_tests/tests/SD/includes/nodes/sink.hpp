@@ -41,6 +41,7 @@ private:
     size_t parallelism;
     size_t replica_id;
     util::Sampler latency_sampler;
+    int tmpp = 0;
 public:
 
     /**
@@ -71,6 +72,7 @@ public:
 
         // always evaluate latency when compiling with FF_BOUNDED_BUFFER MACRO set
         unsigned long tuple_latency = (current_time_nsecs() - (out).ts) / 1e03;
+        tmpp = tmpp + tuple_latency;
         processed++;        // tuples counter
 
 
@@ -84,8 +86,10 @@ public:
         RdKafka::Producer *producer = rc.getProducer();
         std::string msg = "Ricevuto outlier entity_id: " + ((out).key);
 
-        if (processed == 600000) {
+        if (processed == 200) {
             //util::metric_group.add("latency", latency_sampler);
+            auto media = tmpp / arrived;
+            std::cout << "MEDIA SINK: " << media << std::endl;
         }
 
         tmp.partition = rc.getReplicaIndex();
