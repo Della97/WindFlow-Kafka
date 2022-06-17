@@ -86,11 +86,7 @@ public:
         RdKafka::Producer *producer = rc.getProducer();
         std::string msg = "Ricevuto outlier entity_id: " + ((out).key);
 
-        if (processed == 200) {
-            //util::metric_group.add("latency", latency_sampler);
-            auto media = tmpp / arrived;
-            std::cout << "MEDIA SINK: " << media << std::endl;
-        }
+        std::cout << "MEDIA SINK: " << tmpp / arrived << std::endl;
 
         tmp.partition = rc.getReplicaIndex();
         tmp.payload = msg;
