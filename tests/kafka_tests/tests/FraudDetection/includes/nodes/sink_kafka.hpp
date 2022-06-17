@@ -100,7 +100,7 @@ public:
             wf::wf_kafka_sink_msg tmp;
             RdKafka::Producer *producer = rc.getProducer();
             std::string msg = "Ricevuto fraud entity_id: " + ((out).entity_id);
-            std::cout << "MEDIA SINK: " << tmpp / processed << std::endl;
+            //std::cout << "MEDIA SINK: " << tmpp / processed << std::endl;
 
             if (processed == 400000) {
                 //util::metric_group.add("latency", latency_sampler);
