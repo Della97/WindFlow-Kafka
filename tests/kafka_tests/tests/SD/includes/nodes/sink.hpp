@@ -87,7 +87,8 @@ public:
         RdKafka::Producer *producer = rc.getProducer();
         std::string msg = "Ricevuto outlier entity_id: " + ((out).key);
 
-        std::cout << "MEDIA SINK: " << tmpp / arrived << std::endl;
+        //std::cout << "MEDIA SINK: " << tmpp / arrived << std::endl;
+        std::cout << "MESSAGGIO: " << msg << std::endl;
 
         tmp.partition = rc.getReplicaIndex();
         tmp.payload = msg;
