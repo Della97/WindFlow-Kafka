@@ -55,6 +55,7 @@ private:
     size_t parallelism;
     size_t replica_id;
     util::Sampler latency_sampler;
+    int tmpp = 0;
 public:
 
     /**
