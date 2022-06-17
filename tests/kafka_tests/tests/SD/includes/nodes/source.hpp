@@ -124,15 +124,8 @@ public:
                 pos++;
             }
             //t.ts = current_time_nsecs();
-            unsigned long tuple_latency = (current_time_nsecs() - t.ts) / 1e03;
             //std::cout << "SOURCE: " <<  tuple_latency << std::endl;
-            ct++;
-            tmpp = tmpp + tuple_latency;
-            latency_sampler.add(tuple_latency, current_time);
             if (current_time - app_start_time > app_run_time) {
-                util::metric_group.add("latency", latency_sampler);
-                auto media = tmpp / ct;
-                std::cout << "MEDIA SOURCE: " << media << std::endl;
                 return false;
             }
             shipper.pushWithTimestamp(std::move(t), next_ts);

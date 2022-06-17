@@ -1,4 +1,4 @@
-/** 
+/**
  *  @file    source.hpp
  *  @author  Alessandra Fais
  *  @date    18/06/2019
@@ -93,11 +93,11 @@ public:
     {
         interval = 1000000L; // 1 second (microseconds)
     }
-    /** 
+    /**
      *  @brief Generation function of the input stream
-     *  
+     *
      *  @param shipper Source_Shipper object used for generating inputs
-     */ 
+     */
     bool operator()(std::optional<std::reference_wrapper<RdKafka::Message>> msg, Source_Shipper<tuple_t> &shipper)
     {
         //std::cout << static_cast<const char *>(msg->get().payload()) << std::endl;
@@ -122,7 +122,7 @@ public:
                 //cout << "COUNT: " << count << endl;
                 return false;
             }
-            
+
             int pos = 0;
             while (getline (ss, item, delim)) {
                 if (pos == 0) t.entity_id = item;  //cast to double
@@ -137,7 +137,7 @@ public:
                 pos++;
             }
 
-            t.ts = current_time_nsecs();
+            //t.ts = current_time_nsecs();
             //std::cout << t.entity_id << " " << t.key << " " << t.record << std::endl;
             arrived++;
             shipper.push(std::move(t));

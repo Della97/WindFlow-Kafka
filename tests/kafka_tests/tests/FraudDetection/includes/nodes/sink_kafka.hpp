@@ -84,6 +84,7 @@ public:
 
             // always evaluate latency when compiling with FF_BOUNDED_BUFFER MACRO set
             unsigned long tuple_latency = (current_time_nsecs() - (out).ts) / 1e03;
+            tmpp = tmpp + tuple_latency;
             processed++;        // tuples counter
 
 
@@ -97,9 +98,10 @@ public:
             wf::wf_kafka_sink_msg tmp;
             RdKafka::Producer *producer = rc.getProducer();
             std::string msg = "Ricevuto fraud entity_id: " + ((out).entity_id);
+            std::cout << "MEDIA SINK: " << tmpp / processed << std::endl;
 
             if (processed == 1194632) {
-                util::metric_group.add("latency", latency_sampler);
+                //util::metric_group.add("latency", latency_sampler);
             }
             tmp.partition = rc.getReplicaIndex();
             tmp.payload = msg;

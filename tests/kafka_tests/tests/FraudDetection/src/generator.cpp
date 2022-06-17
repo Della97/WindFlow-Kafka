@@ -50,16 +50,16 @@ vector<string> tokens;
 vector<string> tuples_str;
 int tmp = 0;
 
-/** 
+/**
  *  @brief Map keys and parse the input file
- *  
+ *
  *  This method assigns to each string key entity_id a unique integer key (required by the current
  *  implementation of WindFlow). Moreover, the file is parsed and saved in memory.
- *  
+ *
  *  @param file_path the path of the input dataset file
  *  @param split_regex the regular expression used to split the lines of the file
  *         (e.g. for a file input.csv the regular expression to be used is ",")
- */ 
+ */
 void map_and_parse_dataset(const string& file_path, const string& split_regex) {
     ifstream file(file_path);
     if (file.is_open()) {
@@ -80,12 +80,12 @@ void map_and_parse_dataset(const string& file_path, const string& split_regex) {
 }
 
 
-/** 
+/**
  *  @brief Process parsed data and create all the tuples
- *  
+ *
  *  The created tuples are maintained in memory. The source node will generate the stream by
  *  reading all the tuples from main memory.
- */ 
+ */
 void create_tuples(int num_keys)
 {
     std::uniform_int_distribution<std::mt19937::result_type> dist(0, num_keys-1);
@@ -158,7 +158,7 @@ int main(int argc, char* argv[]) {
             std::cerr << errstr << std::endl;
             exit(1);
         }
-        
+
         producer = RdKafka::Producer::create(conf, errstr);
         if (!producer) {
             std::cerr << "Failed to create producer: " << errstr << std::endl;
@@ -175,14 +175,16 @@ int main(int argc, char* argv[]) {
     volatile unsigned long start_time_main_usecs = current_time_usecs();
     while (current_time - start_time <= app_run_time)
     	{
-    		tuple_t t(dataset.at(next_tuple_idx));
-    		t.ts = current_time_nsecs();
+
+        auto record = dataset.at(next_tuple_idx);
+        record.ts = current_time_nsecs();
+        auto messagge = serialize_t(record);
 
     		RdKafka::ErrorCode err = producer->produce("fd", //topic
                                                 RdKafka::Topic::PARTITION_UA,  //partition
                                                 RdKafka::Producer::RK_MSG_COPY, // Copy payload,
-                                                const_cast<char *>(tuples_str.at(next_tuple_idx).c_str()), //payload
-                                                tuples_str.at(next_tuple_idx).size(),        //
+                                                const_cast<char *>(messagge.c_str()), //payload
+                                                messagge.size(),        //
                                                 NULL, 0,  //
                                                 0,        //
                                                 NULL);    //
@@ -191,7 +193,7 @@ int main(int argc, char* argv[]) {
         next_tuple_idx = (next_tuple_idx + 1) % dataset.size();   // index of the next tuple to be sent (if any)
         count++;
         index++;
-        current_time = current_time_nsecs(); 
+        current_time = current_time_nsecs();
     	}
     volatile unsigned long end_time_main_usecs = current_time_usecs();
 
