@@ -125,7 +125,7 @@ public:
             }
             //t.ts = current_time_nsecs();
             unsigned long tuple_latency = (current_time_nsecs() - t.ts) / 1e03;
-            //std::cout << tuple_latency << std::endl;
+            std::cout << "SOURCE: " <<  tuple_latency << std::endl;
             ct++;
             tmpp = tmpp + tuple_latency;
             latency_sampler.add(tuple_latency, current_time);

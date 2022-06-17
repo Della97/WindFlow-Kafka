@@ -72,6 +72,7 @@ public:
 
         // always evaluate latency when compiling with FF_BOUNDED_BUFFER MACRO set
         unsigned long tuple_latency = (current_time_nsecs() - (out).ts) / 1e03;
+        std::cout << "SINK: " <<  tuple_latency << std::endl;
         tmpp = tmpp + tuple_latency;
         processed++;        // tuples counter
 
