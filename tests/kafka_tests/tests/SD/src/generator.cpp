@@ -151,7 +151,7 @@ void create_string() {
 
 int main(int argc, char* argv[]) {
     //KAFKA//
-    std::string broker = "localhost:9092";
+    std::string broker = "131.114.3.249:9092";
     RdKafka::Conf *conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
     std::string errstr;
     RdKafka::Producer *producer;
@@ -162,7 +162,7 @@ int main(int argc, char* argv[]) {
     unsigned long start_time;
     unsigned long app_run_time = 60 * 1000000000L; // 60 seconds
 
-    string file_path = "/home/della/git/WindFlow-Kafka/Datasets/SD/sensors.dat";
+    string file_path = "/home/dbmatteo/git/WindFlow-Kafka/Datasets/SD/sensors.dat";
     ifstream file(file_path);
     int count = 0;
     parse_dataset(file_path);
