@@ -86,9 +86,9 @@ public:
         sink_arrived_tuple++;
         wf::wf_kafka_sink_msg tmp;
         RdKafka::Producer *producer = rc.getProducer();
-        msg = "Ricevuto outlier entity_id: " + ((out).key);
+        msg = "Ricevuto outlier entity_id: ";
 
-        //std::cout << "MEDIA SINK: " << tmpp / arrived << std::endl;
+        std::cout << "MEDIA SINK: " << tmpp / arrived << std::endl;
         std::cout << "MESSAGGIO: " << msg << std::endl;
 
         tmp.partition = rc.getReplicaIndex();

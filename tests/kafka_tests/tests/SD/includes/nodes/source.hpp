@@ -132,7 +132,7 @@ public:
             if (current_time - app_start_time > app_run_time) {
                 util::metric_group.add("latency", latency_sampler);
                 auto media = tmpp / ct;
-                //std::cout << "MEDIA SOURCE: " << media << std::endl;
+                std::cout << "MEDIA SOURCE: " << media << std::endl;
                 return false;
             }
             shipper.pushWithTimestamp(std::move(t), next_ts);
