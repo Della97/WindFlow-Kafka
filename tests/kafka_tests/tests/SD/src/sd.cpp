@@ -168,7 +168,7 @@ int main(int argc, char* argv[]) {
                                 .withName("kafka-source")
                                 .withOutputBatchSize(1)
                                 .withClosingFunction(c_functor)
-                                .withBrokers("131.114.3.249:9092")
+                                .withBrokers("localhost:9092")
                                 .withTopics("sd")
                                 .withGroupID("gruppo")
                                 .withAssignmentPolicy("roundrobin")
@@ -193,7 +193,7 @@ int main(int argc, char* argv[]) {
         Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
-                        .withBrokers("131.114.3.249:9092")
+                        .withBrokers("localhost:9092")
                         .build();
         MultiPipe &mp = topology.add_source(source);
         //cout << "Chaining is disabled" << endl;
@@ -208,7 +208,7 @@ int main(int argc, char* argv[]) {
                                 .withName("kafka-source")
                                 .withOutputBatchSize(1)
                                 .withClosingFunction(c_functor)
-                                .withBrokers("131.114.3.249:9092")
+                                .withBrokers("localhost:9092")
                                 .withTopics("sd")
                                 .withGroupID("gruppo")
                                 .withAssignmentPolicy("roundrobin")
@@ -233,7 +233,7 @@ int main(int argc, char* argv[]) {
         Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
-                        .withBrokers("131.114.3.249:9092")
+                        .withBrokers("localhost:9092")
                         .build();
 
         MultiPipe &mp = topology.add_source(source);
