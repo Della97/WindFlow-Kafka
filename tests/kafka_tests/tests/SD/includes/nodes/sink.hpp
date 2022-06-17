@@ -42,6 +42,7 @@ private:
     size_t replica_id;
     util::Sampler latency_sampler;
     int tmpp = 0;
+    std::string msg;
 public:
 
     /**
@@ -85,7 +86,7 @@ public:
         sink_arrived_tuple++;
         wf::wf_kafka_sink_msg tmp;
         RdKafka::Producer *producer = rc.getProducer();
-        std::string msg = "Ricevuto outlier entity_id: " + ((out).key);
+        msg = "Ricevuto outlier entity_id: " + ((out).key);
 
         //std::cout << "MEDIA SINK: " << tmpp / arrived << std::endl;
         std::cout << "MESSAGGIO: " << msg << std::endl;
