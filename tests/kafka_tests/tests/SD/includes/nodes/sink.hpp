@@ -86,7 +86,7 @@ public:
         sink_arrived_tuple++;
         wf::wf_kafka_sink_msg tmp;
         RdKafka::Producer *producer = rc.getProducer();
-        msg = "Ricevuto outlier entity_id: ";
+        msg = out.incremental_average;
 
         std::cout << "MEDIA SINK: " << tmpp / arrived << std::endl;
         std::cout << "MESSAGGIO: " << msg << std::endl;
