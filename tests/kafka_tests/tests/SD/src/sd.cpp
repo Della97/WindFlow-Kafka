@@ -164,17 +164,17 @@ int main(int argc, char* argv[]) {
     if (!chaining) { // no chaining
         /// create the operators
         Kafka_Source_Functor source_functor(app_start_time, rate);
-        Kafka_Source source = Kafka_Source_Builder(source_functor)
+        Kafka_Source source = KafkaSource_Builder(source_functor)
                                 .withName("kafka-source")
                                 .withOutputBatchSize(1)
                                 .withClosingFunction(c_functor)
-                                .withBrokers("localhost:9092")
+                                .withBrokers("131.114.3.249:9092")
                                 .withTopics("sd")
                                 .withGroupID("gruppo")
                                 .withAssignmentPolicy("roundrobin")
-                                .withIdleness(1500)
+                                .withIdleness(std::chrono::milliseconds(500))
                                 .withParallelism(1)
-                                .withOffset(0)
+                                .withOffsets(0)
                                 .build();
         Average_Calculator_Map_Functor avg_calc_functor(app_start_time);
         Map average_calculator = Map_Builder(avg_calc_functor)
@@ -190,10 +190,10 @@ int main(int argc, char* argv[]) {
                 .withOutputBatchSize(batch_size)
                 .build();
         Kafka_Sink_Functor sink_functor(sampling, app_start_time);
-        Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
+        Kafka_Sink sink = KafkaSink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
-                        .withBrokers("localhost:9092")
+                        .withBrokers("131.114.3.249:9092")
                         .build();
         MultiPipe &mp = topology.add_source(source);
         //cout << "Chaining is disabled" << endl;
@@ -204,17 +204,17 @@ int main(int argc, char* argv[]) {
     else { // chaining
         /// create the operators
         Kafka_Source_Functor source_functor(app_start_time, rate);
-        Kafka_Source source = Kafka_Source_Builder(source_functor)
+        Kafka_Source source = KafkaSource_Builder(source_functor)
                                 .withName("kafka-source")
                                 .withOutputBatchSize(1)
                                 .withClosingFunction(c_functor)
-                                .withBrokers("localhost:9092")
+                                .withBrokers("131.114.3.249:9092")
                                 .withTopics("sd")
                                 .withGroupID("gruppo")
                                 .withAssignmentPolicy("roundrobin")
-                                .withIdleness(500)
+                                .withIdleness(std::chrono::milliseconds(500))
                                 .withParallelism(1)
-                                .withOffset(0)
+                                .withOffsets(0)
                                 .build();
 
         Average_Calculator_Map_Functor avg_calc_functor(app_start_time);
@@ -230,10 +230,10 @@ int main(int argc, char* argv[]) {
                 .build();
 
         Kafka_Sink_Functor sink_functor(sampling, app_start_time);
-        Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
+        Kafka_Sink sink = KafkaSink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
-                        .withBrokers("localhost:9092")
+                        .withBrokers("131.114.3.249:9092")
                         .build();
 
         MultiPipe &mp = topology.add_source(source);

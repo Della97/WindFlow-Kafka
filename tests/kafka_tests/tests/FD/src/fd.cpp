@@ -219,7 +219,7 @@ int main(int argc, char* argv[]) {
                                 .withTopics("fd")
                                 .withGroupID("gruppo")
                                 .withAssignmentPolicy("roundrobin")
-                                .withIdleness(500)
+                                .withIdleness(chrono::milliseconds(500))
                                 .withParallelism(1)
                                 .withOffset(0)
                                 .build();
@@ -254,7 +254,7 @@ int main(int argc, char* argv[]) {
                                 .withTopics("fd")
                                 .withGroupID("gruppo")
                                 .withAssignmentPolicy("roundrobin")
-                                .withIdleness(500)
+                                .withIdleness(chrono::milliseconds(500))
                                 .withParallelism(1)
                                 .withOffset(0)
                                 .build();
