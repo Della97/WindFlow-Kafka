@@ -211,7 +211,7 @@ int main(int argc, char* argv[]) {
     if (!chaining) { // no chaining
         /// create the operators
         Kafka_Source_Functor source_functor(app_start_time, rate);
-        Kafka_Source source = Kafka_Source_Builder(source_functor)
+        Kafka_Source source = KafkaSource_Builder(source_functor)
                                 .withName("kafka-source")
                                 .withOutputBatchSize(batch_size)
                                 .withClosingFunction(c_functor)
@@ -231,7 +231,7 @@ int main(int argc, char* argv[]) {
                                 .withOutputBatchSize(batch_size)
                                 .build();
         Kafka_Sink_Functor sink_functor(sampling, app_start_time);
-        Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
+        Kafka_Sink sink = KafkaSink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
                         .withBrokers("131.114.3.249:9092")
@@ -246,7 +246,7 @@ int main(int argc, char* argv[]) {
     else { // chaining
         /// create the operators
         Kafka_Source_Functor source_functor(app_start_time, rate);
-        Kafka_Source source = Kafka_Source_Builder(source_functor)
+        Kafka_Source source = KafkaSource_Builder(source_functor)
                                 .withName("kafka-source")
                                 .withOutputBatchSize(0)
                                 .withClosingFunction(c_functor)
@@ -265,7 +265,7 @@ int main(int argc, char* argv[]) {
                                 .withKeyBy([](const tuple_t &t) -> size_t { return t.key; })
                                 .build();
         Kafka_Sink_Functor sink_functor(sampling, app_start_time);
-        Kafka_Sink sink = Kafka_Sink_Builder(sink_functor)
+        Kafka_Sink sink = KafkaSink_Builder(sink_functor)
                         .withName("sink1")
                         .withParallelism(1)
                         .withBrokers("131.114.3.249:9092")
