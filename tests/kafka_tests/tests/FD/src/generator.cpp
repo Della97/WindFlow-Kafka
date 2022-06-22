@@ -191,7 +191,7 @@ int main(int argc, char* argv[]) {
                                                 NULL);    //
 
             producer->poll(0);
-        //std::this_thread::sleep_for(std::chrono::microseconds(50));
+        std::this_thread::sleep_for(std::chrono::microseconds(50));
         next_tuple_idx = (next_tuple_idx + 1) % dataset.size();   // index of the next tuple to be sent (if any)
         count++;
         index++;
