@@ -123,7 +123,7 @@ public:
                 }
                 pos++;
             }
-            //t.ts = current_time_nsecs();
+            t.ts = current_time_nsecs();
             //std::cout << "SOURCE: " <<  tuple_latency << std::endl;
             if (current_time - app_start_time > app_run_time) {
                 return false;
