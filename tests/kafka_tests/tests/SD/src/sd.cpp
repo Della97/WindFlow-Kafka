@@ -174,7 +174,7 @@ int main(int argc, char* argv[]) {
                                 .withAssignmentPolicy("roundrobin")
                                 .withIdleness(std::chrono::milliseconds(500))
                                 .withParallelism(1)
-                                .withOffsets(0)
+                                .withOffsets(-1)
                                 .build();
         Average_Calculator_Map_Functor avg_calc_functor(app_start_time);
         Map average_calculator = Map_Builder(avg_calc_functor)
@@ -214,7 +214,7 @@ int main(int argc, char* argv[]) {
                                 .withAssignmentPolicy("roundrobin")
                                 .withIdleness(std::chrono::milliseconds(500))
                                 .withParallelism(1)
-                                .withOffsets(0)
+                                .withOffsets(-1)
                                 .build();
 
         Average_Calculator_Map_Functor avg_calc_functor(app_start_time);

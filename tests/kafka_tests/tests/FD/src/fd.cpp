@@ -221,7 +221,7 @@ int main(int argc, char* argv[]) {
                                 .withAssignmentPolicy("roundrobin")
                                 .withIdleness(chrono::milliseconds(500))
                                 .withParallelism(1)
-                                .withOffsets(0)
+                                .withOffsets(-1)
                                 .build();
         Predictor_Functor predictor_functor(app_start_time);
         FlatMap predictor = FlatMap_Builder(predictor_functor)
@@ -256,7 +256,7 @@ int main(int argc, char* argv[]) {
                                 .withAssignmentPolicy("roundrobin")
                                 .withIdleness(chrono::milliseconds(500))
                                 .withParallelism(1)
-                                .withOffsets(0)
+                                .withOffsets(-1)
                                 .build();
         Predictor_Functor predictor_functor(app_start_time);
         FlatMap predictor = FlatMap_Builder(predictor_functor)
